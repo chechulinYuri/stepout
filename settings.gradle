@@ -1,1 +1,1 @@
-include ':app', ':facebook', ':HelloFacebookSample', ':android-support-v4', ':bolts'
+include ':app', ':facebook', ':HelloFacebookSample'

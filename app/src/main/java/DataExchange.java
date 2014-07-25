@@ -1,3 +1,5 @@
+import com.parse.Parse;
+
 import java.util.ArrayList;
 
 /**
@@ -9,6 +11,9 @@ public class DataExchange {
     }
 
     public User saveToParseCom(User user) {
+
+        //Parse.initialize(this, "w8w75nqgzFroCnZEqO6auY85PJnTRKILNXYZUeKa", "UNH39pBxBzLAD4ekMZQUp0VzGUACPTPTHBT5x8qg");
+
         return null;
     }
 
