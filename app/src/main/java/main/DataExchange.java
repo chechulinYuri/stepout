@@ -62,7 +62,34 @@ public class DataExchange {
         return null;
     }
 
-    public User getFromParseCom(String id) {
+    public User getFromParseCom(String fbId) {
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.USER_TABLE_NAME);
+        query.whereEqualTo("fbId", fbId);
+        try {
+            List<ParseObject> objects = query.find();
+
+            if (objects.size() > 0) {
+
+                ParseObject obj = objects.get(0);
+
+                User user = new User(
+                        obj.getString("firstName"),
+                        obj.getString("lastName"),
+                        obj.getString("phone"),
+                        obj.getString("photoLink"),
+                        obj.getString("fbId")
+                );
+
+                user.hash = obj.getObjectId();
+
+                return user;
+            }
+
+        } catch(ParseException e) {
+
+        }
+
         return null;
     }
 
