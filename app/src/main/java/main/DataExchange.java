@@ -25,7 +25,7 @@ public class DataExchange {
         return null;
     }
 
-    public User saveToParseCom(User user) {
+    public User saveUserToParseCom(User user) {
 
         userHash = null;
 
@@ -62,7 +62,7 @@ public class DataExchange {
         return null;
     }
 
-    public User getFromParseCom(String fbId) {
+    public User getUserFromParseCom(String fbId) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.USER_TABLE_NAME);
         query.whereEqualTo("fbId", fbId);
@@ -93,8 +93,12 @@ public class DataExchange {
         return null;
     }
 
-    private boolean isRegistered(String id) {
-        return false;
+    private boolean isRegistered(String fbId) {
+        if (getUserFromParseCom(fbId) == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public boolean isLogin() {
