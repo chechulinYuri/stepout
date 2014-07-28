@@ -18,23 +18,37 @@ public class MainActivity extends Activity {
         DataExchange dataExchange = new DataExchange(this);
 
         // TEST USER SAVE
-        /*User testUser = new User("Yuri", "Chechulin", "+79531233212", "http://cs618726.vk.me/v618726028/d03e/_EawHr8ITXc.jpg", "1298");
-        User usr = dataExchange.saveToParseCom(testUser);
+        /*User testUser = new User("Yuri", "Chechulin", "+79531233212", "http://cs618726.vk.me/v618726028/d03e/_EawHr8ITXc.jpg", "42323");
+        User usr = dataExchange.saveUserToParseCom(testUser);
 
         if (usr != null) {
-            Log.d("qwe", usr.hash);
+            Toast toast = Toast.makeText(this, usr.hash, Toast.LENGTH_LONG);
+            toast.show();
         } else {
-            Log.d("qwe", "usr null");
+            Toast toast = Toast.makeText(this, "User not saved", Toast.LENGTH_LONG);
+            toast.show();
         }*/
 
 
         // TEST USER GET
-        /*User usr = dataExchange.getFromParseCom("12982");
+        /*User usr = dataExchange.getUserFromParseCom("42323");
         if (usr != null) {
-            Toast toast = Toast.makeText(this, usr.firstName, Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(this, usr.hash, Toast.LENGTH_LONG);
             toast.show();
         } else {
             Toast toast = Toast.makeText(this, "User not found", Toast.LENGTH_LONG);
+            toast.show();
+        }*/
+
+        // TEST EVENT SAVE
+        /*Event testEvent = new Event("GO DOTA", new ParseGeoPoint(40.0, -30.0), Arrays.asList("qwe", "asd"), "asdadqwe123", System.currentTimeMillis(), 3);
+        Event evt = dataExchange.saveEventToParseCom(testEvent);
+
+        if (evt != null) {
+            Toast toast = Toast.makeText(this, evt.message + " " + evt.hash, Toast.LENGTH_LONG);
+            toast.show();
+        } else {
+            Toast toast = Toast.makeText(this, "Event not found", Toast.LENGTH_LONG);
             toast.show();
         }*/
 

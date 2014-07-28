@@ -1,15 +1,26 @@
 package main;
 
-import java.util.Map;
+import com.parse.ParseGeoPoint;
+
+import java.util.List;
 
 /**
  * Created by Yuri on 25.07.2014.
  */
 public class Event extends Entity {
-    public Map<String, Float> coordinates;
+    ParseGeoPoint coordinates;
     public String message;
-    public int category;
+    public List<String> tags;
     public String authorHash;
-    public String date;
+    public Long date;
     public int responsesCount;
+
+    public Event(String message, ParseGeoPoint coordinates, List<String> tags, String authorHash, Long date, int responsesCount) {
+        this.message = message;
+        this.coordinates = coordinates;
+        this.tags = tags;
+        this.authorHash = authorHash;
+        this.date = date;
+        this.responsesCount = responsesCount;
+    }
 }

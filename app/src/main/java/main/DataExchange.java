@@ -1,6 +1,7 @@
 package main;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -15,8 +16,6 @@ import java.util.List;
  */
 public class DataExchange {
 
-    private String userHash;
-
     public DataExchange(Context ctx) {
         Parse.initialize(ctx, "w8w75nqgzFroCnZEqO6auY85PJnTRKILNXYZUeKa", "UNH39pBxBzLAD4ekMZQUp0VzGUACPTPTHBT5x8qg");
     }
@@ -27,7 +26,7 @@ public class DataExchange {
 
     public User saveUserToParseCom(User user) {
 
-        userHash = null;
+        String userHash = null;
 
         ParseObject userParse = new ParseObject(MainActivity.USER_TABLE_NAME);
         userParse.put("fbId", user.fbId);
@@ -38,20 +37,9 @@ public class DataExchange {
 
         try {
             userParse.save();
+            userHash = userParse.getObjectId();
         } catch(ParseException e) {
-
-        }
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.USER_TABLE_NAME);
-        try {
-            List<ParseObject> objects = query.find();
-
-            if (objects.size() > 0) {
-                userHash = objects.get(0).getObjectId();
-            }
-
-        } catch(ParseException e) {
-
+            Log.d("ERROR", e.getMessage());
         }
 
         if (userHash != null) {
@@ -87,13 +75,13 @@ public class DataExchange {
             }
 
         } catch(ParseException e) {
-
+            Log.d("ERROR", e.getMessage());
         }
 
         return null;
     }
 
-    private boolean isRegistered(String fbId) {
+    public boolean isRegistered(String fbId) {
         if (getUserFromParseCom(fbId) == null) {
             return false;
         } else {
@@ -101,12 +89,35 @@ public class DataExchange {
         }
     }
 
-    public boolean isLogin() {
+    public boolean isLogedin() {
         return false;
     }
 
-    public boolean createEvent(Event event) {
-        return false;
+    public Event saveEventToParseCom(Event event) {
+
+        String eventHash = null;
+
+        ParseObject eventParse = new ParseObject(MainActivity.EVENT_TABLE_NAME);
+        eventParse.put("message", event.message);
+        eventParse.put("tags", event.tags);
+        eventParse.put("authorHash", event.authorHash);
+        eventParse.put("date", event.date);
+        eventParse.put("coordinates", event.coordinates);
+        eventParse.put("responsesCount", event.responsesCount);
+
+        try {
+            eventParse.save();
+            eventHash = eventParse.getObjectId();
+        } catch(ParseException e) {
+            Log.d("ERROR", e.getMessage());
+        }
+
+        if (eventHash != null) {
+            event.hash = eventHash;
+            return event;
+        }
+
+        return null;
     }
 
     public boolean respondToEvent(String eventHash, String message, String userHash) {
