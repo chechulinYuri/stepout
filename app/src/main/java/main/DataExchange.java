@@ -8,6 +8,9 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,7 +128,45 @@ public class DataExchange {
     }
 
     public ArrayList<Event> getEventsByUser(String userHash) {
-        return null;
+
+        ArrayList<Event> result = new ArrayList<Event>();
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.EVENT_TABLE_NAME);
+        query.whereEqualTo("authorHash", userHash);
+        try {
+            List<ParseObject> objects = query.find();
+
+            for (int i = 0; i < objects.size(); i++) {
+                ParseObject po = objects.get(i);
+
+                ArrayList<String> tags = new ArrayList<String>();
+                JSONArray jsonArray = po.getJSONArray("tags");
+                if (jsonArray != null) {
+                    int len = jsonArray.length();
+                    for (int j=0; j<len; j++){
+                        tags.add(jsonArray.get(j).toString());
+                    }
+                }
+
+                Event ev = new Event(
+                        po.getString("message"),
+                        po.getParseGeoPoint("coordinates"),
+                        tags,
+                        po.getString("authorHash"),
+                        po.getLong("date"),
+                        po.getInt("responsesCount")
+                    );
+
+                result.add(ev);
+            }
+        } catch(ParseException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+
     }
 
     public ArrayList<User> getUsersByEvent(String eventHash) {

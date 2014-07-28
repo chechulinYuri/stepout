@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
         }*/
 
         // TEST EVENT SAVE
-        /*Event testEvent = new Event("GO DOTA", new ParseGeoPoint(40.0, -30.0), Arrays.asList("qwe", "asd"), "asdadqwe123", System.currentTimeMillis(), 3);
+        /*Event testEvent = new Event("GO ASD", new ParseGeoPoint(40.0, -30.0), Arrays.asList("asd", "qwe"), "dhdhdfhdf", System.currentTimeMillis(), 3);
         Event evt = dataExchange.saveEventToParseCom(testEvent);
 
         if (evt != null) {
@@ -53,5 +53,15 @@ public class MainActivity extends Activity {
         }*/
 
         //TODO
+
+        // TEST GET EVENTS BY USER HASH
+        /*ArrayList<Event> events = dataExchange.getEventsByUser("asdadqwe123");
+        String res = "";
+        for (int i = 0; i < events.size(); i++) {
+            res += events.get(i).message + " ";
+        }
+        Toast toast = Toast.makeText(this, res, Toast.LENGTH_LONG);
+        toast.show();*/
+
     }
 }
