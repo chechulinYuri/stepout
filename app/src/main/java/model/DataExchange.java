@@ -1,4 +1,4 @@
-package main;
+package model;
 
 import android.content.Context;
 import android.util.Log;
@@ -13,6 +13,8 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import main.MainActivity;
 
 /**
  * Created by Yuri on 25.07.2014.

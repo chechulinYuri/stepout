@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import com.example.admin.stepout.R;
 
+import model.DataExchange;
+
 public class MainActivity extends Activity {
 
     public static final String EVENT_TABLE_NAME = "Event";
