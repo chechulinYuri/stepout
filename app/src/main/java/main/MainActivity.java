@@ -20,14 +20,14 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login_screen_layout);
-       /* if (savedInstanceState == null) {
+        //setContentView(R.layout.login_screen_layout);
+        if (savedInstanceState == null) {
             loginFragment = new LoginFragment();
-            getSupportFragmentManager().beginTransaction().add(loginFragment, android.R.id.content).commit();
+            getSupportFragmentManager().beginTransaction().add(android.R.id.content, loginFragment);
         }
         else {
-            loginFragment = (LoginFragment) getSupportFragmentManager().findFragmentById(android.R.id.content)
-        }*/ //NEEDS TO BE FIXED
+            loginFragment = (LoginFragment) getSupportFragmentManager().findFragmentById(android.R.id.content);
+        }
 
         DataExchange dataExchange = new DataExchange(this);
     }
