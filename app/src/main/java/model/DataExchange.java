@@ -55,7 +55,7 @@ public class DataExchange {
         return null;
     }
 
-    public User getUserFromParseCom(String fbId) {
+    public User getUserByFbId(String fbId) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.USER_TABLE_NAME);
         query.whereEqualTo("fbId", fbId);
@@ -86,8 +86,39 @@ public class DataExchange {
         return null;
     }
 
+    public User getUserByHash(String userHash) {
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.USER_TABLE_NAME);
+        query.whereEqualTo("objectId", userHash);
+        try {
+            List<ParseObject> objects = query.find();
+
+            if (objects.size() > 0) {
+
+                ParseObject obj = objects.get(0);
+
+                User user = new User(
+                        obj.getString("firstName"),
+                        obj.getString("lastName"),
+                        obj.getString("phone"),
+                        obj.getString("photoLink"),
+                        obj.getString("fbId")
+                );
+
+                user.hash = obj.getObjectId();
+
+                return user;
+            }
+
+        } catch(ParseException e) {
+            Log.d("ERROR", e.getMessage());
+        }
+
+        return null;
+    }
+
     public boolean isRegistered(String fbId) {
-        if (getUserFromParseCom(fbId) == null) {
+        if (getUserByFbId(fbId) == null) {
             return false;
         } else {
             return true;
@@ -172,7 +203,26 @@ public class DataExchange {
     }
 
     public ArrayList<User> getUsersByEvent(String eventHash) {
-        return null;
+        ArrayList<User> result = new ArrayList<User>();
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.RESPONSE_TABLE_NAME);
+        query.whereEqualTo("eventHash", eventHash);
+        try {
+            List<ParseObject> objects = query.find();
+
+            for (int i = 0; i < objects.size(); i++) {
+                ParseObject po = objects.get(i);
+
+                User user = getUserByHash(po.getString("userHash"));
+                if (user != null) {
+                    result.add(user);
+                }
+            }
+        } catch(ParseException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public ArrayList<Event> getEventsInRadius(float x, float y) {
