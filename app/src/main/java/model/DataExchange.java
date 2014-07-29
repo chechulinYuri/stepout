@@ -22,6 +22,27 @@ import main.MainActivity;
  */
 public class DataExchange {
 
+    public static final String EVENT_TABLE_NAME = "Event";
+    public static final String USER_TABLE_NAME = "User";
+    public static final String RESPONSE_TABLE_NAME = "Response";
+
+    public static final String MESSAGE_COL_NAME = "message";
+    public static final String TAGS_COL_NAME = "tags";
+    public static final String AUTHOR_HASH_COL_NAME = "authorHash";
+    public static final String DATE_COL_NAME = "date";
+    public static final String COORDINATES_COL_NAME = "coordinates";
+    public static final String RESPONSES_COUNT_COL_NAME = "responsesCount";
+    public static final String USER_HASH_COL_NAME = "userHash";
+    public static final String EVENT_HASH_COL_NAME = "eventHash";
+    public static final String FACEBOOK_ID_COL_NAME = "fbId";
+    public static final String FIRST_NAME_COL_NAME = "firstName";
+    public static final String LAST_NAME_COL_NAME = "lastName";
+    public static final String PHOTO_LINK_COL_NAME = "photoLink";
+    public static final String PHONE_COL_NAME = "phone";
+    public static final String OBJECT_ID_COL_NAME = "objectId";
+
+    public static final double EVENTS_VISIBILITY_RADIUS_IN_MILES = 400;
+
     public DataExchange(Context ctx) {
         Parse.initialize(ctx, "w8w75nqgzFroCnZEqO6auY85PJnTRKILNXYZUeKa", "UNH39pBxBzLAD4ekMZQUp0VzGUACPTPTHBT5x8qg");
     }
@@ -34,12 +55,12 @@ public class DataExchange {
 
         String userHash = null;
 
-        ParseObject userParse = new ParseObject(MainActivity.USER_TABLE_NAME);
-        userParse.put("fbId", user.fbId);
-        userParse.put("firstName", user.firstName);
-        userParse.put("lastName", user.lastName);
-        userParse.put("photoLink", user.photoLink);
-        userParse.put("phone", user.phone);
+        ParseObject userParse = new ParseObject(USER_TABLE_NAME);
+        userParse.put(FACEBOOK_ID_COL_NAME, user.fbId);
+        userParse.put(FIRST_NAME_COL_NAME, user.firstName);
+        userParse.put(LAST_NAME_COL_NAME, user.lastName);
+        userParse.put(PHOTO_LINK_COL_NAME, user.photoLink);
+        userParse.put(PHONE_COL_NAME, user.phone);
 
         try {
             userParse.save();
@@ -58,8 +79,8 @@ public class DataExchange {
 
     public User getUserByFbId(String fbId) {
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.USER_TABLE_NAME);
-        query.whereEqualTo("fbId", fbId);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(USER_TABLE_NAME);
+        query.whereEqualTo(FACEBOOK_ID_COL_NAME, fbId);
         try {
             List<ParseObject> objects = query.find();
 
@@ -68,11 +89,11 @@ public class DataExchange {
                 ParseObject obj = objects.get(0);
 
                 User user = new User(
-                        obj.getString("firstName"),
-                        obj.getString("lastName"),
-                        obj.getString("phone"),
-                        obj.getString("photoLink"),
-                        obj.getString("fbId")
+                        obj.getString(FIRST_NAME_COL_NAME),
+                        obj.getString(LAST_NAME_COL_NAME),
+                        obj.getString(PHONE_COL_NAME),
+                        obj.getString(PHOTO_LINK_COL_NAME),
+                        obj.getString(FACEBOOK_ID_COL_NAME)
                 );
 
                 user.hash = obj.getObjectId();
@@ -89,8 +110,8 @@ public class DataExchange {
 
     public User getUserByHash(String userHash) {
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.USER_TABLE_NAME);
-        query.whereEqualTo("objectId", userHash);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(USER_TABLE_NAME);
+        query.whereEqualTo(OBJECT_ID_COL_NAME, userHash);
         try {
             List<ParseObject> objects = query.find();
 
@@ -99,11 +120,11 @@ public class DataExchange {
                 ParseObject obj = objects.get(0);
 
                 User user = new User(
-                        obj.getString("firstName"),
-                        obj.getString("lastName"),
-                        obj.getString("phone"),
-                        obj.getString("photoLink"),
-                        obj.getString("fbId")
+                        obj.getString(FIRST_NAME_COL_NAME),
+                        obj.getString(LAST_NAME_COL_NAME),
+                        obj.getString(PHONE_COL_NAME),
+                        obj.getString(PHOTO_LINK_COL_NAME),
+                        obj.getString(FACEBOOK_ID_COL_NAME)
                 );
 
                 user.hash = obj.getObjectId();
@@ -134,13 +155,13 @@ public class DataExchange {
 
         String eventHash = null;
 
-        ParseObject eventParse = new ParseObject(MainActivity.EVENT_TABLE_NAME);
-        eventParse.put("message", event.message);
-        eventParse.put("tags", event.tags);
-        eventParse.put("authorHash", event.authorHash);
-        eventParse.put("date", event.date);
-        eventParse.put("coordinates", event.coordinates);
-        eventParse.put("responsesCount", event.responsesCount);
+        ParseObject eventParse = new ParseObject(EVENT_TABLE_NAME);
+        eventParse.put(MESSAGE_COL_NAME, event.message);
+        eventParse.put(TAGS_COL_NAME, event.tags);
+        eventParse.put(AUTHOR_HASH_COL_NAME, event.authorHash);
+        eventParse.put(DATE_COL_NAME, event.date);
+        eventParse.put(COORDINATES_COL_NAME, event.coordinates);
+        eventParse.put(RESPONSES_COUNT_COL_NAME, event.responsesCount);
 
         try {
             eventParse.save();
@@ -159,10 +180,10 @@ public class DataExchange {
 
     public boolean respondToEvent(String eventHash, String userHash, String message) {
 
-        ParseObject eventRespondParse = new ParseObject(MainActivity.RESPONSE_TABLE_NAME);
-        eventRespondParse.put("message", message);
-        eventRespondParse.put("userHash", userHash);
-        eventRespondParse.put("eventHash", eventHash);
+        ParseObject eventRespondParse = new ParseObject(RESPONSE_TABLE_NAME);
+        eventRespondParse.put(MESSAGE_COL_NAME, message);
+        eventRespondParse.put(USER_HASH_COL_NAME, userHash);
+        eventRespondParse.put(EVENT_HASH_COL_NAME, eventHash);
 
         try {
             eventRespondParse.save();
@@ -181,8 +202,8 @@ public class DataExchange {
 
         ArrayList<Event> result = new ArrayList<Event>();
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.EVENT_TABLE_NAME);
-        query.whereEqualTo("authorHash", userHash);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
+        query.whereEqualTo(AUTHOR_HASH_COL_NAME, userHash);
         try {
             List<ParseObject> objects = query.find();
 
@@ -190,7 +211,7 @@ public class DataExchange {
                 ParseObject po = objects.get(i);
 
                 ArrayList<String> tags = new ArrayList<String>();
-                JSONArray jsonArray = po.getJSONArray("tags");
+                JSONArray jsonArray = po.getJSONArray(TAGS_COL_NAME);
                 if (jsonArray != null) {
                     int len = jsonArray.length();
                     for (int j=0; j<len; j++){
@@ -199,12 +220,12 @@ public class DataExchange {
                 }
 
                 Event ev = new Event(
-                        po.getString("message"),
-                        po.getParseGeoPoint("coordinates"),
+                        po.getString(MESSAGE_COL_NAME),
+                        po.getParseGeoPoint(COORDINATES_COL_NAME),
                         tags,
-                        po.getString("authorHash"),
-                        po.getLong("date"),
-                        po.getInt("responsesCount")
+                        po.getString(AUTHOR_HASH_COL_NAME),
+                        po.getLong(DATE_COL_NAME),
+                        po.getInt(RESPONSES_COUNT_COL_NAME)
                     );
 
                 result.add(ev);
@@ -222,15 +243,15 @@ public class DataExchange {
     public ArrayList<User> getUsersByEvent(String eventHash) {
         ArrayList<User> result = new ArrayList<User>();
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.RESPONSE_TABLE_NAME);
-        query.whereEqualTo("eventHash", eventHash);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(RESPONSE_TABLE_NAME);
+        query.whereEqualTo(EVENT_HASH_COL_NAME, eventHash);
         try {
             List<ParseObject> objects = query.find();
 
             for (int i = 0; i < objects.size(); i++) {
                 ParseObject po = objects.get(i);
 
-                User user = getUserByHash(po.getString("userHash"));
+                User user = getUserByHash(po.getString(USER_HASH_COL_NAME));
                 if (user != null) {
                     result.add(user);
                 }
@@ -245,8 +266,8 @@ public class DataExchange {
     public ArrayList<Event> getEventsInRadius(float x, float y) {
         ArrayList<Event> result = new ArrayList<Event>();
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.EVENT_TABLE_NAME);
-        query.whereWithinMiles("coordinates", new ParseGeoPoint(x, y), MainActivity.EVENTS_VISIBILITY_RADIUS_IN_MILES);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
+        query.whereWithinMiles(COORDINATES_COL_NAME, new ParseGeoPoint(x, y), EVENTS_VISIBILITY_RADIUS_IN_MILES);
         try {
             List<ParseObject> objects = query.find();
 
@@ -254,7 +275,7 @@ public class DataExchange {
                 ParseObject po = objects.get(i);
 
                 ArrayList<String> tags = new ArrayList<String>();
-                JSONArray jsonArray = po.getJSONArray("tags");
+                JSONArray jsonArray = po.getJSONArray(TAGS_COL_NAME);
                 if (jsonArray != null) {
                     int len = jsonArray.length();
                     for (int j=0; j<len; j++){
@@ -263,12 +284,12 @@ public class DataExchange {
                 }
 
                 Event ev = new Event(
-                        po.getString("message"),
-                        po.getParseGeoPoint("coordinates"),
+                        po.getString(MESSAGE_COL_NAME),
+                        po.getParseGeoPoint(COORDINATES_COL_NAME),
                         tags,
-                        po.getString("authorHash"),
-                        po.getLong("date"),
-                        po.getInt("responsesCount")
+                        po.getString(AUTHOR_HASH_COL_NAME),
+                        po.getLong(DATE_COL_NAME),
+                        po.getInt(RESPONSES_COUNT_COL_NAME)
                 );
 
                 result.add(ev);

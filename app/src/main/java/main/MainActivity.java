@@ -13,11 +13,6 @@ import model.Event;
 
 public class MainActivity extends FragmentActivity {
 
-    public static final String EVENT_TABLE_NAME = "Event";
-    public static final String USER_TABLE_NAME = "User";
-    public static final String RESPONSE_TABLE_NAME = "Response";
-    public static final double EVENTS_VISIBILITY_RADIUS_IN_MILES = 400;
-
     private  LoginFragment loginFragment;
 
     @Override
