@@ -2,10 +2,14 @@ package main;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.widget.Toast;
 
 import com.example.admin.stepout.R;
 
+import java.util.ArrayList;
+
 import model.DataExchange;
+import model.Event;
 
 public class MainActivity extends FragmentActivity {
 
@@ -29,6 +33,5 @@ public class MainActivity extends FragmentActivity {
         }
 
         DataExchange dataExchange = new DataExchange(this);
-
     }
 }

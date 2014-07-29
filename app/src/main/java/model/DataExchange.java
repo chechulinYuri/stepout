@@ -157,7 +157,23 @@ public class DataExchange {
         return null;
     }
 
-    public boolean respondToEvent(String eventHash, String message, String userHash) {
+    public boolean respondToEvent(String eventHash, String userHash, String message) {
+
+        ParseObject eventRespondParse = new ParseObject(MainActivity.RESPONSE_TABLE_NAME);
+        eventRespondParse.put("message", message);
+        eventRespondParse.put("userHash", userHash);
+        eventRespondParse.put("eventHash", eventHash);
+
+        try {
+            eventRespondParse.save();
+        } catch(ParseException e) {
+            Log.d("ERROR", e.getMessage());
+        }
+
+        if (eventRespondParse.getObjectId() != null) {
+            return true;
+        }
+
         return false;
     }
 
