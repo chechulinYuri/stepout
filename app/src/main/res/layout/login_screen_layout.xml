@@ -10,6 +10,12 @@
     android:orientation="vertical"
     tools:context=".MyActivity">
 
+    <Button
+        android:id="@+id/test_create_event_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Test Event"/>
+
     <TextView
         android:text="@string/sign_in_text"
         android:layout_width="wrap_content"
@@ -28,4 +34,5 @@
         facebook:login_text="@string/facebook"
         android:layout_gravity="center_horizontal" />
 -->
+
 </LinearLayout>
