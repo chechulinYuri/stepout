@@ -1,8 +1,6 @@
 package main;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 import com.example.admin.stepout.R;
@@ -14,6 +12,7 @@ public class MainActivity extends FragmentActivity {
     public static final String EVENT_TABLE_NAME = "Event";
     public static final String USER_TABLE_NAME = "User";
     public static final String RESPONSE_TABLE_NAME = "Response";
+    public static final double EVENTS_VISIBILITY_RADIUS_IN_MILES = 400;
 
     private  LoginFragment loginFragment;
 
@@ -30,5 +29,6 @@ public class MainActivity extends FragmentActivity {
         }*/ //NEEDS TO BE FIXED
 
         DataExchange dataExchange = new DataExchange(this);
+
     }
 }

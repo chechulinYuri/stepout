@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -226,7 +227,43 @@ public class DataExchange {
     }
 
     public ArrayList<Event> getEventsInRadius(float x, float y) {
-        return null;
+        ArrayList<Event> result = new ArrayList<Event>();
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(MainActivity.EVENT_TABLE_NAME);
+        query.whereWithinMiles("coordinates", new ParseGeoPoint(x, y), MainActivity.EVENTS_VISIBILITY_RADIUS_IN_MILES);
+        try {
+            List<ParseObject> objects = query.find();
+
+            for (int i = 0; i < objects.size(); i++) {
+                ParseObject po = objects.get(i);
+
+                ArrayList<String> tags = new ArrayList<String>();
+                JSONArray jsonArray = po.getJSONArray("tags");
+                if (jsonArray != null) {
+                    int len = jsonArray.length();
+                    for (int j=0; j<len; j++){
+                        tags.add(jsonArray.get(j).toString());
+                    }
+                }
+
+                Event ev = new Event(
+                        po.getString("message"),
+                        po.getParseGeoPoint("coordinates"),
+                        tags,
+                        po.getString("authorHash"),
+                        po.getLong("date"),
+                        po.getInt("responsesCount")
+                );
+
+                result.add(ev);
+            }
+        } catch(ParseException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public boolean isEventAssignedToUser(String eventHash, String userHash) {
