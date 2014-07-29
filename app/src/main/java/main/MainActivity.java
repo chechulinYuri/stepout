@@ -1,9 +1,10 @@
 package main;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.admin.stepout.R;
 import com.facebook.Request;
@@ -13,10 +14,13 @@ import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.UserSettingsFragment;
 
+import java.util.ArrayList;
+
 import model.DataExchange;
 import model.User;
+import model.Event;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends Activity {
 
     public static final String EVENT_TABLE_NAME = "Event";
     public static final String USER_TABLE_NAME = "User";
@@ -61,4 +65,6 @@ public class MainActivity extends FragmentActivity {
         super.onActivityResult(requestCode, resultCode, data);
         Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
     }
+
+    DataExchange dataExchange = new DataExchange(this);
 }
