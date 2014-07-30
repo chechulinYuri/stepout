@@ -7,7 +7,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
         android:layout_margin="@dimen/activity_margin"
         android:orientation="vertical"
         tools:context="com.stepout.main.CreateEventActivity">
@@ -83,6 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/save_button"
+            android:textColor="@color/flat_clouds"
             android:layout_gravity="center"
             android:background="@color/flat_nephritis"
             android:padding="@dimen/stepout_standard_padding"

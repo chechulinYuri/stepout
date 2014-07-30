@@ -40,6 +40,14 @@ public class MainActivity extends Activity {
             }
         });
 
+        findViewById(R.id.test_view_event_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ViewEventAsGuestActivity.class);
+                startActivity(intent);
+            }
+        });
+
         fbLoginButton = (LoginButton)findViewById(R.id.fb_login);
         fbLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -25,5 +25,4 @@ dependencies {
     compile files('libs/Parse-1.5.1.jar')
     compile project(':facebook')
     compile 'com.google.code.gson:gson:2.2.4'
-    //compile 'com.android.support:appcompat-v7:19.+'
 }

@@ -7,13 +7,13 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
+        android:name=".DataExchange"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name="com.stepout.main.DataExchange">
+        android:theme="@style/AppTheme" >
         <activity
-            android:name="com.stepout.main.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,11 +22,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.stepout.main.CreateEventActivity"
+            android:name=".CreateEventActivity"
             android:label="@string/title_activity_create_event" >
         </activity>
-        <activity android:name="com.facebook.LoginActivity"/>
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>
+        <activity android:name="com.facebook.LoginActivity" />
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/app_id" />
+
+        <activity
+            android:name=".ViewEventAsGuestActivity"
+            android:label="@string/title_activity_view_event" >
+        </activity>
     </application>
 
 </manifest>

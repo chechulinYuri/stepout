@@ -1,0 +1,80 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_margin"
+        android:orientation="vertical"
+        tools:context="com.stepout.main.CreateEventActivity">
+
+        <TextView
+            android:id="@+id/view_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/flat_clouds"
+            android:padding="@dimen/stepout_standard_padding"
+            android:layout_marginRight="@dimen/stepout_standard_margin"
+            android:gravity="center_horizontal"
+            android:layout_gravity="left"/>
+
+        <TextView
+            android:id="@+id/message_view_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/flat_clouds"
+            android:padding="@dimen/stepout_standard_padding"/>
+
+        <TextView
+            android:id="@+id/view_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="@color/flat_clouds"
+            android:padding="@dimen/stepout_standard_padding"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginLeft="@dimen/stepout_standard_margin"
+            android:gravity="center_horizontal"
+            android:layout_gravity="right"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/activity_vertical_margin">
+            <Button
+                android:id="@+id/respond_event_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:textColor="@color/flat_clouds"
+                android:text="@string/respond_button"
+                android:gravity="center"
+                android:background="@color/flat_nephritis"
+                android:padding="@dimen/stepout_standard_padding"
+                android:layout_marginRight="@dimen/stepout_standard_margin"
+                android:layout_marginTop="@dimen/stepout_big_margin"/>
+
+            <Button
+                android:id="@+id/hide_event_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/hide_button"
+                android:textColor="@color/flat_clouds"
+                android:gravity="center"
+                android:background="@color/flat_nephritis"
+                android:padding="@dimen/stepout_standard_padding"
+                android:layout_marginLeft="@dimen/stepout_standard_margin"
+                android:layout_marginTop="@dimen/stepout_big_margin"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
