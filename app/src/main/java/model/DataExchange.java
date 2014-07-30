@@ -28,7 +28,7 @@ public class DataExchange extends Application {
     public static final String RESPONSE_TABLE_NAME = "Response";
 
     public static final String MESSAGE_COL_NAME = "message";
-    public static final String TAGS_COL_NAME = "tags";
+    public static final String CATEGORY_COL_NAME = "category";
     public static final String AUTHOR_HASH_COL_NAME = "authorHash";
     public static final String DATE_COL_NAME = "date";
     public static final String COORDINATES_COL_NAME = "coordinates";
@@ -161,7 +161,7 @@ public class DataExchange extends Application {
 
         ParseObject eventParse = new ParseObject(EVENT_TABLE_NAME);
         eventParse.put(MESSAGE_COL_NAME, event.getMessage());
-        eventParse.put(TAGS_COL_NAME, event.getTags());
+        eventParse.put(CATEGORY_COL_NAME, event.getCategory());
         eventParse.put(AUTHOR_HASH_COL_NAME, event.getAuthorHash());
         eventParse.put(DATE_COL_NAME, event.getDate());
         eventParse.put(COORDINATES_COL_NAME, event.getCoordinates());
@@ -213,20 +213,10 @@ public class DataExchange extends Application {
 
             for (int i = 0; i < objects.size(); i++) {
                 ParseObject po = objects.get(i);
-
-                ArrayList<String> tags = new ArrayList<String>();
-                JSONArray jsonArray = po.getJSONArray(TAGS_COL_NAME);
-                if (jsonArray != null) {
-                    int len = jsonArray.length();
-                    for (int j=0; j<len; j++){
-                        tags.add(jsonArray.get(j).toString());
-                    }
-                }
-
                 Event ev = new Event(
                         po.getString(MESSAGE_COL_NAME),
                         po.getParseGeoPoint(COORDINATES_COL_NAME),
-                        tags,
+                        po.getString(CATEGORY_COL_NAME),
                         po.getString(AUTHOR_HASH_COL_NAME),
                         po.getDate(DATE_COL_NAME),
                         po.getInt(RESPONSES_COUNT_COL_NAME)
@@ -235,8 +225,6 @@ public class DataExchange extends Application {
                 result.add(ev);
             }
         } catch(ParseException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -277,20 +265,10 @@ public class DataExchange extends Application {
 
             for (int i = 0; i < objects.size(); i++) {
                 ParseObject po = objects.get(i);
-
-                ArrayList<String> tags = new ArrayList<String>();
-                JSONArray jsonArray = po.getJSONArray(TAGS_COL_NAME);
-                if (jsonArray != null) {
-                    int len = jsonArray.length();
-                    for (int j=0; j<len; j++){
-                        tags.add(jsonArray.get(j).toString());
-                    }
-                }
-
                 Event ev = new Event(
                         po.getString(MESSAGE_COL_NAME),
                         po.getParseGeoPoint(COORDINATES_COL_NAME),
-                        tags,
+                        po.getString(CATEGORY_COL_NAME),
                         po.getString(AUTHOR_HASH_COL_NAME),
                         po.getDate(DATE_COL_NAME),
                         po.getInt(RESPONSES_COUNT_COL_NAME)
@@ -299,8 +277,6 @@ public class DataExchange extends Application {
                 result.add(ev);
             }
         } catch(ParseException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
             e.printStackTrace();
         }
 

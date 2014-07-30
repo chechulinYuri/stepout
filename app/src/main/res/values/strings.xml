@@ -17,7 +17,7 @@
     <string name="create_event_complete_all_fields_error">Complete all fields</string>
     <string name="pick_a_time">Pick a time</string>
     <string name="pick_a_date">Pick a date</string>
-    <string name="choose_event_category">Choose event category</string>
+    <string name="choose_event_category">Category</string>
 
     <string-array name="event_categories">
         <item>Sport</item>

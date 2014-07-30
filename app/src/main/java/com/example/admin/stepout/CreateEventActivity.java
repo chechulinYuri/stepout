@@ -8,6 +8,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -32,6 +33,7 @@ public class CreateEventActivity extends FragmentActivity {
     private static Integer hour;
     private static Integer minutes;
     private static String message;
+    private static String category;
     private static TextView pickTimeView;
     private static TextView pickDateView;
 
@@ -44,13 +46,7 @@ public class CreateEventActivity extends FragmentActivity {
         pickTimeView = (TextView) findViewById(R.id.choose_time_view);
         pickDateView = (TextView) findViewById(R.id.choose_date_view);
 
-        Spinner spinner = (Spinner) findViewById(R.id.category_spinner);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.event_categories, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
+        implementSpinner();
 
         pickTimeView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,10 +69,10 @@ public class CreateEventActivity extends FragmentActivity {
             public void onClick(View view) {
                 message = messageEditText.getText().toString();
 
-                if (day != null && month != null && year != null && minutes != null && hour != null && message != null && message.length() > 0) {
+                if (day != null && month != null && year != null && minutes != null && hour != null && message != null && message.length() > 0 && category != null) {
                     Calendar cal = Calendar.getInstance();
                     cal.set(year, month, day, hour, minutes, 0);
-                    Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), Arrays.asList(new String[]{"One", "Two", "Three"}), "sdawe123eqwd", cal.getTime(), 0);
+                    Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), category, "sdawe123eqwd", cal.getTime(), 0);
                     Event storedEvent = DataExchange.saveEventToParseCom(event);
                     if (storedEvent.getHash() != null) {
                         Toast.makeText(getApplicationContext(), "OK", Toast.LENGTH_LONG).show();
@@ -87,6 +83,23 @@ public class CreateEventActivity extends FragmentActivity {
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.create_event_complete_all_fields_error, Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+    }
+
+    public void implementSpinner() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.event_categories));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner spinner = (Spinner) findViewById(R.id.category_spinner);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String[] categories = getResources().getStringArray(R.array.event_categories);
+                category = categories[position];
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
             }
         });
     }
@@ -132,7 +145,7 @@ public class CreateEventActivity extends FragmentActivity {
             year = y;
             month = m;
             day = d;
-            pickDateView.setText(day + "." + month + "." + year);
+            pickDateView.setText(day + "." + (month + 1) + "." + year);
         }
     }
 }

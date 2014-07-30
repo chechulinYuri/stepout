@@ -11,15 +11,15 @@ import java.util.List;
 public class Event extends Entity {
     private ParseGeoPoint coordinates;
     private String message;
-    private List<String> tags;
+    private String category;
     private String authorHash;
     private Date date;
     private int responsesCount;
 
-    public Event(String message, ParseGeoPoint coordinates, List<String> tags, String authorHash, Date date, int responsesCount) {
+    public Event(String message, ParseGeoPoint coordinates, String category, String authorHash, Date date, int responsesCount) {
         this.message = message;
         this.coordinates = coordinates;
-        this.tags = tags;
+        this.category = category;
         this.authorHash = authorHash;
         this.date = date;
         this.responsesCount = responsesCount;
@@ -29,8 +29,8 @@ public class Event extends Entity {
         return message;
     }
 
-    public List<String> getTags() {
-        return tags;
+    public String getCategory() {
+        return category;
     }
 
     public String getAuthorHash() {

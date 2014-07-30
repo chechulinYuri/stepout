@@ -4,4 +4,9 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="sign_in_text_margin_top">150dp</dimen>
     <dimen name="sign_in_text_padding_bottom">10dp</dimen>
+    <dimen name="activity_margin">30dp</dimen>
+    <dimen name="vertical_margin">30dp</dimen>
+    <dimen name="stepout_standard_padding">10dp</dimen>
+    <dimen name="stepout_standard_margin">10dp</dimen>
+    <dimen name="stepout_big_margin">20dp</dimen>
 </resources>

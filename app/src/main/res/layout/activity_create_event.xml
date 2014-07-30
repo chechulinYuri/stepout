@@ -2,14 +2,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:layout_margin="@dimen/activity_margin"
         android:orientation="vertical"
         tools:context="com.example.admin.stepout.CreateEventActivity">
 
@@ -20,12 +19,16 @@
             android:hint="@string/type_short_description"
             android:lines="10"
             android:gravity="top|left"
-            android:scrollHorizontally="false"/>
+            android:scrollHorizontally="false"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/flat_clouds"
+            android:padding="@dimen/stepout_standard_padding"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/activity_vertical_margin">
 
             <TextView
                 android:id="@+id/choose_date_view"
@@ -33,7 +36,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:clickable="true"
-                android:text="@string/pick_a_date"/>
+                android:text="@string/pick_a_date"
+                android:background="@color/flat_clouds"
+                android:padding="@dimen/stepout_standard_padding"
+                android:layout_marginRight="@dimen/stepout_standard_margin"
+                android:gravity="center_horizontal"/>
 
             <TextView
                 android:id="@+id/choose_time_view"
@@ -41,44 +48,45 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:clickable="true"
-                android:text="@string/pick_a_time"/>
-
+                android:text="@string/pick_a_time"
+                android:background="@color/flat_clouds"
+                android:padding="@dimen/stepout_standard_padding"
+                android:layout_marginLeft="@dimen/stepout_standard_margin"
+                android:gravity="center_horizontal"/>
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:background="@color/flat_clouds">
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/choose_event_category"/>
-
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/choose_event_category"
+                android:layout_weight="0.5"
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="@dimen/stepout_standard_padding"
+                android:gravity="center_horizontal"/>
             <Spinner
                 android:id="@+id/category_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:layout_gravity="right|bottom"/>
         </LinearLayout>
-
-        <!--<Button
-            android:id="@+id/choose_time_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/choose_time"/>
-
-        <Button
-            android:id="@+id/choose_date_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/choose_date"/>-->
 
         <Button
             android:id="@+id/save_event_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/save_button"/>
+            android:text="@string/save_button"
+            android:layout_gravity="center"
+            android:background="@color/flat_nephritis"
+            android:padding="@dimen/stepout_standard_padding"
+            android:layout_marginTop="@dimen/stepout_big_margin"/>
 
     </LinearLayout>
 </ScrollView>
