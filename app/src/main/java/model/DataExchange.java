@@ -37,7 +37,6 @@ public class DataExchange {
     public static final String FACEBOOK_ID_COL_NAME = "fbId";
     public static final String FIRST_NAME_COL_NAME = "firstName";
     public static final String LAST_NAME_COL_NAME = "lastName";
-    public static final String PHOTO_LINK_COL_NAME = "photoLink";
     public static final String PHONE_COL_NAME = "phone";
     public static final String OBJECT_ID_COL_NAME = "objectId";
 

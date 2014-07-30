@@ -1,31 +1,18 @@
 package com.example.admin.stepout;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.nfc.TagLostException;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.admin.stepout.CreateEventActivity;
-import com.example.admin.stepout.R;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
-import com.facebook.widget.UserSettingsFragment;
-
-import java.util.ArrayList;
 
 import model.DataExchange;
-import model.User;
-import model.Event;
 
 public class MainActivity extends Activity {
 
