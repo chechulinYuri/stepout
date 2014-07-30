@@ -1,4 +1,4 @@
-package model;
+package com.stepout.main;
 
 /**
  * Created by Yuri on 25.07.2014.

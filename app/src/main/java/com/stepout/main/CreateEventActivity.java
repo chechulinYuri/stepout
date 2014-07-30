@@ -1,4 +1,4 @@
-package com.example.admin.stepout;
+package com.stepout.main;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -16,14 +16,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
 import com.parse.ParseGeoPoint;
 
-import java.util.Arrays;
 import java.util.Calendar;
-
-import model.DataExchange;
-import model.Event;
 
 public class CreateEventActivity extends FragmentActivity {
 

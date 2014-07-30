@@ -1,4 +1,4 @@
-package model;
+package com.stepout.main;
 
 import android.app.Application;
 import android.content.Context;
@@ -11,9 +11,6 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -10,7 +10,7 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:layout_margin="@dimen/activity_margin"
         android:orientation="vertical"
-        tools:context="com.example.admin.stepout.CreateEventActivity">
+        tools:context="com.stepout.main.CreateEventActivity">
 
         <EditText
             android:id="@+id/message_edit_text"

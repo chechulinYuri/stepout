@@ -1,10 +1,9 @@
-package com.example.admin.stepout;
+package com.stepout.main;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.facebook.Request;
@@ -14,9 +13,6 @@ import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 import com.google.gson.Gson;
-
-import model.DataExchange;
-import model.User;
 
 public class MainActivity extends Activity {
 
@@ -35,9 +31,6 @@ public class MainActivity extends Activity {
         String readJson = logedInUser.getString(USER_TO_JSON, null);
         Gson gson = new Gson();
         currentUser = gson.fromJson(readJson, User.class);
-        if (currentUser != null) {
-            Log.d("ASD", currentUser.getFirstName());
-        }
 
         findViewById(R.id.test_create_event_button).setOnClickListener(new View.OnClickListener() {
             @Override

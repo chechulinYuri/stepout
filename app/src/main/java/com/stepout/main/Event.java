@@ -1,9 +1,8 @@
-package model;
+package com.stepout.main;
 
 import com.parse.ParseGeoPoint;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Yuri on 25.07.2014.
