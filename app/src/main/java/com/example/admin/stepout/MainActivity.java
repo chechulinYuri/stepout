@@ -1,8 +1,12 @@
 package com.example.admin.stepout;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.nfc.TagLostException;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,11 +66,11 @@ public class MainActivity extends Activity {
                                 @Override
                                 public void onCompleted(GraphUser user, Response response) {
                                     if (user != null) {
-                                        //DataExchange dataExchange = new DataExchange();
-                                        //User newUser = new User(user.getFirstName(), user.getLastName(), "phoneNum", "photoLink", user.getId());
-                                        //dataExchange.saveUserToParseCom(newUser);
-                                        TextView asd = (TextView)findViewById(R.id.test_fb);
-                                        asd.setText(user.getName());
+                                        DataExchange dataExchange = new DataExchange(getApplicationContext());
+                                        TelephonyManager telephonyManager = (TelephonyManager)getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
+                                        String phone = telephonyManager.getLine1Number();
+                                        User newUser = new User(user.getFirstName(), user.getLastName(), phone, user.getId());
+                                        dataExchange.saveUserToParseCom(newUser);
                                     }
                                 }
                             }).executeAsync();

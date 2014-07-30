@@ -57,7 +57,6 @@ public class DataExchange {
         userParse.put(FACEBOOK_ID_COL_NAME, user.getFbId());
         userParse.put(FIRST_NAME_COL_NAME, user.getFirstName());
         userParse.put(LAST_NAME_COL_NAME, user.getLastName());
-        userParse.put(PHOTO_LINK_COL_NAME, user.getPhotoLink());
         userParse.put(PHONE_COL_NAME, user.getPhone()   );
 
         try {
@@ -90,7 +89,6 @@ public class DataExchange {
                         obj.getString(FIRST_NAME_COL_NAME),
                         obj.getString(LAST_NAME_COL_NAME),
                         obj.getString(PHONE_COL_NAME),
-                        obj.getString(PHOTO_LINK_COL_NAME),
                         obj.getString(FACEBOOK_ID_COL_NAME)
                 );
 
@@ -121,7 +119,6 @@ public class DataExchange {
                         obj.getString(FIRST_NAME_COL_NAME),
                         obj.getString(LAST_NAME_COL_NAME),
                         obj.getString(PHONE_COL_NAME),
-                        obj.getString(PHOTO_LINK_COL_NAME),
                         obj.getString(FACEBOOK_ID_COL_NAME)
                 );
 
