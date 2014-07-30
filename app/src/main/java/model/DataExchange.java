@@ -15,8 +15,6 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-import main.MainActivity;
-
 /**
  * Created by Yuri on 25.07.2014.
  */
@@ -56,11 +54,11 @@ public class DataExchange {
         String userHash = null;
 
         ParseObject userParse = new ParseObject(USER_TABLE_NAME);
-        userParse.put(FACEBOOK_ID_COL_NAME, user.fbId);
-        userParse.put(FIRST_NAME_COL_NAME, user.firstName);
-        userParse.put(LAST_NAME_COL_NAME, user.lastName);
-        userParse.put(PHOTO_LINK_COL_NAME, user.photoLink);
-        userParse.put(PHONE_COL_NAME, user.phone);
+        userParse.put(FACEBOOK_ID_COL_NAME, user.getFbId());
+        userParse.put(FIRST_NAME_COL_NAME, user.getFirstName());
+        userParse.put(LAST_NAME_COL_NAME, user.getLastName());
+        userParse.put(PHOTO_LINK_COL_NAME, user.getPhotoLink());
+        userParse.put(PHONE_COL_NAME, user.getPhone()   );
 
         try {
             userParse.save();
@@ -70,7 +68,7 @@ public class DataExchange {
         }
 
         if (userHash != null) {
-            user.hash = userHash;
+            user.setHash(userHash);
             return user;
         }
 
@@ -96,7 +94,7 @@ public class DataExchange {
                         obj.getString(FACEBOOK_ID_COL_NAME)
                 );
 
-                user.hash = obj.getObjectId();
+                user.setHash(obj.getObjectId());
 
                 return user;
             }
@@ -127,7 +125,7 @@ public class DataExchange {
                         obj.getString(FACEBOOK_ID_COL_NAME)
                 );
 
-                user.hash = obj.getObjectId();
+                user.setHash(obj.getObjectId());
 
                 return user;
             }
@@ -156,12 +154,12 @@ public class DataExchange {
         String eventHash = null;
 
         ParseObject eventParse = new ParseObject(EVENT_TABLE_NAME);
-        eventParse.put(MESSAGE_COL_NAME, event.message);
-        eventParse.put(TAGS_COL_NAME, event.tags);
-        eventParse.put(AUTHOR_HASH_COL_NAME, event.authorHash);
-        eventParse.put(DATE_COL_NAME, event.date);
-        eventParse.put(COORDINATES_COL_NAME, event.coordinates);
-        eventParse.put(RESPONSES_COUNT_COL_NAME, event.responsesCount);
+        eventParse.put(MESSAGE_COL_NAME, event.getMessage());
+        eventParse.put(TAGS_COL_NAME, event.getTags());
+        eventParse.put(AUTHOR_HASH_COL_NAME, event.getAuthorHash());
+        eventParse.put(DATE_COL_NAME, event.getDate());
+        eventParse.put(COORDINATES_COL_NAME, event.getCoordinates());
+        eventParse.put(RESPONSES_COUNT_COL_NAME, event.getResponsesCount());
 
         try {
             eventParse.save();
@@ -171,7 +169,7 @@ public class DataExchange {
         }
 
         if (eventHash != null) {
-            event.hash = eventHash;
+            event.setHash(eventHash);
             return event;
         }
 
@@ -224,7 +222,7 @@ public class DataExchange {
                         po.getParseGeoPoint(COORDINATES_COL_NAME),
                         tags,
                         po.getString(AUTHOR_HASH_COL_NAME),
-                        po.getLong(DATE_COL_NAME),
+                        po.getDate(DATE_COL_NAME),
                         po.getInt(RESPONSES_COUNT_COL_NAME)
                     );
 
@@ -288,7 +286,7 @@ public class DataExchange {
                         po.getParseGeoPoint(COORDINATES_COL_NAME),
                         tags,
                         po.getString(AUTHOR_HASH_COL_NAME),
-                        po.getLong(DATE_COL_NAME),
+                        po.getDate(DATE_COL_NAME),
                         po.getInt(RESPONSES_COUNT_COL_NAME)
                 );
 

@@ -4,5 +4,13 @@ package model;
  * Created by Yuri on 25.07.2014.
  */
 abstract public class Entity {
-    public String hash;
+    private String hash;
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
 }

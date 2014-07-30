@@ -1,11 +1,9 @@
 package com.example.admin.stepout;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.sax.TextElementListener;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.format.DateFormat;
@@ -17,7 +15,6 @@ import android.widget.Toast;
 
 import com.parse.ParseGeoPoint;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 
@@ -63,9 +60,11 @@ public class CreateEventActivity extends FragmentActivity {
                 message = messageEditText.getText().toString();
 
                 if (day != null && month != null && year != null && minutes != null && hour != null && message != null) {
-                    Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), Arrays.asList(new String[]{"One", "Two", "Three"}), "sdawe123eqwd", 123123L, 0);
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(year, month, day, hour, minutes, 0);
+                    Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), Arrays.asList(new String[]{"One", "Two", "Three"}), "sdawe123eqwd", cal.getTime(), 0);
                     Event storedEvent = dataExchange.saveEventToParseCom(event);
-                    if (storedEvent.hash != null) {
+                    if (storedEvent.getHash() != null) {
                         Toast.makeText(getApplicationContext(), "OK", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(getApplicationContext(), "NOT OK", Toast.LENGTH_LONG).show();
