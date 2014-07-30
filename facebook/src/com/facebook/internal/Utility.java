@@ -387,6 +387,7 @@ public final class Utility {
     // Note that this method makes a synchronous Graph API call, so should not be called from the main thread.
     public static FetchedAppSettings queryAppSettings(final String applicationId, final boolean forceRequery) {
 
+        //Log.d("TEST", applicationId);
         // Cache the last app checked results.
         if (!forceRequery && fetchedAppSettings.containsKey(applicationId)) {
             return fetchedAppSettings.get(applicationId);
