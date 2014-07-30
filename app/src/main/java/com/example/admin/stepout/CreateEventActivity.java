@@ -8,8 +8,11 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -29,6 +32,8 @@ public class CreateEventActivity extends FragmentActivity {
     private static Integer hour;
     private static Integer minutes;
     private static String message;
+    private static TextView pickTimeView;
+    private static TextView pickDateView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +41,18 @@ public class CreateEventActivity extends FragmentActivity {
         setContentView(R.layout.activity_create_event);
 
         final EditText messageEditText = (EditText) findViewById(R.id.message_edit_text);
+        pickTimeView = (TextView) findViewById(R.id.choose_time_view);
+        pickDateView = (TextView) findViewById(R.id.choose_date_view);
 
-        findViewById(R.id.choose_time_button).setOnClickListener(new View.OnClickListener() {
+        Spinner spinner = (Spinner) findViewById(R.id.category_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.event_categories, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+
+        pickTimeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DialogFragment newFragment = new TimePickerFragment();
@@ -45,7 +60,7 @@ public class CreateEventActivity extends FragmentActivity {
             }
         });
 
-        findViewById(R.id.choose_date_button).setOnClickListener(new View.OnClickListener() {
+        pickDateView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DialogFragment newFragment = new DatePickerFragment();
@@ -58,7 +73,7 @@ public class CreateEventActivity extends FragmentActivity {
             public void onClick(View view) {
                 message = messageEditText.getText().toString();
 
-                if (day != null && month != null && year != null && minutes != null && hour != null && message != null) {
+                if (day != null && month != null && year != null && minutes != null && hour != null && message != null && message.length() > 0) {
                     Calendar cal = Calendar.getInstance();
                     cal.set(year, month, day, hour, minutes, 0);
                     Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), Arrays.asList(new String[]{"One", "Two", "Three"}), "sdawe123eqwd", cal.getTime(), 0);
@@ -94,6 +109,7 @@ public class CreateEventActivity extends FragmentActivity {
         public void onTimeSet(TimePicker view, int h, int m) {
             hour = h;
             minutes = m;
+            pickTimeView.setText(hour + ":" + minutes);
         }
     }
 
@@ -116,6 +132,7 @@ public class CreateEventActivity extends FragmentActivity {
             year = y;
             month = m;
             day = d;
+            pickDateView.setText(day + "." + month + "." + year);
         }
     }
 }

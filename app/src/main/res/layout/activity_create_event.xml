@@ -22,7 +22,47 @@
             android:gravity="top|left"
             android:scrollHorizontally="false"/>
 
-        <Button
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/choose_date_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:clickable="true"
+                android:text="@string/pick_a_date"/>
+
+            <TextView
+                android:id="@+id/choose_time_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:clickable="true"
+                android:text="@string/pick_a_time"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/choose_event_category"/>
+
+            <Spinner
+                android:id="@+id/category_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <!--<Button
             android:id="@+id/choose_time_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,7 +72,7 @@
             android:id="@+id/choose_date_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/choose_date"/>
+            android:text="@string/choose_date"/>-->
 
         <Button
             android:id="@+id/save_event_button"
