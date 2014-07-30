@@ -1,5 +1,6 @@
 package model;
 
+import android.app.Application;
 import android.content.Context;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -20,7 +21,7 @@ import java.util.List;
 /**
  * Created by Yuri on 25.07.2014.
  */
-public class DataExchange {
+public class DataExchange extends Application {
 
     public static final String EVENT_TABLE_NAME = "Event";
     public static final String USER_TABLE_NAME = "User";
@@ -42,11 +43,12 @@ public class DataExchange {
 
     public static final double EVENTS_VISIBILITY_RADIUS_IN_MILES = 400;
 
-    public DataExchange(Context ctx) {
-        Parse.initialize(ctx, "w8w75nqgzFroCnZEqO6auY85PJnTRKILNXYZUeKa", "UNH39pBxBzLAD4ekMZQUp0VzGUACPTPTHBT5x8qg");
+    public void onCreate() {
+        super.onCreate();
+        Parse.initialize(getApplicationContext(), "w8w75nqgzFroCnZEqO6auY85PJnTRKILNXYZUeKa", "UNH39pBxBzLAD4ekMZQUp0VzGUACPTPTHBT5x8qg");
     }
 
-    public User loginFb(GraphUser fbUser, Context context) {
+    public static User loginFb(GraphUser fbUser, Context context) {
         if (!isRegistered(fbUser.getId())) {
             TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
             String phone = telephonyManager.getLine1Number();
@@ -56,7 +58,7 @@ public class DataExchange {
         return getUserByFbId(fbUser.getId());
     }
 
-    public User saveUserToParseCom(User user) {
+    public static User saveUserToParseCom(User user) {
 
         String userHash = null;
 
@@ -81,7 +83,7 @@ public class DataExchange {
         return null;
     }
 
-    public User getUserByFbId(String fbId) {
+    public static User getUserByFbId(String fbId) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(USER_TABLE_NAME);
         query.whereEqualTo(FACEBOOK_ID_COL_NAME, fbId);
@@ -111,7 +113,7 @@ public class DataExchange {
         return null;
     }
 
-    public User getUserByHash(String userHash) {
+    public static User getUserByHash(String userHash) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(USER_TABLE_NAME);
         query.whereEqualTo(OBJECT_ID_COL_NAME, userHash);
@@ -141,7 +143,7 @@ public class DataExchange {
         return null;
     }
 
-    public boolean isRegistered(String fbId) {
+    public static boolean isRegistered(String fbId) {
         if (getUserByFbId(fbId) == null) {
             return false;
         } else {
@@ -153,7 +155,7 @@ public class DataExchange {
         return false;
     }
 
-    public Event saveEventToParseCom(Event event) {
+    public static Event saveEventToParseCom(Event event) {
 
         String eventHash = null;
 
@@ -180,7 +182,7 @@ public class DataExchange {
         return null;
     }
 
-    public boolean respondToEvent(String eventHash, String userHash, String message) {
+    public static boolean respondToEvent(String eventHash, String userHash, String message) {
 
         ParseObject eventRespondParse = new ParseObject(RESPONSE_TABLE_NAME);
         eventRespondParse.put(MESSAGE_COL_NAME, message);
@@ -200,7 +202,7 @@ public class DataExchange {
         return false;
     }
 
-    public ArrayList<Event> getEventsByUser(String userHash) {
+    public static ArrayList<Event> getEventsByUser(String userHash) {
 
         ArrayList<Event> result = new ArrayList<Event>();
 
@@ -242,7 +244,7 @@ public class DataExchange {
 
     }
 
-    public ArrayList<User> getUsersByEvent(String eventHash) {
+    public static ArrayList<User> getUsersByEvent(String eventHash) {
         ArrayList<User> result = new ArrayList<User>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(RESPONSE_TABLE_NAME);
@@ -265,7 +267,7 @@ public class DataExchange {
         return result;
     }
 
-    public ArrayList<Event> getEventsInRadius(float x, float y) {
+    public static ArrayList<Event> getEventsInRadius(float x, float y) {
         ArrayList<Event> result = new ArrayList<Event>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
@@ -305,23 +307,23 @@ public class DataExchange {
         return result;
     }
 
-    public boolean isEventAssignedToUser(String eventHash, String userHash) {
+    public static boolean isEventAssignedToUser(String eventHash, String userHash) {
         return false;
     }
 
-    public boolean unsubscribeFromEvent(String eventHash, String userHash) {
+    public static boolean unsubscribeFromEvent(String eventHash, String userHash) {
         return false;
     }
 
-    public boolean removeEvent(String eventHash, String userHash) {
+    public static boolean removeEvent(String eventHash, String userHash) {
         return false;
     }
 
-    public boolean updateEvent(Event event, String userHash) {
+    public static boolean updateEvent(Event event, String userHash) {
         return false;
     }
 
-    public boolean shareEvent(String eventHash, String type) {
+    public static boolean shareEvent(String eventHash, String type) {
         return false;
     }
 }

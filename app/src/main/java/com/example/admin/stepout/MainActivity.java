@@ -23,8 +23,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_screen_layout);
 
-        final DataExchange dataExchange = new DataExchange(this);
-
         findViewById(R.id.test_create_event_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -53,7 +51,7 @@ public class MainActivity extends Activity {
                                 @Override
                                 public void onCompleted(GraphUser user, Response response) {
                                     if (user != null) {
-                                        dataExchange.loginFb(user, getApplicationContext());
+                                        DataExchange.loginFb(user, getApplicationContext());
                                     }
                                 }
                             }).executeAsync();

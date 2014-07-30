@@ -36,7 +36,6 @@ public class CreateEventActivity extends FragmentActivity {
         setContentView(R.layout.activity_create_event);
 
         final EditText messageEditText = (EditText) findViewById(R.id.message_edit_text);
-        final DataExchange dataExchange = new DataExchange(getApplicationContext());
 
         findViewById(R.id.choose_time_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,7 +62,7 @@ public class CreateEventActivity extends FragmentActivity {
                     Calendar cal = Calendar.getInstance();
                     cal.set(year, month, day, hour, minutes, 0);
                     Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), Arrays.asList(new String[]{"One", "Two", "Three"}), "sdawe123eqwd", cal.getTime(), 0);
-                    Event storedEvent = dataExchange.saveEventToParseCom(event);
+                    Event storedEvent = DataExchange.saveEventToParseCom(event);
                     if (storedEvent.getHash() != null) {
                         Toast.makeText(getApplicationContext(), "OK", Toast.LENGTH_LONG).show();
                     } else {
