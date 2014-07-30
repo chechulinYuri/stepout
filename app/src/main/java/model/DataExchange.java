@@ -1,8 +1,10 @@
 package model;
 
 import android.content.Context;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.facebook.model.GraphUser;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -45,8 +47,14 @@ public class DataExchange {
         Parse.initialize(ctx, "w8w75nqgzFroCnZEqO6auY85PJnTRKILNXYZUeKa", "UNH39pBxBzLAD4ekMZQUp0VzGUACPTPTHBT5x8qg");
     }
 
-    public User loginFb() {
-        return null;
+    public User loginFb(GraphUser fbUser, Context context) {
+        if (!isRegistered(fbUser.getId())) {
+            TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+            String phone = telephonyManager.getLine1Number();
+            User newUser = new User(fbUser.getFirstName(), fbUser.getLastName(), phone, fbUser.getId());
+            return saveUserToParseCom(newUser);
+        }
+        return getUserByFbId(fbUser.getId());
     }
 
     public User saveUserToParseCom(User user) {

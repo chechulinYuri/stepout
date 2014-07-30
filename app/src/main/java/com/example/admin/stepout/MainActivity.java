@@ -36,7 +36,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_screen_layout);
 
-        DataExchange dataExchange = new DataExchange(this);
+        final DataExchange dataExchange = new DataExchange(this);
 
         findViewById(R.id.test_create_event_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
 
                     // callback when session changes state
                     @Override
-                    public void call(Session session, SessionState state, Exception exception) {
+                    public void call(Session session, SessionState state, final Exception exception) {
                         if (session.isOpened()) {
 
                             // make request to the /me API
@@ -66,11 +66,7 @@ public class MainActivity extends Activity {
                                 @Override
                                 public void onCompleted(GraphUser user, Response response) {
                                     if (user != null) {
-                                        DataExchange dataExchange = new DataExchange(getApplicationContext());
-                                        TelephonyManager telephonyManager = (TelephonyManager)getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-                                        String phone = telephonyManager.getLine1Number();
-                                        User newUser = new User(user.getFirstName(), user.getLastName(), phone, user.getId());
-                                        dataExchange.saveUserToParseCom(newUser);
+                                        dataExchange.loginFb(user, getApplicationContext());
                                     }
                                 }
                             }).executeAsync();
@@ -79,7 +75,6 @@ public class MainActivity extends Activity {
                 });
             }
         });
-
     }
 
     @Override

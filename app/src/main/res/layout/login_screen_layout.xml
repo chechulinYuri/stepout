@@ -17,7 +17,6 @@
         android:text="Create Test Event"/>
 
     <TextView
-        android:id="@+id/test_fb"
         android:text="@string/sign_in_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
