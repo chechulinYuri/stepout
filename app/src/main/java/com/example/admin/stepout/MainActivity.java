@@ -44,11 +44,11 @@ public class MainActivity extends Activity {
 
         fbLoginButton = (LoginButton)findViewById(R.id.fb_login);
 
-/*
+
         fbLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Session.openActiveSession((Activity)getApplicationContext(), true, new Session.StatusCallback() {
+                Session.openActiveSession(MainActivity.this, true, new Session.StatusCallback() {
 
                     // callback when session changes state
                     @Override
@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
                 });
             }
         });
-                                    */
+
     }
 
     @Override
