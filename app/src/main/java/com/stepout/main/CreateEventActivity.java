@@ -31,11 +31,13 @@ public class CreateEventActivity extends FragmentActivity {
     private static String category;
     private static TextView pickTimeView;
     private static TextView pickDateView;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
+        currentUser = UserKeeper.readUserFromSharedPref(this);
 
         final EditText messageEditText = (EditText) findViewById(R.id.message_edit_text);
         pickTimeView = (TextView) findViewById(R.id.choose_time_view);
@@ -67,7 +69,7 @@ public class CreateEventActivity extends FragmentActivity {
                 if (day != null && month != null && year != null && minutes != null && hour != null && message != null && message.length() > 0 && category != null) {
                     Calendar cal = Calendar.getInstance();
                     cal.set(year, month, day, hour, minutes, 0);
-                    Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), category, "sdawe123eqwd", cal.getTime(), 0);
+                    Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), category, currentUser.getHash(), cal.getTime(), 0);
                     Event storedEvent = DataExchange.saveEventToParseCom(event);
                     if (storedEvent.getHash() != null) {
                         Toast.makeText(getApplicationContext(), "OK", Toast.LENGTH_LONG).show();

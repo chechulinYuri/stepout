@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.facebook.Request;
@@ -27,10 +28,14 @@ public class MainActivity extends Activity {
         setContentView(R.layout.login_screen_layout);
 
         //Restore data from SharedPreferences
+        currentUser = UserKeeper.readUserFromSharedPref(this);
+        Log.d("ASD", currentUser.getFirstName());
+        /*
         final SharedPreferences logedInUser = getSharedPreferences(USER_DATA, 0);
         String readJson = logedInUser.getString(USER_TO_JSON, null);
         Gson gson = new Gson();
         currentUser = gson.fromJson(readJson, User.class);
+        */
 
         findViewById(R.id.test_create_event_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,12 +71,15 @@ public class MainActivity extends Activity {
                                 @Override
                                 public void onCompleted(GraphUser user, Response response) {
                                     if (user != null) {
+                                        UserKeeper.writeUserToSharedPref(user, MainActivity.this);
+                                        /*
                                         Gson gson = new Gson();
                                         String json = gson.toJson(DataExchange.loginFb(user, getApplicationContext()));
                                         SharedPreferences logedInUser = getSharedPreferences(USER_DATA, 0);
                                         SharedPreferences.Editor editor = logedInUser.edit();
                                         editor.putString(USER_TO_JSON, json);
                                         editor.commit();
+                                        */
                                     }
                                 }
                             }).executeAsync();
