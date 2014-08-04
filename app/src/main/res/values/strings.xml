@@ -3,7 +3,6 @@
 
     <string name="title_activity_create_event">Create Event</string>
     <string name="title_activity_view_event">View Event</string>
-
     <string name="app_name">StepOut</string>
     <string name="sign_in_text">Please sign in</string>
     <string name="action_settings">Settings</string>
@@ -26,5 +25,7 @@
         <item>Games</item>
         <item>Communication</item>
     </string-array>
+
+    <string name="title_activity_maps">Map</string>
 
 </resources>
