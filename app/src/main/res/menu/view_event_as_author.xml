@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:yourapp="http://schemas.android.com/apk/res-auto"
+    tools:context="com.stepout.main.ViewEventAsAuthorActivity">
+
+    <item android:id="@+id/action_edit"
+        android:title="@string/action_edit"
+        android:icon="@drawable/ic_action_edit"
+        yourapp:showAsAction="always"/>
+
+    <item android:id="@+id/action_share"
+        android:title="@string/action_share"
+        android:icon="@drawable/ic_action_share"
+        yourapp:showAsAction="always"/>
+
+    <item android:id="@+id/action_delete"
+        android:title="@string/action_delete"
+        android:icon="@drawable/ic_action_remove"
+        yourapp:showAsAction="always"/>
+</menu>

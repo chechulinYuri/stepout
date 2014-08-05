@@ -3,6 +3,7 @@ package com.stepout.main;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -116,6 +117,10 @@ public class CreateEventActivity extends FragmentActivity {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.event_saved), Toast.LENGTH_LONG).show();
+
+            Intent intent = new Intent(this, ViewEventAsAuthorActivity.class);
+            intent.putExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, event.getHash());
+            startActivity(intent);
         }
 
         isSavingProcess = false;

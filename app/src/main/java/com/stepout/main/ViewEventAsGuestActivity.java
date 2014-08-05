@@ -1,5 +1,6 @@
 package com.stepout.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
@@ -11,23 +12,22 @@ import android.widget.Toast;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-
 public class ViewEventAsGuestActivity extends FragmentActivity {
 
     private Event currentEvent;
     private User currentUser;
     private boolean isSavingProcess;
     private Button respondButton;
+    private User eventAuthor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_event);
+        setContentView(R.layout.activity_view_event_as_guest);
 
         currentUser = UserKeeper.readUserFromSharedPref(this);
 
-        DataExchange.getEventsByUser(getIntent().getStringExtra(MainActivity.USER_HASH_FOR_VIEW_EVENT_ACTIVITY));
+        DataExchange.getEventByHash(getIntent().getStringExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY));
 
         respondButton = (Button) findViewById(R.id.respond_event_button);
 
@@ -78,15 +78,23 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.you_respond), Toast.LENGTH_LONG).show();
+
+            Intent intent = new Intent(this, ViewEventAsRespondentActivity.class);
+            intent.putExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, currentEvent.getHash());
+            startActivity(intent);
         }
     }
 
     @Subscribe
-    public void getEvents(ArrayList<Event> events) {
-        if (events.size() > 0) {
-            currentEvent = events.get(0);
-            showEvent(currentEvent);
-        }
+    public void getEvent(Event event) {
+        currentEvent = event;
+        DataExchange.getUserByHash(currentEvent.getAuthorHash());
+    }
+
+    @Subscribe
+    public void getAuthor(User user) {
+        eventAuthor = user;
+        showEvent(currentEvent);
 
         findViewById(R.id.content_wrapper).setVisibility(View.VISIBLE);
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
@@ -98,16 +106,10 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
         final TextView date = (TextView) findViewById(R.id.view_date);
         final ImageView userPhoto = (ImageView) findViewById(R.id.user_photo);
 
-        User authorObj = DataExchange.getUserByHash(event.getAuthorHash());
+        date.setText(android.text.format.DateFormat.format("dd.MM.yy hh:mm", event.getDate()));
+        message.setText(event.getMessage());
+        author.setText(eventAuthor.getFirstName() + " " + eventAuthor.getLastName());
 
-        if (authorObj != null) {
-            date.setText(android.text.format.DateFormat.format("dd.MM.yy hh:mm", event.getDate()));
-            message.setText(event.getMessage());
-            author.setText(authorObj.getFirstName() + " " + authorObj.getLastName());
-
-
-            Picasso.with(this).load("https://graph.facebook.com/" + authorObj.getFbId().toString() + "/picture?type=square").into(userPhoto);
-
-        }
+        Picasso.with(this).load("https://graph.facebook.com/" + eventAuthor.getFbId().toString() + "/picture?type=square").into(userPhoto);
     }
 }

@@ -24,6 +24,11 @@
     <string name="pick_a_time">Pick a time</string>
     <string name="pick_a_date">Pick a date</string>
     <string name="choose_event_category">Category</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_share">Share</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_unresponse">I wont come</string>
+    <string name="action_call">Call</string>
 
     <string-array name="event_categories">
         <item>Sport</item>
@@ -33,5 +38,7 @@
 
     <string name="title_activity_maps">Map</string>
     <string name="user_photo">User photo</string>
+    <string name="title_activity_view_event_as_author">ViewEventAsAuthor</string>
+    <string name="title_activity_view_event_as_respondent">ViewEventAsRespondentActivity</string>
 
 </resources>
