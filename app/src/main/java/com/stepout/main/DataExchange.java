@@ -40,7 +40,7 @@ public class DataExchange extends Application {
     public static final String PHONE_COL_NAME = "phone";
     public static final String OBJECT_ID_COL_NAME = "objectId";
 
-    public static final double EVENTS_VISIBILITY_RADIUS_IN_MILES = 400;
+    public static final double EVENTS_VISIBILITY_RADIUS_IN_MILES = 50;
 
     public static Bus bus;
 
