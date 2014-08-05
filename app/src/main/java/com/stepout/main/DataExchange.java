@@ -6,6 +6,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.facebook.model.GraphUser;
+import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -201,34 +202,31 @@ public class DataExchange extends Application {
         return false;
     }
 
-    public static ArrayList<Event> getEventsByUser(String userHash) {
-
-        ArrayList<Event> result = new ArrayList<Event>();
+    public static void getEventsByUser(String userHash) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
         query.whereEqualTo(AUTHOR_HASH_COL_NAME, userHash);
-        try {
-            List<ParseObject> objects = query.find();
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                ArrayList<Event> events = new ArrayList<Event>();
 
-            for (int i = 0; i < objects.size(); i++) {
-                ParseObject po = objects.get(i);
-                Event ev = new Event(
-                        po.getString(MESSAGE_COL_NAME),
-                        po.getParseGeoPoint(COORDINATES_COL_NAME),
-                        po.getString(CATEGORY_COL_NAME),
-                        po.getString(AUTHOR_HASH_COL_NAME),
-                        po.getDate(DATE_COL_NAME),
-                        po.getInt(RESPONSES_COUNT_COL_NAME)
+                for (int i = 0; i < objects.size(); i++) {
+                    ParseObject po = objects.get(i);
+                    Event ev = new Event(
+                            po.getString(MESSAGE_COL_NAME),
+                            po.getParseGeoPoint(COORDINATES_COL_NAME),
+                            po.getString(CATEGORY_COL_NAME),
+                            po.getString(AUTHOR_HASH_COL_NAME),
+                            po.getDate(DATE_COL_NAME),
+                            po.getInt(RESPONSES_COUNT_COL_NAME)
                     );
 
-                result.add(ev);
+                    events.add(ev);
+                }
+                bus.post(events);
             }
-        } catch(ParseException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-
+        });
     }
 
     public static ArrayList<User> getUsersByEvent(String eventHash) {

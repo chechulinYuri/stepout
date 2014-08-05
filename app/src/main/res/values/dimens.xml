@@ -9,4 +9,5 @@
     <dimen name="stepout_standard_padding">10dp</dimen>
     <dimen name="stepout_standard_margin">10dp</dimen>
     <dimen name="stepout_big_margin">20dp</dimen>
+    <dimen name="top_margin_for_progressbar">20dp</dimen>
 </resources>
