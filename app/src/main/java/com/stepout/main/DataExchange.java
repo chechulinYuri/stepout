@@ -182,24 +182,20 @@ public class DataExchange extends Application {
         });
     }
 
-    public static boolean respondToEvent(String eventHash, String userHash, String message) {
+    public static void respondToEvent(String eventHash, String userHash) {
 
-        ParseObject eventRespondParse = new ParseObject(RESPONSE_TABLE_NAME);
-        eventRespondParse.put(MESSAGE_COL_NAME, message);
+        final ParseObject eventRespondParse = new ParseObject(RESPONSE_TABLE_NAME);
         eventRespondParse.put(USER_HASH_COL_NAME, userHash);
         eventRespondParse.put(EVENT_HASH_COL_NAME, eventHash);
 
-        try {
-            eventRespondParse.save();
-        } catch(ParseException e) {
-            Log.d("ERROR", e.getMessage());
-        }
+        eventRespondParse.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                String eventRespondHash = eventRespondParse.getObjectId();
 
-        if (eventRespondParse.getObjectId() != null) {
-            return true;
-        }
-
-        return false;
+                bus.post(eventRespondHash);
+            }
+        });
     }
 
     public static void getEventsByUser(String userHash) {
@@ -221,6 +217,8 @@ public class DataExchange extends Application {
                             po.getDate(DATE_COL_NAME),
                             po.getInt(RESPONSES_COUNT_COL_NAME)
                     );
+
+                    ev.setHash(po.getObjectId());
 
                     events.add(ev);
                 }

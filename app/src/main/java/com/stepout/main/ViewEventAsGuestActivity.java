@@ -3,8 +3,10 @@ package com.stepout.main;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
@@ -13,12 +15,37 @@ import java.util.ArrayList;
 
 public class ViewEventAsGuestActivity extends FragmentActivity {
 
+    private Event currentEvent;
+    private User currentUser;
+    private boolean isSavingProcess;
+    private Button respondButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_event);
 
+        currentUser = UserKeeper.readUserFromSharedPref(this);
+
         DataExchange.getEventsByUser(getIntent().getStringExtra(MainActivity.USER_HASH_FOR_VIEW_EVENT_ACTIVITY));
+
+        respondButton = (Button) findViewById(R.id.respond_event_button);
+
+        respondButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (!isSavingProcess) {
+                    if (currentEvent != null && currentUser != null) {
+                        isSavingProcess = true;
+                        updateSaveButton();
+                        DataExchange.respondToEvent(currentEvent.getHash(), currentUser.getHash());
+                    } else {
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -33,10 +60,32 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
         super.onPause();
     }
 
+    void updateSaveButton() {
+        if (isSavingProcess) {
+            respondButton.setText(getResources().getString(R.string.responding_process));
+            respondButton.setBackgroundColor(getResources().getColor(R.color.flat_emerald));
+        } else {
+            respondButton.setText(getResources().getString(R.string.respond_button));
+            respondButton.setBackgroundColor(getResources().getColor(R.color.flat_nephritis));
+        }
+    }
+
+    @Subscribe
+    public void getRespond(String respondHash) {
+        isSavingProcess = false;
+        updateSaveButton();
+        if (respondHash == null) {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.you_respond), Toast.LENGTH_LONG).show();
+        }
+    }
+
     @Subscribe
     public void getEvents(ArrayList<Event> events) {
         if (events.size() > 0) {
-            showEvent(events.get(0));
+            currentEvent = events.get(0);
+            showEvent(currentEvent);
         }
 
         findViewById(R.id.content_wrapper).setVisibility(View.VISIBLE);
