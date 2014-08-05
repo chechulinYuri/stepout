@@ -1,13 +1,10 @@
 package com.stepout.main;
 
-import android.app.Activity;
-import android.location.Location;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -26,7 +23,7 @@ public class MapsActivity extends FragmentActivity {
                 .findFragmentById(R.id.map);
 
         GoogleMap map = mapFrag.getMap();
-        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
 
         LatLng sydney = new LatLng(-33.867, 151.206);
 
