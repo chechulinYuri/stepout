@@ -2,9 +2,7 @@ package com.stepout.main;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.facebook.Request;
@@ -13,13 +11,12 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
-import com.google.gson.Gson;
 
 public class MainActivity extends Activity {
 
+    public static final String USER_HASH_FOR_VIEW_EVENT_ACTIVITY = "USER_HASH_FOR_VIEW_EVENT_ACTIVITY";
+
     private LoginButton fbLoginButton;
-    public static final String USER_DATA = "UserPrefsFile";
-    public static final String USER_TO_JSON = "UserToJson";
     private User currentUser;
 
     @Override
@@ -42,6 +39,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), ViewEventAsGuestActivity.class);
+                intent.putExtra(USER_HASH_FOR_VIEW_EVENT_ACTIVITY, currentUser.getHash());
                 startActivity(intent);
             }
         });
