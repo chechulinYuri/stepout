@@ -77,7 +77,20 @@
                 android:gravity="center_horizontal"
                 android:layout_gravity="right"/>
 
-            <LinearLayout
+            <Button
+                android:id="@+id/respond_event_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/flat_clouds"
+                android:text="@string/respond_button"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:background="@color/flat_nephritis"
+                android:padding="@dimen/stepout_standard_padding"
+                android:layout_marginRight="@dimen/stepout_standard_margin"
+                android:layout_marginTop="@dimen/stepout_big_margin"/>
+
+            <!--<LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -107,7 +120,7 @@
                     android:padding="@dimen/stepout_standard_padding"
                     android:layout_marginLeft="@dimen/stepout_standard_margin"
                     android:layout_marginTop="@dimen/stepout_big_margin"/>
-            </LinearLayout>
+            </LinearLayout>-->
 
         </LinearLayout>
     </LinearLayout>

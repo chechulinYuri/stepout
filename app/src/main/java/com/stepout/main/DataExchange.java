@@ -117,17 +117,15 @@ public class DataExchange extends Application {
         return null;
     }
 
-    public static User getUserByHash(String userHash) {
+    public static void getUserByHash(String userHash) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(USER_TABLE_NAME);
         query.whereEqualTo(OBJECT_ID_COL_NAME, userHash);
-        try {
-            List<ParseObject> objects = query.find();
-
-            if (objects.size() > 0) {
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
 
                 ParseObject obj = objects.get(0);
-
                 User user = new User(
                         obj.getString(FIRST_NAME_COL_NAME),
                         obj.getString(LAST_NAME_COL_NAME),
@@ -137,14 +135,9 @@ public class DataExchange extends Application {
 
                 user.setHash(obj.getObjectId());
 
-                return user;
+                bus.post(user);
             }
-
-        } catch(ParseException e) {
-            Log.d("ERROR", e.getMessage());
-        }
-
-        return null;
+        });
     }
 
     public static boolean isRegistered(String fbId) {
@@ -182,24 +175,20 @@ public class DataExchange extends Application {
         });
     }
 
-    public static boolean respondToEvent(String eventHash, String userHash, String message) {
+    public static void respondToEvent(String eventHash, String userHash) {
 
-        ParseObject eventRespondParse = new ParseObject(RESPONSE_TABLE_NAME);
-        eventRespondParse.put(MESSAGE_COL_NAME, message);
+        final ParseObject eventRespondParse = new ParseObject(RESPONSE_TABLE_NAME);
         eventRespondParse.put(USER_HASH_COL_NAME, userHash);
         eventRespondParse.put(EVENT_HASH_COL_NAME, eventHash);
 
-        try {
-            eventRespondParse.save();
-        } catch(ParseException e) {
-            Log.d("ERROR", e.getMessage());
-        }
+        eventRespondParse.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                String eventRespondHash = eventRespondParse.getObjectId();
 
-        if (eventRespondParse.getObjectId() != null) {
-            return true;
-        }
-
-        return false;
+                bus.post(eventRespondHash);
+            }
+        });
     }
 
     public static void getEventsByUser(String userHash) {
@@ -222,6 +211,8 @@ public class DataExchange extends Application {
                             po.getInt(RESPONSES_COUNT_COL_NAME)
                     );
 
+                    ev.setHash(po.getObjectId());
+
                     events.add(ev);
                 }
                 bus.post(events);
@@ -229,7 +220,35 @@ public class DataExchange extends Application {
         });
     }
 
-    public static ArrayList<User> getUsersByEvent(String eventHash) {
+    public static void getEventByHash(String eventHash) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
+        query.whereEqualTo(OBJECT_ID_COL_NAME, eventHash);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+
+                if (objects.size() > 0) {
+                    ParseObject po = objects.get(0);
+                    Event ev = new Event(
+                            po.getString(MESSAGE_COL_NAME),
+                            po.getParseGeoPoint(COORDINATES_COL_NAME),
+                            po.getString(CATEGORY_COL_NAME),
+                            po.getString(AUTHOR_HASH_COL_NAME),
+                            po.getDate(DATE_COL_NAME),
+                            po.getInt(RESPONSES_COUNT_COL_NAME)
+                    );
+
+                    ev.setHash(po.getObjectId());
+                    bus.post(ev);
+                    return;
+                }
+
+                bus.post(null);
+            }
+        });
+    }
+
+    /*public static ArrayList<User> getUsersByEvent(String eventHash) {
         ArrayList<User> result = new ArrayList<User>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(RESPONSE_TABLE_NAME);
@@ -250,7 +269,7 @@ public class DataExchange extends Application {
         }
 
         return result;
-    }
+    }*/
 
     public static ArrayList<Event> getEventsInRadius(float x, float y) {
         ArrayList<Event> result = new ArrayList<Event>();
