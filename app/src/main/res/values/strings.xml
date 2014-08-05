@@ -16,6 +16,9 @@
     <string name="respond_button">Respond</string>
     <string name="hide_button">Hide</string>
     <string name="create_event_complete_all_fields_error">Complete all fields</string>
+    <string name="some_error">Sorry, something went wrong</string>
+    <string name="event_saved">Event has been saved</string>
+    <string name="saving_process">Saving...</string>
     <string name="pick_a_time">Pick a time</string>
     <string name="pick_a_date">Pick a date</string>
     <string name="choose_event_category">Category</string>

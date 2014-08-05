@@ -10,13 +10,16 @@ import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
 import com.parse.ParseGeoPoint;
+import com.squareup.otto.Subscribe;
 
 import java.util.Calendar;
 
@@ -31,7 +34,9 @@ public class CreateEventActivity extends FragmentActivity {
     private static String category;
     private static TextView pickTimeView;
     private static TextView pickDateView;
+    private static Button saveButton;
     private User currentUser;
+    private boolean isSavingProcess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +47,7 @@ public class CreateEventActivity extends FragmentActivity {
         final EditText messageEditText = (EditText) findViewById(R.id.message_edit_text);
         pickTimeView = (TextView) findViewById(R.id.choose_time_view);
         pickDateView = (TextView) findViewById(R.id.choose_date_view);
+        saveButton = (Button) findViewById(R.id.save_event_button);
 
         implementSpinner();
 
@@ -61,27 +67,59 @@ public class CreateEventActivity extends FragmentActivity {
             }
         });
 
-        findViewById(R.id.save_event_button).setOnClickListener(new View.OnClickListener() {
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                message = messageEditText.getText().toString();
+                if (!isSavingProcess) {
+                    message = messageEditText.getText().toString();
 
-                if (day != null && month != null && year != null && minutes != null && hour != null && message != null && message.length() > 0 && category != null) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(year, month, day, hour, minutes, 0);
-                    Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), category, currentUser.getHash(), cal.getTime(), 0);
-                    Event storedEvent = DataExchange.saveEventToParseCom(event);
-                    if (storedEvent.getHash() != null) {
-                        Toast.makeText(getApplicationContext(), "OK", Toast.LENGTH_LONG).show();
+                    if (day != null && month != null && year != null && minutes != null && hour != null && message != null && message.length() > 0 && category != null) {
+                        isSavingProcess = true;
+                        updateSaveButton();
+                        Calendar cal = Calendar.getInstance();
+                        cal.set(year, month, day, hour, minutes, 0);
+                        Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), category, currentUser.getHash(), cal.getTime(), 0);
+                        DataExchange.saveEventToParseCom(event);
                     } else {
-                        Toast.makeText(getApplicationContext(), "NOT OK", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), R.string.create_event_complete_all_fields_error, Toast.LENGTH_LONG).show();
                     }
-
-                } else {
-                    Toast.makeText(getApplicationContext(), R.string.create_event_complete_all_fields_error, Toast.LENGTH_LONG).show();
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        DataExchange.bus.register(this);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        DataExchange.bus.unregister(this);
+        super.onPause();
+    }
+
+    void updateSaveButton() {
+        if (isSavingProcess) {
+            saveButton.setText(getResources().getString(R.string.saving_process));
+            saveButton.setBackgroundColor(getResources().getColor(R.color.flat_emerald));
+        } else {
+            saveButton.setText(getResources().getString(R.string.save_button));
+            saveButton.setBackgroundColor(getResources().getColor(R.color.flat_nephritis));
+        }
+    }
+
+    @Subscribe
+    public void savedEvent(Event event) {
+        if (event.getHash() == null) {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.event_saved), Toast.LENGTH_LONG).show();
+        }
+
+        isSavingProcess = false;
+        updateSaveButton();
     }
 
     public void implementSpinner() {

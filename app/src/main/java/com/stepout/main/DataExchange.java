@@ -11,6 +11,8 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
+import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +42,13 @@ public class DataExchange extends Application {
 
     public static final double EVENTS_VISIBILITY_RADIUS_IN_MILES = 400;
 
+    public static Bus bus;
+
     public void onCreate() {
         super.onCreate();
         Parse.initialize(getApplicationContext(), "w8w75nqgzFroCnZEqO6auY85PJnTRKILNXYZUeKa", "UNH39pBxBzLAD4ekMZQUp0VzGUACPTPTHBT5x8qg");
+
+        bus = new Bus();
     }
 
     public static User loginFb(GraphUser fbUser, Context context) {
@@ -152,11 +158,8 @@ public class DataExchange extends Application {
         return false;
     }
 
-    public static Event saveEventToParseCom(Event event) {
-
-        String eventHash = null;
-
-        ParseObject eventParse = new ParseObject(EVENT_TABLE_NAME);
+    public static void saveEventToParseCom(final Event event) {
+        final ParseObject eventParse = new ParseObject(EVENT_TABLE_NAME);
         eventParse.put(MESSAGE_COL_NAME, event.getMessage());
         eventParse.put(CATEGORY_COL_NAME, event.getCategory());
         eventParse.put(AUTHOR_HASH_COL_NAME, event.getAuthorHash());
@@ -164,19 +167,18 @@ public class DataExchange extends Application {
         eventParse.put(COORDINATES_COL_NAME, event.getCoordinates());
         eventParse.put(RESPONSES_COUNT_COL_NAME, event.getResponsesCount());
 
-        try {
-            eventParse.save();
-            eventHash = eventParse.getObjectId();
-        } catch(ParseException e) {
-            Log.d("ERROR", e.getMessage());
-        }
+        eventParse.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                String eventHash = eventParse.getObjectId();
 
-        if (eventHash != null) {
-            event.setHash(eventHash);
-            return event;
-        }
+                if (eventHash != null) {
+                    event.setHash(eventHash);
+                }
 
-        return null;
+                bus.post(event);
+            }
+        });
     }
 
     public static boolean respondToEvent(String eventHash, String userHash, String message) {

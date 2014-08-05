@@ -2,5 +2,6 @@
 <resources>
     <color name="flat_clouds">#ecf0f1</color>
     <color name="flat_silver">#bdc3c7</color>
-    <color name="flat_nephritis">#27ae60</color>
+    <color name="flat_nephritis">#16a085</color>
+    <color name="flat_emerald">#1abc9c</color>
 </resources>
