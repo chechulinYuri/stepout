@@ -14,6 +14,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,8 @@ public class DataExchange extends Application {
 
     public static final double EVENTS_VISIBILITY_RADIUS_IN_MILES = 50;
 
+    public static final ArrayList<Event> uploadedEvents = new ArrayList<Event>();
+
     public static Bus bus;
 
     public void onCreate() {
@@ -50,6 +53,17 @@ public class DataExchange extends Application {
         Parse.initialize(getApplicationContext(), "w8w75nqgzFroCnZEqO6auY85PJnTRKILNXYZUeKa", "UNH39pBxBzLAD4ekMZQUp0VzGUACPTPTHBT5x8qg");
 
         bus = new Bus();
+
+        // 2 TEST ROWS
+        bus.register(this);
+        getEventsInRadius(29.1f, 30.4f);
+    }
+
+    // TEST METHOD
+    @Subscribe
+    public void getEvents(ArrayList<Event> events) {
+        uploadedEvents.addAll(events);
+        Log.d("asd", uploadedEvents.size() + "");
     }
 
     public static User loginFb(GraphUser fbUser, Context context) {
@@ -212,7 +226,6 @@ public class DataExchange extends Application {
                     );
 
                     ev.setHash(po.getObjectId());
-
                     events.add(ev);
                 }
                 bus.post(events);
@@ -239,6 +252,7 @@ public class DataExchange extends Application {
                     );
 
                     ev.setHash(po.getObjectId());
+                    
                     bus.post(ev);
                     return;
                 }
@@ -271,32 +285,33 @@ public class DataExchange extends Application {
         return result;
     }*/
 
-    public static ArrayList<Event> getEventsInRadius(float x, float y) {
-        ArrayList<Event> result = new ArrayList<Event>();
+    public static void getEventsInRadius(float x, float y) {
+        final ArrayList<Event> result = new ArrayList<Event>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
         query.whereWithinMiles(COORDINATES_COL_NAME, new ParseGeoPoint(x, y), EVENTS_VISIBILITY_RADIUS_IN_MILES);
-        try {
-            List<ParseObject> objects = query.find();
 
-            for (int i = 0; i < objects.size(); i++) {
-                ParseObject po = objects.get(i);
-                Event ev = new Event(
-                        po.getString(MESSAGE_COL_NAME),
-                        po.getParseGeoPoint(COORDINATES_COL_NAME),
-                        po.getString(CATEGORY_COL_NAME),
-                        po.getString(AUTHOR_HASH_COL_NAME),
-                        po.getDate(DATE_COL_NAME),
-                        po.getInt(RESPONSES_COUNT_COL_NAME)
-                );
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                for (int i = 0; i < parseObjects.size(); i++) {
+                    ParseObject po = parseObjects.get(i);
+                    Event ev = new Event(
+                            po.getString(MESSAGE_COL_NAME),
+                            po.getParseGeoPoint(COORDINATES_COL_NAME),
+                            po.getString(CATEGORY_COL_NAME),
+                            po.getString(AUTHOR_HASH_COL_NAME),
+                            po.getDate(DATE_COL_NAME),
+                            po.getInt(RESPONSES_COUNT_COL_NAME)
+                    );
+                    ev.setHash(po.getObjectId());
 
-                result.add(ev);
+                    result.add(ev);
+                }
+
+                bus.post(result);
             }
-        } catch(ParseException e) {
-            e.printStackTrace();
-        }
-
-        return result;
+        });
     }
 
     public static boolean isEventAssignedToUser(String eventHash, String userHash) {

@@ -39,7 +39,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), ViewEventAsGuestActivity.class);
-                intent.putExtra(EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, "OFiNqayjo0");
+                intent.putExtra(EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, "F737hdAJC1");
                 startActivity(intent);
             }
         });

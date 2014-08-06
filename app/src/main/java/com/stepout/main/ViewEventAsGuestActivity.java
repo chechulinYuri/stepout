@@ -3,6 +3,7 @@ package com.stepout.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -27,8 +28,6 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
 
         currentUser = UserKeeper.readUserFromSharedPref(this);
 
-        DataExchange.getEventByHash(getIntent().getStringExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY));
-
         respondButton = (Button) findViewById(R.id.respond_event_button);
 
         respondButton.setOnClickListener(new View.OnClickListener() {
@@ -46,6 +45,22 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
                 }
             }
         });
+
+        boolean isEventUploaded = false;
+        for (int i = 0; i < DataExchange.uploadedEvents.size(); i++) {
+            if (DataExchange.uploadedEvents.get(i).getHash().equals(getIntent().getStringExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY))) {
+                currentEvent = DataExchange.uploadedEvents.get(i);
+                DataExchange.getUserByHash(currentEvent.getAuthorHash());
+                isEventUploaded = true;
+                Log.d("asd", "Get event from uploaded");
+                break;
+            }
+        }
+
+        if (!isEventUploaded) {
+            Log.d("asd", "Get event from parse.com");
+            DataExchange.getEventByHash(getIntent().getStringExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY));
+        }
     }
 
     @Override
