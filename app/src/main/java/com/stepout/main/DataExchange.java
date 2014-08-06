@@ -271,32 +271,32 @@ public class DataExchange extends Application {
         return result;
     }*/
 
-    public static ArrayList<Event> getEventsInRadius(float x, float y) {
-        ArrayList<Event> result = new ArrayList<Event>();
+    public static void getEventsInRadius(float x, float y) {
+        final ArrayList<Event> result = new ArrayList<Event>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
         query.whereWithinMiles(COORDINATES_COL_NAME, new ParseGeoPoint(x, y), EVENTS_VISIBILITY_RADIUS_IN_MILES);
-        try {
-            List<ParseObject> objects = query.find();
 
-            for (int i = 0; i < objects.size(); i++) {
-                ParseObject po = objects.get(i);
-                Event ev = new Event(
-                        po.getString(MESSAGE_COL_NAME),
-                        po.getParseGeoPoint(COORDINATES_COL_NAME),
-                        po.getString(CATEGORY_COL_NAME),
-                        po.getString(AUTHOR_HASH_COL_NAME),
-                        po.getDate(DATE_COL_NAME),
-                        po.getInt(RESPONSES_COUNT_COL_NAME)
-                );
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                for (int i = 0; i < parseObjects.size(); i++) {
+                    ParseObject po = parseObjects.get(i);
+                    Event ev = new Event(
+                            po.getString(MESSAGE_COL_NAME),
+                            po.getParseGeoPoint(COORDINATES_COL_NAME),
+                            po.getString(CATEGORY_COL_NAME),
+                            po.getString(AUTHOR_HASH_COL_NAME),
+                            po.getDate(DATE_COL_NAME),
+                            po.getInt(RESPONSES_COUNT_COL_NAME)
+                    );
 
-                result.add(ev);
+                    result.add(ev);
+                }
+
+                bus.post(result);
             }
-        } catch(ParseException e) {
-            e.printStackTrace();
-        }
-
-        return result;
+        });
     }
 
     public static boolean isEventAssignedToUser(String eventHash, String userHash) {
