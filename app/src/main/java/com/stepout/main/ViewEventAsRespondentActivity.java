@@ -25,7 +25,19 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
 
         currentUser = UserKeeper.readUserFromSharedPref(this);
 
-        DataExchange.getEventByHash(getIntent().getStringExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY));
+        boolean isEventUploaded = false;
+        for (int i = 0; i < DataExchange.uploadedEvents.size(); i++) {
+            if (DataExchange.uploadedEvents.get(i).getHash().equals(getIntent().getStringExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY))) {
+                currentEvent = DataExchange.uploadedEvents.get(i);
+                DataExchange.getUserByHash(currentEvent.getAuthorHash());
+                isEventUploaded = true;
+                break;
+            }
+        }
+
+        if (!isEventUploaded) {
+            DataExchange.getEventByHash(getIntent().getStringExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY));
+        }
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
