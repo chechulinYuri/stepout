@@ -1,13 +1,19 @@
 package com.stepout.main;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -26,7 +32,7 @@ public class MapsActivity extends FragmentActivity implements
         GooglePlayServicesClient.OnConnectionFailedListener{
 
     private SupportMapFragment mapFragment;
-    private GoogleMap map;
+    private static GoogleMap map;
     private LocationClient locationClient;
     /*
      * Define a request code to send to Google Play services
@@ -61,6 +67,7 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_maps);
 
         locationClient = new LocationClient(this, this, this);
@@ -72,14 +79,15 @@ public class MapsActivity extends FragmentActivity implements
 
     }
 
-    /*
-     * Called when the Activity becomes visible.
-     */
     @Override
     protected void onStart() {
         super.onStart();
         // Connect the client.
-        if(isGooglePlayServicesAvailable()){
+        LocationManager service = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        if (!service.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            TurnOnGpsDialog dialog = new TurnOnGpsDialog();
+            dialog.show(getSupportFragmentManager(), "TurnOnGpsDialog");
+        } else if (isGooglePlayServicesAvailable()){
             locationClient.connect();
         }
 
@@ -154,7 +162,10 @@ public class MapsActivity extends FragmentActivity implements
     public void onConnected(Bundle dataBundle) {
         // Display the connection status
         Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
-        Location location = locationClient.getLastLocation();
+        Location location = null;
+        while (location == null) {
+            location = locationClient.getLastLocation();
+        }
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
@@ -201,68 +212,6 @@ public class MapsActivity extends FragmentActivity implements
         }
     }
 
-}
-/*
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
-import android.provider.Settings;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
-import android.widget.Toast;
-
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-public class MapsActivity extends FragmentActivity {
-
-    private GoogleMap mMap;
-    private LocationManager locationManager;
-    private String provider;
-    private double latitude;
-    private double longitude;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-
-        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            TurnOnGpsDialog dialog = new TurnOnGpsDialog();
-            dialog.show(getSupportFragmentManager(), "TurnOnGpsDialog");
-        }
-
-        SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-
-        GoogleMap map = mapFrag.getMap();
-        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
-        LatLng sydney = new LatLng(-33.867, 151.206);
-
-        map.setMyLocationEnabled(true);
-        map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-        map.addMarker(new MarkerOptions()
-                .title("Sydney")
-                .snippet("The most populous city in Australia.")
-                .position(sydney));
-
-    }
-
     public static class TurnOnGpsDialog extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -276,6 +225,9 @@ public class MapsActivity extends FragmentActivity {
                     })
                     .setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
+                            LatLng sydney = new LatLng(-33.867, 151.206);
+                            map.setMyLocationEnabled(true);
+                            map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
                             dismiss();
                         }
                     });
@@ -283,4 +235,3 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 }
-*/
