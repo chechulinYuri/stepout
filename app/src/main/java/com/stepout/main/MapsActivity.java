@@ -28,6 +28,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 import com.squareup.otto.Subscribe;
@@ -44,6 +45,8 @@ public class MapsActivity extends FragmentActivity implements
     private LocationClient locationClient;
     private LocationManager service;
     private boolean allowConnection = true;
+    private User currentUser;
+    private static final LatLng nsk = new LatLng(54.940803, 83.074371);
     /*
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult
@@ -80,10 +83,41 @@ public class MapsActivity extends FragmentActivity implements
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_maps);
 
+        currentUser = UserKeeper.readUserFromSharedPref(this);
 
         mapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         map = mapFragment.getMap();
         map.setMyLocationEnabled(true);
+        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                for (Event e: DataExchange.uploadedEvents) {
+                    if (e.getMarkerId().equals(marker.getId())) {
+
+                        if (e.getAuthorHash().equals(currentUser.getHash())) {
+                            Intent intent = new Intent(getApplicationContext(), ViewEventAsAuthorActivity.class);
+                            intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, e.getHash());
+                            startActivity(intent);
+                            return;
+                        }
+
+                        for (User usr: e.getRespondents()) {
+                            if (usr.getHash().equals(currentUser.getHash())) {
+                                Intent intent = new Intent(getApplicationContext(), ViewEventAsRespondentActivity.class);
+                                intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, e.getHash());
+                                startActivity(intent);
+                                return;
+                            }
+                        }
+
+                        Intent intent = new Intent(getApplicationContext(), ViewEventAsGuestActivity.class);
+                        intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, e.getHash());
+                        startActivity(intent);
+                        return;
+                    }
+                }
+            }
+        });
         locationClient = new LocationClient(this, this, this);
         service = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         if (!service.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -104,13 +138,19 @@ public class MapsActivity extends FragmentActivity implements
             Event currentEvent = DataExchange.uploadedEvents.get(i);
             LatLng latLng = new LatLng(currentEvent.getCoordinates().getLatitude(), DataExchange.uploadedEvents.get(i).getCoordinates().getLongitude());
             String category = currentEvent.getCategory();
-            String snippet = currentEvent.getMessage() + " Attenders: " + currentEvent.getResponsesCount();
+            String snippet = currentEvent.getMessage() + " Attenders: " + currentEvent.getRespondents().size();
             IconGenerator iconGenerator = new IconGenerator(this);
             iconGenerator.setStyle(IconGenerator.STYLE_RED);
             DataExchange.getCategories();
             Bitmap bmp = iconGenerator.makeIcon(DataExchange.categories.get(category));
             //Bitmap bmp = iconGenerator.makeIcon(/*category*/);
-            map.addMarker(new MarkerOptions().position(latLng).title(category).snippet(snippet).icon(BitmapDescriptorFactory.fromBitmap(bmp)));
+
+            currentEvent.setMarkerId(map.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title(category)
+                    .snippet(snippet)
+                    .icon(BitmapDescriptorFactory
+                    .fromBitmap(bmp))).getId());
         }
     }
 
@@ -208,9 +248,8 @@ public class MapsActivity extends FragmentActivity implements
             DataExchange.getEventsInRadius(location.getLatitude(), location.getLongitude());
         }
         else {
-            LatLng latLng = new LatLng(-31.90, 115.86);
-            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            DataExchange.getEventsInRadius(-31.90, 115.86);
+            map.moveCamera(CameraUpdateFactory.newLatLng(nsk));
+            DataExchange.getEventsInRadius(nsk.latitude, nsk.longitude);
         }
     }
 
@@ -269,9 +308,9 @@ public class MapsActivity extends FragmentActivity implements
                     })
                     .setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            LatLng sydney = new LatLng(-33.867, 151.206);
                             map.setMyLocationEnabled(true);
-                            map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                            map.moveCamera(CameraUpdateFactory.newLatLng(nsk));
+                            DataExchange.getEventsInRadius(nsk.latitude, nsk.longitude);
                             dismiss();
                         }
                     });

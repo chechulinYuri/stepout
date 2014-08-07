@@ -38,7 +38,7 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
                     if (currentEvent != null && currentUser != null) {
                         isSavingProcess = true;
                         updateSaveButton();
-                        DataExchange.respondToEvent(currentEvent.getHash(), currentUser.getHash());
+                        DataExchange.respondToEvent(currentEvent.getHash(), currentUser);
                     } else {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
                     }
@@ -48,7 +48,7 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
 
         boolean isEventUploaded = false;
         for (int i = 0; i < DataExchange.uploadedEvents.size(); i++) {
-            if (DataExchange.uploadedEvents.get(i).getHash().equals(getIntent().getStringExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY))) {
+            if (DataExchange.uploadedEvents.get(i).getHash().equals(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY))) {
                 currentEvent = DataExchange.uploadedEvents.get(i);
                 DataExchange.getUserByHash(currentEvent.getAuthorHash());
                 isEventUploaded = true;
@@ -59,7 +59,7 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
 
         if (!isEventUploaded) {
             Log.d("asd", "Get event from parse.com");
-            DataExchange.getEventByHash(getIntent().getStringExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY));
+            DataExchange.getEventByHash(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY));
         }
     }
 
@@ -86,16 +86,16 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
     }
 
     @Subscribe
-    public void getRespond(String respondHash) {
+    public void getRespondStatus(String status) {
         isSavingProcess = false;
         updateSaveButton();
-        if (respondHash == null) {
+        if (status == DataExchange.STATUS_FAIL) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
-        } else {
+        } else if (status == DataExchange.STATUS_SUCCESS) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.you_respond), Toast.LENGTH_LONG).show();
 
             Intent intent = new Intent(this, ViewEventAsRespondentActivity.class);
-            intent.putExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, currentEvent.getHash());
+            intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, currentEvent.getHash());
             startActivity(intent);
         }
     }

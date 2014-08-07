@@ -79,7 +79,7 @@ public class CreateEventActivity extends FragmentActivity {
                         updateSaveButton();
                         Calendar cal = Calendar.getInstance();
                         cal.set(year, month, day, hour, minutes, 0);
-                        Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), category, currentUser.getHash(), cal.getTime(), 0);
+                        Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), category, currentUser.getHash(), cal.getTime(), null);
                         DataExchange.saveEventToParseCom(event);
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.create_event_complete_all_fields_error, Toast.LENGTH_LONG).show();
@@ -119,7 +119,7 @@ public class CreateEventActivity extends FragmentActivity {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.event_saved), Toast.LENGTH_LONG).show();
 
             Intent intent = new Intent(this, ViewEventAsAuthorActivity.class);
-            intent.putExtra(MainActivity.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, event.getHash());
+            intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, event.getHash());
             startActivity(intent);
         }
 

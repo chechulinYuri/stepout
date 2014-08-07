@@ -14,8 +14,6 @@ import com.facebook.widget.LoginButton;
 
 public class MainActivity extends Activity {
 
-    public static final String EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY = "EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY";
-
     private LoginButton fbLoginButton;
     private User currentUser;
 
@@ -39,7 +37,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), ViewEventAsGuestActivity.class);
-                intent.putExtra(EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, "F737hdAJC1");
+                intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, "F737hdAJC1");
                 startActivity(intent);
             }
         });
