@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -23,7 +25,14 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.ui.IconGenerator;
+import com.squareup.otto.Subscribe;
+
+import java.util.ArrayList;
 
 
 public class MapsActivity extends FragmentActivity implements
@@ -85,7 +94,24 @@ public class MapsActivity extends FragmentActivity implements
             allowConnection = false;
             locationClient.connect();
         }
+    }
 
+    @Subscribe
+    public void getEvents(ArrayList<Event> events) {
+        DataExchange.uploadedEvents.addAll(events);
+        //Log.d("asd", DataExchange.uploadedEvents.size() + "");
+        for (int i = 0; i < DataExchange.uploadedEvents.size(); i++) {
+            Event currentEvent = DataExchange.uploadedEvents.get(i);
+            LatLng latLng = new LatLng(currentEvent.getCoordinates().getLatitude(), DataExchange.uploadedEvents.get(i).getCoordinates().getLongitude());
+            String category = currentEvent.getCategory();
+            String snippet = currentEvent.getMessage() + " Attenders: " + currentEvent.getResponsesCount();
+            IconGenerator iconGenerator = new IconGenerator(this);
+            iconGenerator.setStyle(IconGenerator.STYLE_RED);
+            DataExchange.getCategories();
+            Bitmap bmp = iconGenerator.makeIcon(DataExchange.categories.get(category));
+            //Bitmap bmp = iconGenerator.makeIcon(/*category*/);
+            map.addMarker(new MarkerOptions().position(latLng).title(category).snippet(snippet).icon(BitmapDescriptorFactory.fromBitmap(bmp)));
+        }
     }
 
     @Override
@@ -176,8 +202,16 @@ public class MapsActivity extends FragmentActivity implements
         locationClient.disconnect();
         //LocationManager asd = (LocationManager)getSystemService(LOCATION_SERVICE);
         //location = asd.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        if (location != null) {
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            DataExchange.getEventsInRadius(location.getLatitude(), location.getLongitude());
+        }
+        else {
+            LatLng latLng = new LatLng(-31.90, 115.86);
+            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            DataExchange.getEventsInRadius(-31.90, 115.86);
+        }
     }
 
     /*
@@ -244,119 +278,16 @@ public class MapsActivity extends FragmentActivity implements
             return builder.create();
         }
     }
-}
-/*
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
-import android.provider.Settings;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
-import android.widget.Toast;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-public class MapsActivity extends FragmentActivity implements LocationListener, GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
-
-    private GoogleMap mMap;
-    private LocationManager locationManager;
-    private String provider;
-    private double latitude;
-    private double longitude;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            TurnOnGpsDialog dialog = new TurnOnGpsDialog();
-            dialog.show(getSupportFragmentManager(), "TurnOnGpsDialog");
-        }
-
-        LocationClient locationClient = new LocationClient(this, this, this);
-        LocationRequest request = LocationRequest.create();
-        request.setInterval(5 * 1000);
-        request.setPriority(LocationRequest.PRIORITY_LOW_POWER);
-        request.setFastestInterval(5 * 1000);
-        locationClient.connect();
-
-        SupportMapFragment mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-
-        GoogleMap map = mapFrag.getMap();
-        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
-        LatLng sydney = new LatLng(-33.867, 151.206);
-
-        map.setMyLocationEnabled(true);
-        map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-        map.addMarker(new MarkerOptions()
-                .title("Sydney")
-                .snippet("The most populous city in Australia.")
-                .position(sydney));
-
+    protected void onResume() {
+        DataExchange.bus.register(this);
+        super.onResume();
     }
 
-
     @Override
-    public void onLocationChanged(Location location) {}
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {}
-
-    @Override
-    public void onConnected(Bundle bundle) {}
-
-    @Override
-    public void onDisconnected() {}
-
-    @Override
-    public void onProviderEnabled(String provider) {}
-
-    @Override
-    public void onProviderDisabled(String provider) {}
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-    public static class TurnOnGpsDialog extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(R.string.turn_on_gps_dialog)
-                    .setPositiveButton(R.string.settings_text, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                            startActivity(intent);
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dismiss();
-                        }
-                    });
-            return builder.create();
-        }
+    protected void onPause() {
+        DataExchange.bus.unregister(this);
+        super.onPause();
     }
 }
-*/
