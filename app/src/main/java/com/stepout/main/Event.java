@@ -15,6 +15,9 @@ public class Event extends Entity {
     private Date date;
     private int responsesCount;
 
+    private boolean isMeAuthor;
+    private boolean isMeRespondent;
+
     public Event(String message, ParseGeoPoint coordinates, String category, String authorHash, Date date, int responsesCount) {
         this.message = message;
         this.coordinates = coordinates;
@@ -47,4 +50,12 @@ public class Event extends Entity {
     public ParseGeoPoint getCoordinates() {
         return coordinates;
     }
+
+    public void setIsMeAuthor(boolean isMeAuthor) { this.isMeAuthor = isMeAuthor; }
+
+    public void setIsMeRespondent(boolean isMeRespondent) { this.isMeRespondent = isMeRespondent; }
+
+    public boolean isMeRespondent() { return isMeRespondent; }
+
+    public boolean isMeAuthor() { return isMeAuthor; }
 }

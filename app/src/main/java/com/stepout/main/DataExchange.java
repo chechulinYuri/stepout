@@ -47,6 +47,7 @@ public class DataExchange extends Application {
     public static final ArrayList<Event> uploadedEvents = new ArrayList<Event>();
 
     public static Bus bus;
+    public static Context context;
 
     public void onCreate() {
         super.onCreate();
@@ -57,6 +58,7 @@ public class DataExchange extends Application {
         // 2 TEST ROWS
         bus.register(this);
         getEventsInRadius(29.1f, 30.4f);
+        context = getApplicationContext();
     }
 
     // TEST METHOD
@@ -287,6 +289,7 @@ public class DataExchange extends Application {
 
     public static void getEventsInRadius(float x, float y) {
         final ArrayList<Event> result = new ArrayList<Event>();
+        final User user = UserKeeper.readUserFromSharedPref(context);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
         query.whereWithinMiles(COORDINATES_COL_NAME, new ParseGeoPoint(x, y), EVENTS_VISIBILITY_RADIUS_IN_MILES);
@@ -305,6 +308,12 @@ public class DataExchange extends Application {
                             po.getInt(RESPONSES_COUNT_COL_NAME)
                     );
                     ev.setHash(po.getObjectId());
+
+                    if (user != null) {
+                        if (user.getHash() == ev.getHash()) {
+                            ev.setIsMeAuthor(true);
+                        }
+                    }
 
                     result.add(ev);
                 }
