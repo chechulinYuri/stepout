@@ -17,6 +17,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -45,6 +46,7 @@ public class DataExchange extends Application {
     public static final double EVENTS_VISIBILITY_RADIUS_IN_MILES = 50;
 
     public static final ArrayList<Event> uploadedEvents = new ArrayList<Event>();
+    public static HashMap<String, String> categories = new HashMap<String, String>();
 
     public static Bus bus;
 
@@ -54,16 +56,13 @@ public class DataExchange extends Application {
 
         bus = new Bus();
 
-        // 2 TEST ROWS
-        bus.register(this);
-        getEventsInRadius(29.1f, 30.4f);
-    }
 
-    // TEST METHOD
-    @Subscribe
-    public void getEvents(ArrayList<Event> events) {
-        uploadedEvents.addAll(events);
-        Log.d("asd", uploadedEvents.size() + "");
+    }
+    //Needs to be rewritten!
+    public static void getCategories() {
+        categories.put("Games", "ic_games");
+        categories.put("Communication", "ic_communication");
+        categories.put("Sport", "ic_sport");
     }
 
     public static User loginFb(GraphUser fbUser, Context context) {
@@ -285,7 +284,7 @@ public class DataExchange extends Application {
         return result;
     }*/
 
-    public static void getEventsInRadius(float x, float y) {
+    public static void getEventsInRadius(double x, double y) {
         final ArrayList<Event> result = new ArrayList<Event>();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
