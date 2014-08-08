@@ -11,13 +11,16 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -33,14 +36,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.ui.BubbleIconFactory;
 import com.google.maps.android.ui.IconGenerator;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
 
-public class MapsActivity extends FragmentActivity implements
+public class MapsActivity extends ActionBarActivity implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener{
 
@@ -65,7 +67,6 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_maps);
 
         currentUser = UserKeeper.readUserFromSharedPref(this);
@@ -111,6 +112,7 @@ public class MapsActivity extends FragmentActivity implements
                 }
             }
         });
+
         locationClient = new LocationClient(this, this, this);
         service = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         if (!service.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -177,7 +179,34 @@ public class MapsActivity extends FragmentActivity implements
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_action_view, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener( ) {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+
+                InputMethodManager imm = (InputMethodManager)getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+
+                Toast toast = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT);
+                toast.show();
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Subscribe
     public void getEvents(ArrayList<Event> events) {

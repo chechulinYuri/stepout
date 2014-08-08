@@ -37,6 +37,7 @@
     <string name="choose_event_location_dialog">Pick location of event on map</string>
     <string name="choose_location_for_new_event">Create event here</string>
     <string name="cancel">Cancel</string>
+    <string name="action_search">Search</string>
 
     <string-array name="event_categories">
         <item>Sport</item>
