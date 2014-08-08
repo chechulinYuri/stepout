@@ -22,7 +22,7 @@
     <string name="pick_a_time">Pick a time</string>
     <string name="pick_a_date">Pick a date</string>
     <string name="choose_event_category">Category</string>
-    <string name="turn_on_gps_dialog">Your GPS is off now. Please turn it on in settings if you want us to determine you location.</string>
+    <string name="turn_on_gps_dialog">We are unable to get your location. Please turn it on in settings if you want us to redirect you directly to your location.</string>
     <string name="settings_text">Settings</string>
     <string name="cancel_text">Cancel</string>
     <string name="provider_selected">Your location have been determined using %s</string>

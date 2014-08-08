@@ -44,6 +44,8 @@ public class MainActivity extends Activity {
                                 public void onCompleted(GraphUser user, Response response) {
                                     if (user != null) {
                                         UserKeeper.writeUserToSharedPref(user, MainActivity.this);
+                                        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                                        startActivity(intent);
                                     }
                                 }
                             }).executeAsync();
