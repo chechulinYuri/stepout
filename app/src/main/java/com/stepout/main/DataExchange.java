@@ -2,6 +2,8 @@ package com.stepout.main;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -9,6 +11,7 @@ import com.facebook.model.GraphUser;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -27,14 +30,14 @@ public class DataExchange extends Application {
 
     public static final String EVENT_TABLE_NAME = "Event";
     public static final String USER_TABLE_NAME = "User";
-    public static final String RESPONSE_TABLE_NAME = "Response";
+    public static final String CATEGORY_TABLE_NAME = "Categories";
 
     public static final String MESSAGE_COL_NAME = "message";
     public static final String CATEGORY_COL_NAME = "category";
     public static final String AUTHOR_HASH_COL_NAME = "authorHash";
     public static final String DATE_COL_NAME = "date";
     public static final String COORDINATES_COL_NAME = "coordinates";
-    public static final String RESPONSES_COUNT_COL_NAME = "responsesCount";
+    public static final String RESPONDENTS_COL_NAME = "respondents";
     public static final String USER_HASH_COL_NAME = "userHash";
     public static final String EVENT_HASH_COL_NAME = "eventHash";
     public static final String FACEBOOK_ID_COL_NAME = "fbId";
@@ -42,11 +45,14 @@ public class DataExchange extends Application {
     public static final String LAST_NAME_COL_NAME = "lastName";
     public static final String PHONE_COL_NAME = "phone";
     public static final String OBJECT_ID_COL_NAME = "objectId";
+    public static final String NAME_COL_NAME = "name";
+    public static final String IMAGE_COL_NAME = "image";
+
 
     public static final double EVENTS_VISIBILITY_RADIUS_IN_MILES = 50;
 
     public static final ArrayList<Event> uploadedEvents = new ArrayList<Event>();
-    public static HashMap<String, String> categories = new HashMap<String, String>();
+    public static HashMap<String, Bitmap> categories = new HashMap<String, Bitmap>();
 
     public static Bus bus;
     public static Context context;
@@ -63,13 +69,31 @@ public class DataExchange extends Application {
 
         bus = new Bus();
         context = getApplicationContext();
+
+        DataExchange.getCategories();
     }
 
     //Needs to be rewritten!
     public static void getCategories() {
-        categories.put("Games", "ic_games");
-        categories.put("Communication", "ic_communication");
-        categories.put("Sport", "ic_sport");
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(CATEGORY_TABLE_NAME);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    for (ParseObject po: objects) {
+                        ParseFile imageFile = po.getParseFile(IMAGE_COL_NAME);
+                        try {
+                            byte[] imageBytes = imageFile.getData();
+                            Bitmap bmp = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                            categories.put(po.getString(NAME_COL_NAME), bmp);
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public static User loginFb(GraphUser fbUser, Context context) {
@@ -185,7 +209,7 @@ public class DataExchange extends Application {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    ParseRelation relation = eventParse.getRelation("respondents");
+                    ParseRelation relation = eventParse.getRelation(RESPONDENTS_COL_NAME);
                     ParseQuery query = relation.getQuery();
                     try {
                         List<ParseObject> respondentObjects = query.find();
@@ -227,7 +251,7 @@ public class DataExchange extends Application {
                             if (e == null) {
                                 final ParseObject obj = objects.get(0);
 
-                                ParseRelation<ParseObject> relation = obj.getRelation("respondents");
+                                ParseRelation<ParseObject> relation = obj.getRelation(RESPONDENTS_COL_NAME);
                                 relation.add(userParseObj);
 
                                 obj.saveInBackground(new SaveCallback() {
@@ -267,7 +291,7 @@ public class DataExchange extends Application {
                     for (int i = 0; i < objects.size(); i++) {
                         ParseObject po = objects.get(i);
 
-                        ParseRelation relation = po.getRelation("respondents");
+                        ParseRelation relation = po.getRelation(RESPONDENTS_COL_NAME);
                         ParseQuery query = relation.getQuery();
                         try {
                             List<ParseObject> respondentObjects = query.find();
@@ -372,7 +396,7 @@ public class DataExchange extends Application {
                 if (e == null) {
                     for (int i = 0; i < parseObjects.size(); i++) {
                         ParseObject po = parseObjects.get(i);
-                        ParseRelation relation = po.getRelation("respondents");
+                        ParseRelation relation = po.getRelation(RESPONDENTS_COL_NAME);
                         ParseQuery query = relation.getQuery();
 
                         try {

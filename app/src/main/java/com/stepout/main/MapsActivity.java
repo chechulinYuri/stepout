@@ -208,16 +208,16 @@ public class MapsActivity extends FragmentActivity implements
             else {
                 iconGenerator.setStyle(IconGenerator.STYLE_BLUE);
             }
-            DataExchange.getCategories();
-            Bitmap bmp = iconGenerator.makeIcon(DataExchange.categories.get(category));
+
+            Bitmap bmp = DataExchange.categories.get(category);
             //Bitmap bmp = iconGenerator.makeIcon(/*category*/);
 
             currentEvent.setMarkerId(map.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title(category)
                     .snippet(snippet)
-                    .icon(BitmapDescriptorFactory
-                            .fromBitmap(bmp))).getId());
+                    .icon(BitmapDescriptorFactory.fromBitmap(bmp))
+                ).getId());
         }
     }
 
