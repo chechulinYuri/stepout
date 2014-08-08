@@ -48,7 +48,7 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
 
         boolean isEventUploaded = false;
         for (int i = 0; i < DataExchange.uploadedEvents.size(); i++) {
-            if (DataExchange.uploadedEvents.get(i).getHash().equals(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY))) {
+            if (DataExchange.uploadedEvents.get(i).getHash().equals(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY))) {
                 currentEvent = DataExchange.uploadedEvents.get(i);
                 DataExchange.getUserByHash(currentEvent.getAuthorHash());
                 isEventUploaded = true;
@@ -59,7 +59,7 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
 
         if (!isEventUploaded) {
             Log.d("asd", "Get event from parse.com");
-            DataExchange.getEventByHash(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY));
+            DataExchange.getEventByHash(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY));
         }
     }
 
@@ -95,7 +95,7 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.you_respond), Toast.LENGTH_LONG).show();
 
             Intent intent = new Intent(this, ViewEventAsRespondentActivity.class);
-            intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, currentEvent.getHash());
+            intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEvent.getHash());
             startActivity(intent);
         }
     }

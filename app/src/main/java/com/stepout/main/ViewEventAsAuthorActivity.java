@@ -26,7 +26,7 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
 
         boolean isEventUploaded = false;
         for (int i = 0; i < DataExchange.uploadedEvents.size(); i++) {
-            if (DataExchange.uploadedEvents.get(i).getHash().equals(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY))) {
+            if (DataExchange.uploadedEvents.get(i).getHash().equals(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY))) {
                 currentEvent = DataExchange.uploadedEvents.get(i);
 
                 showEvent(currentEvent);
@@ -38,7 +38,7 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
         }
 
         if (!isEventUploaded) {
-            DataExchange.getEventByHash(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY));
+            DataExchange.getEventByHash(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY));
         }
     }
     @Override

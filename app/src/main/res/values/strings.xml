@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="title_activity_create_event">Create Event</string>
-    <string name="title_activity_view_event">View Event</string>
     <string name="app_name">StepOut</string>
     <string name="sign_in_text">Please sign in</string>
     <string name="action_settings">Settings</string>
@@ -35,6 +33,9 @@
     <string name="action_delete">Delete</string>
     <string name="action_unresponse">I wont come</string>
     <string name="action_call">Call</string>
+    <string name="create_event_button">Create event</string>
+    <string name="choose_event_location_dialog">Pick location of event on map</string>
+    <string name="choose_location_for_new_event">Create event here</string>
 
     <string-array name="event_categories">
         <item>Sport</item>
@@ -42,9 +43,11 @@
         <item>Communication</item>
     </string-array>
 
-    <string name="title_activity_maps">Map</string>
     <string name="user_photo">User photo</string>
-    <string name="title_activity_view_event_as_author">ViewEventAsAuthor</string>
-    <string name="title_activity_view_event_as_respondent">ViewEventAsRespondentActivity</string>
+    <string name="title_activity_create_event">Create Event</string>
+    <string name="title_activity_view_event">View Event</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_view_event_as_author">View Event</string>
+    <string name="title_activity_view_event_as_respondent">View Event</string>
 
 </resources>

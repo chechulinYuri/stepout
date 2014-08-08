@@ -25,31 +25,6 @@ public class MainActivity extends Activity {
         //Restore data from SharedPreferences
         currentUser = UserKeeper.readUserFromSharedPref(this);
 
-        findViewById(R.id.test_create_event_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        findViewById(R.id.test_view_event_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), ViewEventAsGuestActivity.class);
-                intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, "F737hdAJC1");
-                startActivity(intent);
-            }
-        });
-
-        findViewById(R.id.test_map).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(intent);
-            }
-        });
-
         fbLoginButton = (LoginButton)findViewById(R.id.fb_login);
         fbLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +52,17 @@ public class MainActivity extends Activity {
                 });
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+
+        if (currentUser != null) {
+            Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+            startActivity(intent);
+        }
+
+        super.onResume();
     }
 
     @Override

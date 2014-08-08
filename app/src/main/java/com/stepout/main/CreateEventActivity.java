@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
 import com.squareup.otto.Subscribe;
 
@@ -36,6 +37,7 @@ public class CreateEventActivity extends FragmentActivity {
     private static TextView pickTimeView;
     private static TextView pickDateView;
     private static Button saveButton;
+    private static LatLng eventLocation;
     private User currentUser;
     private boolean isSavingProcess;
 
@@ -44,6 +46,7 @@ public class CreateEventActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
         currentUser = UserKeeper.readUserFromSharedPref(this);
+        eventLocation = new LatLng(getIntent().getDoubleExtra(DataExchange.LOCATION_OF_NEW_EVENT_LAT_KEY, 0), getIntent().getDoubleExtra(DataExchange.LOCATION_OF_NEW_EVENT_LNG_KEY, 0));
 
         final EditText messageEditText = (EditText) findViewById(R.id.message_edit_text);
         pickTimeView = (TextView) findViewById(R.id.choose_time_view);
@@ -79,7 +82,7 @@ public class CreateEventActivity extends FragmentActivity {
                         updateSaveButton();
                         Calendar cal = Calendar.getInstance();
                         cal.set(year, month, day, hour, minutes, 0);
-                        Event event = new Event(message, new ParseGeoPoint(29.1, 30.4), category, currentUser.getHash(), cal.getTime(), null);
+                        Event event = new Event(message, new ParseGeoPoint(eventLocation.latitude, eventLocation.longitude), category, currentUser.getHash(), cal.getTime(), null);
                         DataExchange.saveEventToParseCom(event);
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.create_event_complete_all_fields_error, Toast.LENGTH_LONG).show();
@@ -118,8 +121,10 @@ public class CreateEventActivity extends FragmentActivity {
         } else {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.event_saved), Toast.LENGTH_LONG).show();
 
+            DataExchange.uploadedEvents.add(event);
+
             Intent intent = new Intent(this, ViewEventAsAuthorActivity.class);
-            intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, event.getHash());
+            intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, event.getHash());
             startActivity(intent);
         }
 

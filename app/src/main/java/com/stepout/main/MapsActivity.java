@@ -10,11 +10,11 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -25,7 +25,6 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -47,35 +46,13 @@ public class MapsActivity extends FragmentActivity implements
     private boolean allowConnection = true;
     private User currentUser;
     private static final LatLng nsk = new LatLng(54.940803, 83.074371);
+    private boolean isUserPickLocationForNewEvent;
+    private LatLng locationOfNewEvent;
     /*
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult
      */
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
-
-    // Define a DialogFragment that displays the error dialog
-    public static class ErrorDialogFragment extends DialogFragment {
-
-        // Global field to contain the error dialog
-        private Dialog mDialog;
-
-        // Default constructor. Sets the dialog field to null
-        public ErrorDialogFragment() {
-            super();
-            mDialog = null;
-        }
-
-        // Set the dialog to display
-        public void setDialog(Dialog dialog) {
-            mDialog = dialog;
-        }
-
-        // Return a Dialog to the DialogFragment.
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            return mDialog;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +64,10 @@ public class MapsActivity extends FragmentActivity implements
 
         mapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         map = mapFragment.getMap();
+        map.getUiSettings().setCompassEnabled(false);
+        map.getUiSettings().setRotateGesturesEnabled(false);
+        map.getUiSettings().setZoomControlsEnabled(true);
+
         map.setMyLocationEnabled(true);
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
@@ -96,7 +77,7 @@ public class MapsActivity extends FragmentActivity implements
 
                         if (e.getAuthorHash().equals(currentUser.getHash())) {
                             Intent intent = new Intent(getApplicationContext(), ViewEventAsAuthorActivity.class);
-                            intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, e.getHash());
+                            intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, e.getHash());
                             startActivity(intent);
                             return;
                         }
@@ -104,14 +85,14 @@ public class MapsActivity extends FragmentActivity implements
                         for (User usr: e.getRespondents()) {
                             if (usr.getHash().equals(currentUser.getHash())) {
                                 Intent intent = new Intent(getApplicationContext(), ViewEventAsRespondentActivity.class);
-                                intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, e.getHash());
+                                intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, e.getHash());
                                 startActivity(intent);
                                 return;
                             }
                         }
 
                         Intent intent = new Intent(getApplicationContext(), ViewEventAsGuestActivity.class);
-                        intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY, e.getHash());
+                        intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, e.getHash());
                         startActivity(intent);
                         return;
                     }
@@ -128,12 +109,57 @@ public class MapsActivity extends FragmentActivity implements
             allowConnection = false;
             locationClient.connect();
         }
+
+        findViewById(R.id.create_event_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isUserPickLocationForNewEvent = true;
+                Toast.makeText(MapsActivity.this, R.string.choose_event_location_dialog, Toast.LENGTH_LONG).show();
+                map.clear();
+            }
+        });
+
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if (isUserPickLocationForNewEvent) {
+                    map.clear();
+                    map.addMarker(new MarkerOptions().position(latLng));
+                    locationOfNewEvent = latLng;
+                    findViewById(R.id.choose_location_for_new_event).setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        findViewById(R.id.choose_location_for_new_event).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (locationOfNewEvent != null) {
+
+                    map.clear();
+                    drawAllMarkers();
+                    findViewById(R.id.choose_location_for_new_event).setVisibility(View.GONE);
+                    isUserPickLocationForNewEvent = false;
+
+                    Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
+                    intent.putExtra(DataExchange.LOCATION_OF_NEW_EVENT_LAT_KEY, locationOfNewEvent.latitude);
+                    intent.putExtra(DataExchange.LOCATION_OF_NEW_EVENT_LNG_KEY, locationOfNewEvent.longitude);
+                    startActivity(intent);
+                }
+            }
+        });
     }
+
+
 
     @Subscribe
     public void getEvents(ArrayList<Event> events) {
         DataExchange.uploadedEvents.addAll(events);
-        //Log.d("asd", DataExchange.uploadedEvents.size() + "");
+        drawAllMarkers();
+    }
+
+    private void drawAllMarkers() {
+        map.clear();
         for (int i = 0; i < DataExchange.uploadedEvents.size(); i++) {
             Event currentEvent = DataExchange.uploadedEvents.get(i);
             LatLng latLng = new LatLng(currentEvent.getCoordinates().getLatitude(), DataExchange.uploadedEvents.get(i).getCoordinates().getLongitude());
@@ -150,7 +176,7 @@ public class MapsActivity extends FragmentActivity implements
                     .title(category)
                     .snippet(snippet)
                     .icon(BitmapDescriptorFactory
-                    .fromBitmap(bmp))).getId());
+                            .fromBitmap(bmp))).getId());
         }
     }
 
@@ -244,11 +270,11 @@ public class MapsActivity extends FragmentActivity implements
         //location = asd.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (location != null) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
             DataExchange.getEventsInRadius(location.getLatitude(), location.getLongitude());
         }
         else {
-            map.moveCamera(CameraUpdateFactory.newLatLng(nsk));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(nsk, 10));
             DataExchange.getEventsInRadius(nsk.latitude, nsk.longitude);
         }
     }
@@ -321,6 +347,7 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onResume() {
         DataExchange.bus.register(this);
+        drawAllMarkers();
         super.onResume();
     }
 
@@ -328,5 +355,29 @@ public class MapsActivity extends FragmentActivity implements
     protected void onPause() {
         DataExchange.bus.unregister(this);
         super.onPause();
+    }
+
+    // Define a DialogFragment that displays the error dialog
+    public static class ErrorDialogFragment extends DialogFragment {
+
+        // Global field to contain the error dialog
+        private Dialog mDialog;
+
+        // Default constructor. Sets the dialog field to null
+        public ErrorDialogFragment() {
+            super();
+            mDialog = null;
+        }
+
+        // Set the dialog to display
+        public void setDialog(Dialog dialog) {
+            mDialog = dialog;
+        }
+
+        // Return a Dialog to the DialogFragment.
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return mDialog;
+        }
     }
 }

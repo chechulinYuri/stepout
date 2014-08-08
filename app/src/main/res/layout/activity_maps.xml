@@ -1,11 +1,36 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    map:uiCompass="false"
-    map:uiRotateGestures="false"
-    map:uiZoomControls="false"
-    map:cameraZoom="10"/>
+    android:layout_height="match_parent">
+
+    <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+
+    <Button
+        android:id="@+id/create_event_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_event_button"
+        android:layout_margin="@dimen/stepout_standard_margin"
+        android:gravity="center"
+        android:background="@color/flat_nephritis"
+        android:padding="@dimen/stepout_standard_padding"
+        android:textColor="@color/flat_clouds"/>
+
+    <Button
+        android:id="@+id/choose_location_for_new_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="@string/choose_location_for_new_event"
+        android:layout_margin="@dimen/stepout_standard_margin"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal|bottom"
+        android:background="@color/flat_nephritis"
+        android:padding="@dimen/stepout_standard_padding"
+        android:textColor="@color/flat_clouds"/>
+
+</FrameLayout>

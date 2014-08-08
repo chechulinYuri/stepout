@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.facebook.model.GraphUser;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -20,7 +19,6 @@ import com.squareup.otto.Bus;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Created by Yuri on 25.07.2014.
@@ -55,7 +53,9 @@ public class DataExchange extends Application {
 
     public static final String STATUS_SUCCESS = "STATUS_SUCCESS";
     public static final String STATUS_FAIL = "STATUS_FAIL";
-    public static final String EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY = "EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY";
+    public static final String EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY = "EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY";
+    public static final String LOCATION_OF_NEW_EVENT_LAT_KEY = "LOCATION_OF_NEW_EVENT_LAT_KEY";
+    public static final String LOCATION_OF_NEW_EVENT_LNG_KEY = "LOCATION_OF_NEW_EVENT_LNG_KEY";
 
     public void onCreate() {
         super.onCreate();
@@ -63,52 +63,6 @@ public class DataExchange extends Application {
 
         bus = new Bus();
         context = getApplicationContext();
-
-        /*ParseQuery<ParseObject> query = ParseQuery.getQuery(USER_TABLE_NAME);
-        query.whereEqualTo(OBJECT_ID_COL_NAME, "ocTr8tIV8e");
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-
-                final ParseObject usr = objects.get(0);
-
-                ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
-                query.whereEqualTo(OBJECT_ID_COL_NAME, "5MijlqDzHt");
-                query.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List<ParseObject> objects, ParseException e) {
-
-                        ParseObject obj = objects.get(0);
-                        ParseQuery asd = obj.getRelation("Respondents").getQuery();
-                        asd.findInBackground(new FindCallback<ParseObject>() {
-                            @Override
-                            public void done(List<ParseObject> list, ParseException e) {
-                                for (ParseObject u: list) {
-                                    Log.d("asd", u.getString("firstName"));
-                                }
-                            }
-                        });
-
-                        ParseRelation<ParseObject> relation = obj.getRelation("Respondents");
-                        relation.add(usr);
-
-                        obj.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    Log.d("asd", "ok");
-                                } else {
-                                    // Failure!
-                                }
-                            }
-                        });
-
-                    }
-                });
-
-            }
-        });*/
-
     }
 
     //Needs to be rewritten!
@@ -229,13 +183,27 @@ public class DataExchange extends Application {
         eventParse.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                String eventHash = eventParse.getObjectId();
 
-                if (eventHash != null) {
-                    event.setHash(eventHash);
+                ParseRelation relation = eventParse.getRelation("respondents");
+                ParseQuery query = relation.getQuery();
+                try {
+                    List<ParseObject> respondentObjects = query.find();
+                    ArrayList<User> respondents = castParseObjectToUserList(respondentObjects);
+
+                    Event ev = new Event(
+                            eventParse.getString(MESSAGE_COL_NAME),
+                            eventParse.getParseGeoPoint(COORDINATES_COL_NAME),
+                            eventParse.getString(CATEGORY_COL_NAME),
+                            eventParse.getString(AUTHOR_HASH_COL_NAME),
+                            eventParse.getDate(DATE_COL_NAME),
+                            respondents
+                    );
+
+                    ev.setHash(eventParse.getObjectId());
+                    bus.post(ev);
+                } catch (ParseException e1) {
+                    e1.printStackTrace();
                 }
-
-                bus.post(event);
             }
         });
     }
