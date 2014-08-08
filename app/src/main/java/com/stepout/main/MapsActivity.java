@@ -1,4 +1,5 @@
 package com.stepout.main;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -16,6 +17,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -48,6 +50,9 @@ public class MapsActivity extends FragmentActivity implements
     private static final LatLng nsk = new LatLng(54.940803, 83.074371);
     private boolean isUserPickLocationForNewEvent;
     private LatLng locationOfNewEvent;
+    private Button createEventButton;
+    private Button chooseEventLocationButton;
+    private Button cancelChoosingLocationButton;
     /*
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult
@@ -61,6 +66,10 @@ public class MapsActivity extends FragmentActivity implements
         setContentView(R.layout.activity_maps);
 
         currentUser = UserKeeper.readUserFromSharedPref(this);
+
+        createEventButton = (Button) findViewById(R.id.create_event_button);
+        chooseEventLocationButton = (Button) findViewById(R.id.choose_location_for_new_event);
+        cancelChoosingLocationButton = (Button) findViewById(R.id.cancel_choose_location_for_new_event);
 
         mapFragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         map = mapFragment.getMap();
@@ -110,12 +119,15 @@ public class MapsActivity extends FragmentActivity implements
             locationClient.connect();
         }
 
-        findViewById(R.id.create_event_button).setOnClickListener(new View.OnClickListener() {
+        createEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 isUserPickLocationForNewEvent = true;
                 Toast.makeText(MapsActivity.this, R.string.choose_event_location_dialog, Toast.LENGTH_LONG).show();
                 map.clear();
+
+                createEventButton.setVisibility(View.GONE);
+                cancelChoosingLocationButton.setVisibility(View.VISIBLE);
             }
         });
 
@@ -126,19 +138,19 @@ public class MapsActivity extends FragmentActivity implements
                     map.clear();
                     map.addMarker(new MarkerOptions().position(latLng));
                     locationOfNewEvent = latLng;
-                    findViewById(R.id.choose_location_for_new_event).setVisibility(View.VISIBLE);
+                    chooseEventLocationButton.setVisibility(View.VISIBLE);
                 }
             }
         });
 
-        findViewById(R.id.choose_location_for_new_event).setOnClickListener(new View.OnClickListener() {
+        chooseEventLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (locationOfNewEvent != null) {
-
                     map.clear();
                     drawAllMarkers();
-                    findViewById(R.id.choose_location_for_new_event).setVisibility(View.GONE);
+                    chooseEventLocationButton.setVisibility(View.GONE);
+                    cancelChoosingLocationButton.setVisibility(View.GONE);
                     isUserPickLocationForNewEvent = false;
 
                     Intent intent = new Intent(getApplicationContext(), CreateEventActivity.class);
@@ -146,6 +158,17 @@ public class MapsActivity extends FragmentActivity implements
                     intent.putExtra(DataExchange.LOCATION_OF_NEW_EVENT_LNG_KEY, locationOfNewEvent.longitude);
                     startActivity(intent);
                 }
+            }
+        });
+
+        cancelChoosingLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                map.clear();
+                drawAllMarkers();
+                chooseEventLocationButton.setVisibility(View.GONE);
+                cancelChoosingLocationButton.setVisibility(View.GONE);
+                createEventButton.setVisibility(View.VISIBLE);
             }
         });
     }
