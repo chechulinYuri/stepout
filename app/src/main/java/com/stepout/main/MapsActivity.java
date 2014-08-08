@@ -153,7 +153,7 @@ public class MapsActivity extends ActionBarActivity implements
             public void onClick(View v) {
                 if (locationOfNewEvent != null) {
                     map.clear();
-                    drawAllMarkers();
+                    drawMarkers(DataExchange.uploadedEvents);
                     chooseEventLocationButton.setVisibility(View.GONE);
                     cancelChoosingLocationButton.setVisibility(View.GONE);
                     isUserPickLocationForNewEvent = false;
@@ -170,7 +170,7 @@ public class MapsActivity extends ActionBarActivity implements
             @Override
             public void onClick(View v) {
                 map.clear();
-                drawAllMarkers();
+                drawMarkers(DataExchange.uploadedEvents);
                 chooseEventLocationButton.setVisibility(View.GONE);
                 cancelChoosingLocationButton.setVisibility(View.GONE);
                 createEventButton.setVisibility(View.VISIBLE);
@@ -185,7 +185,7 @@ public class MapsActivity extends ActionBarActivity implements
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener( ) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
 
@@ -193,10 +193,9 @@ public class MapsActivity extends ActionBarActivity implements
                         Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
 
-                Toast toast = Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT);
-                toast.show();
+                DataExchange.searchEventsInRadius(s, map.getCameraPosition().target.latitude, map.getCameraPosition().target.longitude);
 
-                return false;
+                return true;
             }
 
             @Override
@@ -211,7 +210,18 @@ public class MapsActivity extends ActionBarActivity implements
     @Subscribe
     public void getEvents(ArrayList<Event> events) {
         DataExchange.uploadedEvents.addAll(events);
-        drawAllMarkers();
+        drawMarkers(DataExchange.uploadedEvents);
+    }
+
+    @Subscribe
+    public void searchCallback(String status) {
+        if (status == DataExchange.STATUS_SEARCH_SUCCESS) {
+            drawMarkers(DataExchange.searchEventResult);
+
+            if (DataExchange.searchEventResult.size() == 0) {
+                Toast.makeText(MapsActivity.this, getResources().getString(R.string.no_search_event_dialog), Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     private ArrayList<String> getUserHashes(Event event) {
@@ -223,11 +233,11 @@ public class MapsActivity extends ActionBarActivity implements
         return usersHashes;
     }
 
-    private void drawAllMarkers() {
+    private void drawMarkers(ArrayList<Event> events) {
         map.clear();
-        for (int i = 0; i < DataExchange.uploadedEvents.size(); i++) {
-            Event currentEvent = DataExchange.uploadedEvents.get(i);
-            LatLng latLng = new LatLng(currentEvent.getCoordinates().getLatitude(), DataExchange.uploadedEvents.get(i).getCoordinates().getLongitude());
+        for (int i = 0; i < events.size(); i++) {
+            Event currentEvent = events.get(i);
+            LatLng latLng = new LatLng(currentEvent.getCoordinates().getLatitude(), events.get(i).getCoordinates().getLongitude());
             String category = currentEvent.getCategory();
             String snippet = currentEvent.getMessage() + " Attenders: " + currentEvent.getRespondents().size();
             IconGenerator iconGenerator = new IconGenerator(this);
@@ -431,7 +441,7 @@ public class MapsActivity extends ActionBarActivity implements
         createEventButton.setVisibility(View.VISIBLE);
         cancelChoosingLocationButton.setVisibility(View.GONE);
         chooseEventLocationButton.setVisibility(View.GONE);
-        drawAllMarkers();
+        drawMarkers(DataExchange.uploadedEvents);
         super.onResume();
     }
 

@@ -52,6 +52,7 @@ public class DataExchange extends Application {
     public static final double EVENTS_VISIBILITY_RADIUS_IN_MILES = 50;
 
     public static final ArrayList<Event> uploadedEvents = new ArrayList<Event>();
+    public static final ArrayList<Event> searchEventResult = new ArrayList<Event>();
     public static HashMap<String, Bitmap> categories = new HashMap<String, Bitmap>();
 
     public static Bus bus;
@@ -59,6 +60,8 @@ public class DataExchange extends Application {
 
     public static final String STATUS_SUCCESS = "STATUS_SUCCESS";
     public static final String STATUS_FAIL = "STATUS_FAIL";
+    public static final String STATUS_SEARCH_SUCCESS = "STATUS_SEARCH_SUCCESS";
+    public static final String STATUS_SEARCH_FAIL = "STATUS_SEARCH_FAIL";
     public static final String EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY = "EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY";
     public static final String LOCATION_OF_NEW_EVENT_LAT_KEY = "LOCATION_OF_NEW_EVENT_LAT_KEY";
     public static final String LOCATION_OF_NEW_EVENT_LNG_KEY = "LOCATION_OF_NEW_EVENT_LNG_KEY";
@@ -383,12 +386,11 @@ public class DataExchange extends Application {
         return result;
     }*/
 
-    public static void getEventsInRadius(double x, double y) {
+    public static void getEventsInRadius(double lan, double lng) {
         final ArrayList<Event> events = new ArrayList<Event>();
-        final User user = UserKeeper.readUserFromSharedPref(context);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
-        query.whereWithinMiles(COORDINATES_COL_NAME, new ParseGeoPoint(x, y), EVENTS_VISIBILITY_RADIUS_IN_MILES);
+        query.whereWithinMiles(COORDINATES_COL_NAME, new ParseGeoPoint(lan, lng), EVENTS_VISIBILITY_RADIUS_IN_MILES);
 
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -444,6 +446,51 @@ public class DataExchange extends Application {
 
     public static boolean shareEvent(String eventHash, String type) {
         return false;
+    }
+
+    public static void searchEventsInRadius(String key, Double lan, Double lng) {
+        final ArrayList<Event> events = new ArrayList<Event>();
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
+        query.whereWithinMiles(COORDINATES_COL_NAME, new ParseGeoPoint(lan, lng), EVENTS_VISIBILITY_RADIUS_IN_MILES);
+        query.whereContains(MESSAGE_COL_NAME, key);
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    for (int i = 0; i < parseObjects.size(); i++) {
+                        ParseObject po = parseObjects.get(i);
+                        ParseRelation relation = po.getRelation(RESPONDENTS_COL_NAME);
+                        ParseQuery query = relation.getQuery();
+
+                        try {
+                            List<ParseObject> respondentObjects = query.find();
+                            ArrayList<User> respondents = castParseObjectToUserList(respondentObjects);
+
+                            Event ev = new Event(
+                                    po.getString(MESSAGE_COL_NAME),
+                                    po.getParseGeoPoint(COORDINATES_COL_NAME),
+                                    po.getString(CATEGORY_COL_NAME),
+                                    po.getString(AUTHOR_HASH_COL_NAME),
+                                    po.getDate(DATE_COL_NAME),
+                                    respondents
+                            );
+
+                            ev.setHash(po.getObjectId());
+                            events.add(ev);
+
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+
+                    searchEventResult.clear();
+                    searchEventResult.addAll(events);
+                    bus.post(STATUS_SEARCH_SUCCESS);
+                }
+            }
+        });
     }
 
     private static ArrayList<User> castParseObjectToUserList(List<ParseObject> objects) {
