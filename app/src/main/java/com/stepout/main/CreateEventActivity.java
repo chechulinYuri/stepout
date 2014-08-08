@@ -107,10 +107,10 @@ public class CreateEventActivity extends FragmentActivity {
     void updateSaveButton() {
         if (isSavingProcess) {
             saveButton.setText(getResources().getString(R.string.saving_process));
-            saveButton.setBackgroundColor(getResources().getColor(R.color.flat_emerald));
+            saveButton.setBackgroundColor(getResources().getColor(R.color.flat_turquoise));
         } else {
             saveButton.setText(getResources().getString(R.string.save_button));
-            saveButton.setBackgroundColor(getResources().getColor(R.color.flat_nephritis));
+            saveButton.setBackgroundColor(getResources().getColor(R.color.flat_green_sea));
         }
     }
 

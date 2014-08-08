@@ -78,10 +78,10 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
     void updateSaveButton() {
         if (isSavingProcess) {
             respondButton.setText(getResources().getString(R.string.responding_process));
-            respondButton.setBackgroundColor(getResources().getColor(R.color.flat_emerald));
+            respondButton.setBackgroundColor(getResources().getColor(R.color.flat_turquoise));
         } else {
             respondButton.setText(getResources().getString(R.string.respond_button));
-            respondButton.setBackgroundColor(getResources().getColor(R.color.flat_nephritis));
+            respondButton.setBackgroundColor(getResources().getColor(R.color.flat_green_sea));
         }
     }
 

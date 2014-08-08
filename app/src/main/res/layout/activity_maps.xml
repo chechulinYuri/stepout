@@ -16,7 +16,7 @@
         android:text="@string/create_event_button"
         android:layout_margin="@dimen/stepout_standard_margin"
         android:gravity="center"
-        android:background="@color/flat_nephritis"
+        android:background="@color/flat_green_sea"
         android:padding="@dimen/stepout_standard_padding"
         android:textColor="@color/flat_clouds"/>
 
@@ -29,7 +29,7 @@
         android:layout_margin="@dimen/stepout_standard_margin"
         android:gravity="center"
         android:layout_gravity="center_horizontal|bottom"
-        android:background="@color/flat_nephritis"
+        android:background="@color/flat_green_sea"
         android:padding="@dimen/stepout_standard_padding"
         android:textColor="@color/flat_clouds"/>
 

@@ -158,6 +158,15 @@ public class MapsActivity extends FragmentActivity implements
         drawAllMarkers();
     }
 
+    private ArrayList<String> getUserHashes(Event event) {
+        ArrayList<User> tempUsers = event.getRespondents();
+        ArrayList<String> usersHashes = new ArrayList<String>();
+        for (int i = 0; i < tempUsers.size(); i++) {
+            usersHashes.add(tempUsers.get(i).getHash());
+        }
+        return usersHashes;
+    }
+
     private void drawAllMarkers() {
         map.clear();
         for (int i = 0; i < DataExchange.uploadedEvents.size(); i++) {
@@ -166,7 +175,15 @@ public class MapsActivity extends FragmentActivity implements
             String category = currentEvent.getCategory();
             String snippet = currentEvent.getMessage() + " Attenders: " + currentEvent.getRespondents().size();
             IconGenerator iconGenerator = new IconGenerator(this);
-            iconGenerator.setStyle(IconGenerator.STYLE_RED);
+            if (currentUser.getHash().compareTo(currentEvent.getAuthorHash()) == 0) {
+                iconGenerator.setStyle(IconGenerator.STYLE_GREEN);
+            }
+            else if (getUserHashes(currentEvent).indexOf(currentUser.getHash()) != -1) {
+                iconGenerator.setStyle(IconGenerator.STYLE_BLUE);
+            }
+            else {
+                iconGenerator.setStyle(IconGenerator.STYLE_RED);
+            }
             DataExchange.getCategories();
             Bitmap bmp = iconGenerator.makeIcon(DataExchange.categories.get(category));
             //Bitmap bmp = iconGenerator.makeIcon(/*category*/);

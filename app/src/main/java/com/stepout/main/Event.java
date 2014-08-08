@@ -57,6 +57,7 @@ public class Event extends Entity {
 
     public ArrayList<User> getRespondents() { return respondents; }
 
+
     public boolean isMeRespondent() { return isMeRespondent; }
 
     public boolean isMeAuthor() { return isMeAuthor; }
