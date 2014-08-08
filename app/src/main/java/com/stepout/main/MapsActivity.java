@@ -169,6 +169,7 @@ public class MapsActivity extends FragmentActivity implements
                 chooseEventLocationButton.setVisibility(View.GONE);
                 cancelChoosingLocationButton.setVisibility(View.GONE);
                 createEventButton.setVisibility(View.VISIBLE);
+                isUserPickLocationForNewEvent = false;
             }
         });
     }
@@ -387,6 +388,9 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onResume() {
         DataExchange.bus.register(this);
+        createEventButton.setVisibility(View.VISIBLE);
+        cancelChoosingLocationButton.setVisibility(View.GONE);
+        chooseEventLocationButton.setVisibility(View.GONE);
         drawAllMarkers();
         super.onResume();
     }
