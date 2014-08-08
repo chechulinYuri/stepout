@@ -202,10 +202,10 @@ public class MapsActivity extends FragmentActivity implements
                 iconGenerator.setStyle(IconGenerator.STYLE_GREEN);
             }
             else if (getUserHashes(currentEvent).indexOf(currentUser.getHash()) != -1) {
-                iconGenerator.setStyle(IconGenerator.STYLE_BLUE);
+                iconGenerator.setStyle(IconGenerator.STYLE_ORANGE);
             }
             else {
-                iconGenerator.setStyle(IconGenerator.STYLE_RED);
+                iconGenerator.setStyle(IconGenerator.STYLE_BLUE);
             }
             DataExchange.getCategories();
             Bitmap bmp = iconGenerator.makeIcon(DataExchange.categories.get(category));
