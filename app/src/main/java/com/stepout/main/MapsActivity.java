@@ -426,7 +426,7 @@ public class MapsActivity extends ActionBarActivity implements
                     .setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             map.setMyLocationEnabled(true);
-                            map.moveCamera(CameraUpdateFactory.newLatLng(nsk));
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(nsk, 10));
                             DataExchange.getEventsInRadius(nsk.latitude, nsk.longitude);
                             dismiss();
                         }
