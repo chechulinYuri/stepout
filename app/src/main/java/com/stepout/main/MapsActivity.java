@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -31,6 +32,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.ui.BubbleIconFactory;
 import com.google.maps.android.ui.IconGenerator;
 import com.squareup.otto.Subscribe;
 
@@ -209,6 +211,8 @@ public class MapsActivity extends FragmentActivity implements
             }
             DataExchange.getCategories();
             Bitmap bmp = iconGenerator.makeIcon(DataExchange.categories.get(category));
+            //ImageView
+            //iconGenerator.setContentView();
             //Bitmap bmp = iconGenerator.makeIcon(/*category*/);
 
             currentEvent.setMarkerId(map.addMarker(new MarkerOptions()
