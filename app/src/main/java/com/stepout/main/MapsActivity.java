@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -171,6 +172,7 @@ public class MapsActivity extends FragmentActivity implements
                 chooseEventLocationButton.setVisibility(View.GONE);
                 cancelChoosingLocationButton.setVisibility(View.GONE);
                 createEventButton.setVisibility(View.VISIBLE);
+                isUserPickLocationForNewEvent = false;
             }
         });
     }
@@ -209,18 +211,24 @@ public class MapsActivity extends FragmentActivity implements
             else {
                 iconGenerator.setStyle(IconGenerator.STYLE_BLUE);
             }
-            DataExchange.getCategories();
-            Bitmap bmp = iconGenerator.makeIcon(DataExchange.categories.get(category));
-            //ImageView
-            //iconGenerator.setContentView();
-            //Bitmap bmp = iconGenerator.makeIcon(/*category*/);
-
+            ImageView imageView = new ImageView(this);
+            Bitmap categoryIcon = DataExchange.categories.get(category);
+            Bitmap bmp;
+            if (categoryIcon != null) {
+                iconGenerator.setContentView(imageView);
+                imageView.setImageBitmap(categoryIcon);
+                imageView.setPadding(10, 10, 10, 10);
+                bmp = iconGenerator.makeIcon();
+            }
+            else {
+                bmp = iconGenerator.makeIcon(category);
+            }
             currentEvent.setMarkerId(map.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title(category)
                     .snippet(snippet)
-                    .icon(BitmapDescriptorFactory
-                            .fromBitmap(bmp))).getId());
+                    .icon(BitmapDescriptorFactory.fromBitmap(bmp))
+                ).getId());
         }
     }
 
@@ -391,6 +399,9 @@ public class MapsActivity extends FragmentActivity implements
     @Override
     protected void onResume() {
         DataExchange.bus.register(this);
+        createEventButton.setVisibility(View.VISIBLE);
+        cancelChoosingLocationButton.setVisibility(View.GONE);
+        chooseEventLocationButton.setVisibility(View.GONE);
         drawAllMarkers();
         super.onResume();
     }
