@@ -102,6 +102,11 @@
                 <category android:name="com.stepout.main" />
             </intent-filter>
         </receiver>
+        <receiver android:name="com.stepout.main.CustomReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="com.stepout.main.CustomReceiver.SHOW_EVENT" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
