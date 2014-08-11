@@ -9,7 +9,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseException;
+import com.parse.ParsePush;
 import com.parse.PushService;
+import com.parse.SendCallback;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
@@ -60,6 +63,10 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
 
             case R.id.action_unresponse:
                 PushService.unsubscribe(getApplicationContext(), currentEvent.getHash());
+                ParsePush push = new ParsePush();
+                push.setChannel(currentEvent.getHash());
+                push.setMessage(getString(R.string.user_do_not_attend_event, currentEvent.getRespondents().size() - 1));
+                push.sendInBackground();
                 return true;
 
             default:

@@ -42,7 +42,9 @@
     <string name="action_new_event">Add event</string>
     <string name="no_search_event_dialog">Events are not found</string>
     <string name="remove_success">Event successfully removed</string>
-    <string name="user_joined_event">A user just joined to this event! Attenders: %s</string>
+    <string name="user_joined_event">A user just joined to this event! Attenders: %s</string>.
+    <string name="user_do_not_attend_event">A user is not going to attend this event anymore! Attenders: %s</string>
+    <string name="author_deleted_event">The author has cancelled this event :(</string>
     <string name="attenders_text">Attenders: %s</string>
 
     <string-array name="event_categories">

@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParsePush;
+import com.parse.PushService;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
@@ -69,6 +71,11 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
                 case R.id.action_delete:
                     isRemovingProcess = true;
                     DataExchange.removeEvent(currentEvent.getHash(), currentUser.getHash());
+                    PushService.unsubscribe(getApplicationContext(), currentEvent.getHash());
+                    ParsePush push = new ParsePush();
+                    push.setChannel(currentEvent.getHash());
+                    push.setMessage(getString(R.string.author_deleted_event));
+                    push.sendInBackground();
                     return true;
             }
         }
