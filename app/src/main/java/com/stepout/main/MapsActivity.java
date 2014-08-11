@@ -239,7 +239,8 @@ public class MapsActivity extends ActionBarActivity implements
             Event currentEvent = events.get(i);
             LatLng latLng = new LatLng(currentEvent.getCoordinates().getLatitude(), events.get(i).getCoordinates().getLongitude());
             String category = currentEvent.getCategory();
-            String snippet = currentEvent.getMessage() + " " + getString(R.string.attenders_text, currentEvent.getRespondents().size());
+            //String snippet = currentEvent.getMessage() + " " + getString(R.string.attenders_text, currentEvent.getRespondents().size());
+            String snippet = currentEvent.getMessage() + " " + getString(R.string.attenders_text, currentEvent.getRespondentsCount());
             IconGenerator iconGenerator = new IconGenerator(this);
             if (currentUser.getHash().compareTo(currentEvent.getAuthorHash()) == 0) {
                 iconGenerator.setStyle(IconGenerator.STYLE_GREEN);
