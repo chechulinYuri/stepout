@@ -19,6 +19,9 @@ public class CustomReceiver extends BroadcastReceiver {
             JSONObject json = new JSONObject(intent.getExtras().getString("com.parse.Data"));
             String currentEventHash = json.getString(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY);
             Log.d("ASD", currentEventHash);
+            Intent newIntent = new Intent(context, ViewEventAsGuestActivity.class);
+            intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEventHash);
+            context.startActivity(newIntent);
         } catch (JSONException e) {
             e.printStackTrace();
         }
