@@ -11,7 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParseInstallation;
 import com.parse.ParsePush;
+import com.parse.ParseQuery;
 import com.parse.PushService;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
@@ -73,7 +75,10 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
                     DataExchange.removeEvent(currentEvent.getHash(), currentUser.getHash());
                     PushService.unsubscribe(getApplicationContext(), currentEvent.getHash());
                     ParsePush push = new ParsePush();
-                    push.setChannel(currentEvent.getHash());
+                    ParseQuery pushQuery = ParseInstallation.getQuery();
+                    pushQuery.whereNotEqualTo("objectId", ParseInstallation.getCurrentInstallation().getInstallationId());
+                    pushQuery.whereEqualTo("channels", currentEvent.getHash());
+                    push.setQuery(pushQuery);
                     push.setMessage(getString(R.string.author_deleted_event));
                     push.sendInBackground();
                     Intent intentDeletion = new Intent(this, MapsActivity.class);
