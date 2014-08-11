@@ -108,7 +108,7 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
             push.setMessage(getString(R.string.user_joined_event, currentEvent.getRespondents().size() + 1));
             //NEW SHIT
             try {
-                JSONObject data = new JSONObject("{\"action\": \"com.stepout.main.CustomReceiver.SHOW_EVENT\", \"" + DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY + "\": \"" + currentEvent.getHash() + "\"}");
+                JSONObject data = new JSONObject("{\"action\": \"com.stepout.main.CustomReceiver.SHOW_EVENT\", \"alert\": \"" + getString(R.string.user_joined_event, currentEvent.getRespondents().size() + 1) + "\", \"" + DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY + "\": \"" + currentEvent.getHash() + "\"}");
                 push.setData(data);
             } catch (JSONException e) {
                 e.printStackTrace();
