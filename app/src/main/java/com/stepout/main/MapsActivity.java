@@ -193,7 +193,6 @@ public class MapsActivity extends ActionBarActivity implements
                         Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
 
-                Log.d("asd", "searchStart");
                 DataExchange.searchEventsInRadius(s, map.getCameraPosition().target.latitude, map.getCameraPosition().target.longitude);
 
                 return true;
@@ -360,6 +359,7 @@ public class MapsActivity extends ActionBarActivity implements
         locationClient.disconnect();
         //LocationManager asd = (LocationManager)getSystemService(LOCATION_SERVICE);
         //location = asd.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Log.d("asd", "searchStart");
         if (location != null) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));

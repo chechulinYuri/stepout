@@ -413,12 +413,14 @@ public class DataExchange extends Application {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
+                    Log.d("asd", "searchEnd");
                     for (int i = 0; i < parseObjects.size(); i++) {
                         ParseObject po = parseObjects.get(i);
                         ParseRelation relation = po.getRelation(RESPONDENTS_COL_NAME);
                         ParseQuery query = relation.getQuery();
 
                         try {
+                            Log.d("asd", "getRespondents");
                             List<ParseObject> respondentObjects = query.find();
                             ArrayList<User> respondents = castParseObjectToUserList(respondentObjects);
 
@@ -539,14 +541,12 @@ public class DataExchange extends Application {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
-                    Log.d("asd", "searchEnd");
                     for (int i = 0; i < parseObjects.size(); i++) {
                         ParseObject po = parseObjects.get(i);
                         ParseRelation relation = po.getRelation(RESPONDENTS_COL_NAME);
                         ParseQuery query = relation.getQuery();
 
                         try {
-                            Log.d("asd", "getRespondents");
                             List<ParseObject> respondentObjects = query.find();
                             ArrayList<User> respondents = castParseObjectToUserList(respondentObjects);
 
