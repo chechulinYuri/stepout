@@ -76,6 +76,8 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
                     push.setChannel(currentEvent.getHash());
                     push.setMessage(getString(R.string.author_deleted_event));
                     push.sendInBackground();
+                    Intent intentDeletion = new Intent(this, MapsActivity.class);
+                    startActivity(intentDeletion);
                     return true;
             }
         }
