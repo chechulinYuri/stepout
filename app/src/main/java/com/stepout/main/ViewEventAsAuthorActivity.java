@@ -79,7 +79,7 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
                     pushQuery.whereNotEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
                     pushQuery.whereEqualTo("channels", currentEvent.getHash());
                     push.setQuery(pushQuery);
-                    push.setMessage(getString(R.string.author_deleted_event));
+                    push.setMessage(getString(R.string.author_deleted_event, android.text.format.DateFormat.format("dd.MM.yy hh:mm", currentEvent.getDate())));
                     push.sendInBackground();
                     Intent intentDeletion = new Intent(this, MapsActivity.class);
                     startActivity(intentDeletion);
