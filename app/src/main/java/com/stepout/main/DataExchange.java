@@ -1,7 +1,9 @@
 package com.stepout.main;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.telephony.TelephonyManager;
@@ -10,12 +12,14 @@ import android.util.Log;
 import com.facebook.model.GraphUser;
 import com.parse.FindCallback;
 import com.parse.Parse;
+import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
+import com.parse.PushService;
 import com.parse.SaveCallback;
 import com.squareup.otto.Bus;
 
@@ -70,8 +74,18 @@ public class DataExchange extends Application {
         super.onCreate();
         Parse.initialize(getApplicationContext(), "w8w75nqgzFroCnZEqO6auY85PJnTRKILNXYZUeKa", "UNH39pBxBzLAD4ekMZQUp0VzGUACPTPTHBT5x8qg");
 
+
+
         bus = new Bus();
         context = getApplicationContext();
+
+        // New shit begins right here
+
+        PushService.setDefaultPushCallback(getApplicationContext(), MainActivity.class);
+        //Activity mContext = (Activity)getApplicationContext();
+        //ParseAnalytics.trackAppOpened(mContext.getIntent());
+
+        // And ends here
 
         DataExchange.getCategories();
     }
