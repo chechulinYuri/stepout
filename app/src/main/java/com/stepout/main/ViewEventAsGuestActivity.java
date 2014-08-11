@@ -102,6 +102,7 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
             ParsePush push = new ParsePush();
             push.setChannel(currentEvent.getHash());
             push.setMessage(getString(R.string.user_joined_event,  currentEvent.getRespondents().size() + 1));
+            push.sendInBackground();
             startActivity(intent);
         }
     }
