@@ -1,5 +1,6 @@
 package com.stepout.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -67,11 +68,13 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
                 PushService.unsubscribe(getApplicationContext(), currentEvent.getHash());
                 ParsePush push = new ParsePush();
                 ParseQuery pushQuery = ParseInstallation.getQuery();
-                pushQuery.whereNotEqualTo("objectId", ParseInstallation.getCurrentInstallation().getInstallationId());
+                pushQuery.whereNotEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
                 pushQuery.whereEqualTo("channels", currentEvent.getHash());
                 push.setQuery(pushQuery);
                 push.setMessage(getString(R.string.user_do_not_attend_event));
                 push.sendInBackground();
+                Intent intentDeletion = new Intent(this, MapsActivity.class);
+                startActivity(intentDeletion);
                 return true;
 
             default:

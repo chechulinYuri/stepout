@@ -76,7 +76,7 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
                     PushService.unsubscribe(getApplicationContext(), currentEvent.getHash());
                     ParsePush push = new ParsePush();
                     ParseQuery pushQuery = ParseInstallation.getQuery();
-                    pushQuery.whereNotEqualTo("objectId", ParseInstallation.getCurrentInstallation().getInstallationId());
+                    pushQuery.whereNotEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
                     pushQuery.whereEqualTo("channels", currentEvent.getHash());
                     push.setQuery(pushQuery);
                     push.setMessage(getString(R.string.author_deleted_event));
