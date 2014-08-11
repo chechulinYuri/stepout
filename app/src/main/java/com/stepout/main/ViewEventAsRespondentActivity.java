@@ -10,7 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParsePush;
+import com.parse.ParseQuery;
 import com.parse.PushService;
 import com.parse.SendCallback;
 import com.squareup.otto.Subscribe;
@@ -64,8 +66,11 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
             case R.id.action_unresponse:
                 PushService.unsubscribe(getApplicationContext(), currentEvent.getHash());
                 ParsePush push = new ParsePush();
-                push.setChannel(currentEvent.getHash());
-                push.setMessage(getString(R.string.user_do_not_attend_event, currentEvent.getRespondents().size() - 1));
+                ParseQuery pushQuery = ParseInstallation.getQuery();
+                pushQuery.whereNotEqualTo("objectId", ParseInstallation.getCurrentInstallation().getInstallationId());
+                pushQuery.whereEqualTo("channels", currentEvent.getHash());
+                push.setQuery(pushQuery);
+                push.setMessage(getString(R.string.user_do_not_attend_event));
                 push.sendInBackground();
                 return true;
 
