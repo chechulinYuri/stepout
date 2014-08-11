@@ -174,10 +174,13 @@ public class EditEventActivity extends FragmentActivity {
         Intent intent = new Intent(this, ViewEventAsAuthorActivity.class);
         intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEvent.getHash());
         startActivity(intent);
+
+        isSavingProcess = false;
+        updateSaveButton();
     }
 
     public void implementSpinner() {
-        String[] categories = DataExchange.categories.keySet().toArray(new String[DataExchange.categories.size()]);
+        final String[] categories = DataExchange.categories.keySet().toArray(new String[DataExchange.categories.size()]);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySpinner = (AbsSpinner) findViewById(R.id.category_spinner);
@@ -185,7 +188,6 @@ public class EditEventActivity extends FragmentActivity {
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String[] categories = getResources().getStringArray(R.array.event_categories);
                 category = categories[position];
             }
             @Override
