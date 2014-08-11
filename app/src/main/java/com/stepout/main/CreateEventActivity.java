@@ -24,6 +24,7 @@ import com.parse.ParseGeoPoint;
 import com.parse.PushService;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class CreateEventActivity extends FragmentActivity {
@@ -83,7 +84,11 @@ public class CreateEventActivity extends FragmentActivity {
                         updateSaveButton();
                         Calendar cal = Calendar.getInstance();
                         cal.set(year, month, day, hour, minutes, 0);
-                        Event event = new Event(message, new ParseGeoPoint(eventLocation.latitude, eventLocation.longitude), category, currentUser.getHash(), cal.getTime(), null);
+
+                        ArrayList<String> respondentsHash = new ArrayList<String>();
+                        respondentsHash.add(currentUser.getHash());
+
+                        Event event = new Event(message, new ParseGeoPoint(eventLocation.latitude, eventLocation.longitude), category, currentUser.getHash(), cal.getTime(), null, 1/*, respondentsHash*/);
                         DataExchange.saveEventToParseCom(event);
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.create_event_complete_all_fields_error, Toast.LENGTH_LONG).show();

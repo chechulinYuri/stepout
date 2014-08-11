@@ -41,6 +41,8 @@ public class DataExchange extends Application {
     public static final String DATE_COL_NAME = "date";
     public static final String COORDINATES_COL_NAME = "coordinates";
     public static final String RESPONDENTS_COL_NAME = "respondents";
+    public static final String RESPONDENTS_COUNT_COL_NAME = "respondentsCount";
+    public static final String RESPONDENTS_HASH_COL_NAME = "respondentsHash";
     public static final String USER_HASH_COL_NAME = "userHash";
     public static final String EVENT_HASH_COL_NAME = "eventHash";
     public static final String FACEBOOK_ID_COL_NAME = "fbId";
@@ -224,6 +226,8 @@ public class DataExchange extends Application {
         eventParse.put(AUTHOR_HASH_COL_NAME, event.getAuthorHash());
         eventParse.put(DATE_COL_NAME, event.getDate());
         eventParse.put(COORDINATES_COL_NAME, event.getCoordinates());
+        eventParse.put(RESPONDENTS_COUNT_COL_NAME, event.getRespondentsCount());
+        eventParse.put(RESPONDENTS_HASH_COL_NAME, event.getRespondentsHash());
 
         eventParse.saveInBackground(new SaveCallback() {
             @Override
@@ -241,7 +245,9 @@ public class DataExchange extends Application {
                                 eventParse.getString(CATEGORY_COL_NAME),
                                 eventParse.getString(AUTHOR_HASH_COL_NAME),
                                 eventParse.getDate(DATE_COL_NAME),
-                                respondents
+                                respondents,
+                                eventParse.getInt(RESPONDENTS_COUNT_COL_NAME)//,
+                                //eventParse.getList<String>(RESPONDENTS_HASH_COL_NAME)
                         );
 
                         ev.setHash(eventParse.getObjectId());
@@ -323,7 +329,8 @@ public class DataExchange extends Application {
                                     po.getString(CATEGORY_COL_NAME),
                                     po.getString(AUTHOR_HASH_COL_NAME),
                                     po.getDate(DATE_COL_NAME),
-                                    respondents
+                                    respondents,
+                                    po.getInt(RESPONDENTS_COUNT_COL_NAME)
                             );
 
                             ev.setHash(po.getObjectId());
@@ -361,7 +368,8 @@ public class DataExchange extends Application {
                                     po.getString(CATEGORY_COL_NAME),
                                     po.getString(AUTHOR_HASH_COL_NAME),
                                     po.getDate(DATE_COL_NAME),
-                                    respondents
+                                    respondents,
+                                    po.getInt(RESPONDENTS_COUNT_COL_NAME)
                             );
 
                             ev.setHash(po.getObjectId());
@@ -416,29 +424,31 @@ public class DataExchange extends Application {
                     Log.d("asd", "searchEnd");
                     for (int i = 0; i < parseObjects.size(); i++) {
                         ParseObject po = parseObjects.get(i);
-                        ParseRelation relation = po.getRelation(RESPONDENTS_COL_NAME);
-                        ParseQuery query = relation.getQuery();
+                        //ParseRelation relation = po.getRelation(RESPONDENTS_COL_NAME);
+                        //ParseQuery query = relation.getQuery();
 
-                        try {
+                        //try {
                             Log.d("asd", "getRespondents");
-                            List<ParseObject> respondentObjects = query.find();
-                            ArrayList<User> respondents = castParseObjectToUserList(respondentObjects);
+                            //List<ParseObject> respondentObjects = query.find();
+                            //ArrayList<User> respondents = castParseObjectToUserList(respondentObjects);
+                            ArrayList<User> respondents = new ArrayList<User>();
 
-                            Event ev = new Event(
+                                    Event ev = new Event(
                                     po.getString(MESSAGE_COL_NAME),
                                     po.getParseGeoPoint(COORDINATES_COL_NAME),
                                     po.getString(CATEGORY_COL_NAME),
                                     po.getString(AUTHOR_HASH_COL_NAME),
                                     po.getDate(DATE_COL_NAME),
-                                    respondents
+                                    respondents,
+                                    po.getInt(RESPONDENTS_COUNT_COL_NAME)
                             );
 
                             ev.setHash(po.getObjectId());
                             events.add(ev);
 
-                        } catch (ParseException e1) {
+                        /*} catch (ParseException e1) {
                             e1.printStackTrace();
-                        }
+                        }*/
                     }
 
                     bus.post(events);
@@ -556,7 +566,8 @@ public class DataExchange extends Application {
                                     po.getString(CATEGORY_COL_NAME),
                                     po.getString(AUTHOR_HASH_COL_NAME),
                                     po.getDate(DATE_COL_NAME),
-                                    respondents
+                                    respondents,
+                                    po.getInt(RESPONDENTS_COUNT_COL_NAME)
                             );
 
                             ev.setHash(po.getObjectId());
