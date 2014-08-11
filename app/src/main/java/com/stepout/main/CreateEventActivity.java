@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
+import com.parse.PushService;
 import com.squareup.otto.Subscribe;
 
 import java.util.Calendar;
@@ -125,6 +126,7 @@ public class CreateEventActivity extends FragmentActivity {
 
             Intent intent = new Intent(this, ViewEventAsAuthorActivity.class);
             intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, event.getHash());
+            PushService.subscribe(getApplicationContext(), event.getHash(), MainActivity.class);
             startActivity(intent);
         }
     }

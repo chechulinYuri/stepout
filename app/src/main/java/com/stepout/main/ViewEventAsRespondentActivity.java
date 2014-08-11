@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.PushService;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
@@ -58,7 +59,7 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
                 return true;
 
             case R.id.action_unresponse:
-
+                PushService.unsubscribe(getApplicationContext(), currentEvent.getHash());
                 return true;
 
             default:

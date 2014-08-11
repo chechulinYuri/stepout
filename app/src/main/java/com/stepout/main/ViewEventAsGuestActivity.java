@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParsePush;
+import com.parse.PushService;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
@@ -96,6 +98,10 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
 
             Intent intent = new Intent(this, ViewEventAsRespondentActivity.class);
             intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEvent.getHash());
+            PushService.subscribe(getApplicationContext(), currentEvent.getHash(), MainActivity.class);
+            ParsePush push = new ParsePush();
+            push.setChannel(currentEvent.getHash());
+            push.setMessage(getString(R.string.user_joined_event,  currentEvent.getRespondents().size() + 1));
             startActivity(intent);
         }
     }
