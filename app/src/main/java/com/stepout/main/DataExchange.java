@@ -83,15 +83,7 @@ public class DataExchange extends Application {
 
         bus = new Bus();
         context = getApplicationContext();
-
-        // New shit begins right here
-
         PushService.setDefaultPushCallback(getApplicationContext(), MainActivity.class);
-        //Activity mContext = (Activity)getApplicationContext();
-        //ParseAnalytics.trackAppOpened(mContext.getIntent());
-
-        // And ends here
-
         DataExchange.getCategories();
     }
 
