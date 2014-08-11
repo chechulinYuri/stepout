@@ -219,7 +219,7 @@ public class DataExchange extends Application {
         eventParse.put(DATE_COL_NAME, event.getDate());
         eventParse.put(COORDINATES_COL_NAME, event.getCoordinates());
         eventParse.put(RESPONDENTS_COUNT_COL_NAME, event.getRespondentsCount());
-        eventParse.put(RESPONDENTS_HASH_COL_NAME, event.getRespondentsHash());
+        //eventParse.put(RESPONDENTS_HASH_COL_NAME, event.getRespondentsHash());
 
         eventParse.saveInBackground(new SaveCallback() {
             @Override
