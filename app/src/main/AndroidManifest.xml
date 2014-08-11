@@ -45,7 +45,7 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
-            android:theme="@style/Theme.AppCompat.Light">
+            android:theme="@style/Theme.AppCompat.Light" >
         </activity>
 
         <meta-data
@@ -58,7 +58,7 @@
         <activity
             android:name=".ViewEventAsAuthorActivity"
             android:label="@string/title_activity_view_event_as_author"
-            android:uiOptions="splitActionBarWhenNarrow">
+            android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
@@ -66,10 +66,14 @@
         <activity
             android:name=".ViewEventAsRespondentActivity"
             android:label="@string/title_activity_view_event_as_respondent"
-            android:uiOptions="splitActionBarWhenNarrow">
+            android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
                 android:name="android.support.UI_OPTIONS"
                 android:value="splitActionBarWhenNarrow" />
+        </activity>
+        <activity
+            android:name=".EditEventActivity"
+            android:label="@string/title_activity_edit_event" >
         </activity>
     </application>
 

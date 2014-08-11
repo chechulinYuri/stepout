@@ -8,7 +8,9 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.facebook.model.GraphUser;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -60,6 +62,10 @@ public class DataExchange extends Application {
 
     public static final String STATUS_SUCCESS = "STATUS_SUCCESS";
     public static final String STATUS_FAIL = "STATUS_FAIL";
+    public static final String STATUS_REMOVE_SUCCESS = "STATUS_REMOVE_SUCCESS";
+    public static final String STATUS_REMOVE_FAIL = "STATUS_REMOVE_FAIL";
+    public static final String STATUS_UPDATE_EVENT_SUCCESS = "STATUS_UPDATE_EVENT_SUCCESS";
+    public static final String STATUS_UPDATE_EVENT_FAIL = "STATUS_UPDATE_EVENT_FAIL";
     public static final String STATUS_SEARCH_SUCCESS = "STATUS_SEARCH_SUCCESS";
     public static final String STATUS_SEARCH_FAIL = "STATUS_SEARCH_FAIL";
     public static final String EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY = "EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY";
@@ -436,12 +442,75 @@ public class DataExchange extends Application {
         return false;
     }
 
-    public static boolean removeEvent(String eventHash, String userHash) {
-        return false;
+    public static void removeEvent(final String eventHash, String userHash) {
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
+        query.whereEqualTo(OBJECT_ID_COL_NAME, eventHash);
+        query.whereEqualTo(AUTHOR_HASH_COL_NAME, userHash);
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null && parseObjects.size() > 0) {
+                    parseObjects.get(0).deleteInBackground(new DeleteCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+
+                                for (Event event: uploadedEvents) {
+                                    if (event.getHash().equals(eventHash)) {
+                                        uploadedEvents.remove(event);
+                                        break;
+                                    }
+                                }
+
+                                bus.post(STATUS_REMOVE_SUCCESS);
+                            } else {
+                                bus.post(STATUS_REMOVE_FAIL);
+                            }
+                        }
+                    });
+                } else {
+                    bus.post(STATUS_REMOVE_FAIL);
+                }
+            }
+        });
     }
 
-    public static boolean updateEvent(Event event, String userHash) {
-        return false;
+    public static void updateEvent(final Event event, String userHash) {
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
+
+        query.getInBackground(event.getHash(), new GetCallback<ParseObject>() {
+            public void done(ParseObject eventParse, ParseException e) {
+                if (e == null) {
+                    eventParse.put(MESSAGE_COL_NAME, event.getMessage());
+                    eventParse.put(CATEGORY_COL_NAME, event.getCategory());
+                    eventParse.put(AUTHOR_HASH_COL_NAME, event.getAuthorHash());
+                    eventParse.put(DATE_COL_NAME, event.getDate());
+
+                    eventParse.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                for (int i = 0; i < uploadedEvents.size(); i++) {
+                                    Event ev = uploadedEvents.get(i);
+                                    if (ev.getHash().equals(event.getHash())) {
+                                        uploadedEvents.set(i, event);
+                                        break;
+                                    }
+                                }
+                                bus.post(STATUS_UPDATE_EVENT_SUCCESS);
+                            } else {
+                                bus.post(STATUS_UPDATE_EVENT_FAIL);
+                            }
+                        }
+                    });
+                } else {
+                    bus.post(STATUS_UPDATE_EVENT_FAIL);
+                }
+            }
+        });
     }
 
     public static boolean shareEvent(String eventHash, String type) {

@@ -9,12 +9,12 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.AbsSpinner;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -25,7 +25,7 @@ import com.squareup.otto.Subscribe;
 
 import java.util.Calendar;
 
-public class CreateEventActivity extends FragmentActivity {
+public class EditEventActivity extends FragmentActivity {
 
     private static Integer day;
     private static Integer month;
@@ -37,8 +37,10 @@ public class CreateEventActivity extends FragmentActivity {
     private static TextView pickTimeView;
     private static TextView pickDateView;
     private static Button saveButton;
+    private static AbsSpinner categorySpinner;
     private static LatLng eventLocation;
     private User currentUser;
+    private static Event currentEvent;
     private boolean isSavingProcess;
 
     @Override
@@ -48,12 +50,23 @@ public class CreateEventActivity extends FragmentActivity {
         currentUser = UserKeeper.readUserFromSharedPref(this);
         eventLocation = new LatLng(getIntent().getDoubleExtra(DataExchange.LOCATION_OF_NEW_EVENT_LAT_KEY, 0), getIntent().getDoubleExtra(DataExchange.LOCATION_OF_NEW_EVENT_LNG_KEY, 0));
 
+        implementSpinner();
+
+        final String currentEventHash = getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY);
+
+        for (int i = 0; i < DataExchange.uploadedEvents.size(); i++) {
+            if (DataExchange.uploadedEvents.get(i).getHash().equals(currentEventHash)) {
+                currentEvent = DataExchange.uploadedEvents.get(i);
+
+                showEvent(currentEvent);
+                break;
+            }
+        }
+
         final EditText messageEditText = (EditText) findViewById(R.id.message_edit_text);
         pickTimeView = (TextView) findViewById(R.id.choose_time_view);
         pickDateView = (TextView) findViewById(R.id.choose_date_view);
         saveButton = (Button) findViewById(R.id.save_event_button);
-
-        implementSpinner();
 
         pickTimeView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,8 +95,20 @@ public class CreateEventActivity extends FragmentActivity {
                         updateSaveButton();
                         Calendar cal = Calendar.getInstance();
                         cal.set(year, month, day, hour, minutes, 0);
-                        Event event = new Event(message, new ParseGeoPoint(eventLocation.latitude, eventLocation.longitude), category, currentUser.getHash(), cal.getTime(), null);
-                        DataExchange.saveEventToParseCom(event);
+                        Event event = new Event(
+                                message,
+                                new ParseGeoPoint(
+                                        currentEvent.getCoordinates().getLatitude(),
+                                        currentEvent.getCoordinates().getLongitude()),
+                                category,
+                                currentUser.getHash(),
+                                cal.getTime(),
+                                null
+                        );
+
+                        event.setHash(currentEvent.getHash());
+
+                        DataExchange.updateEvent(event, currentUser.getHash());
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.create_event_complete_all_fields_error, Toast.LENGTH_LONG).show();
                     }
@@ -104,6 +129,30 @@ public class CreateEventActivity extends FragmentActivity {
         super.onPause();
     }
 
+    private void showEvent(Event event) {
+        final EditText message = (EditText) findViewById(R.id.message_edit_text);
+        final TextView date = (TextView) findViewById(R.id.choose_date_view);
+        final TextView time = (TextView) findViewById(R.id.choose_time_view);
+
+        date.setText(android.text.format.DateFormat.format("dd.MM.yy", event.getDate()));
+        time.setText(android.text.format.DateFormat.format("hh:mm", event.getDate()));
+        message.setText(event.getMessage());
+
+        ArrayAdapter<String> adapter = (ArrayAdapter<String>) categorySpinner.getAdapter();
+        int spinnerPosition = adapter.getPosition(event.getCategory());
+        categorySpinner.setSelection(spinnerPosition);
+        category = event.getCategory();
+
+        final Calendar c = Calendar.getInstance();
+        c.setTime(currentEvent.getDate());
+        hour = c.get(Calendar.HOUR_OF_DAY);
+        minutes = c.get(Calendar.MINUTE);
+        year = c.get(Calendar.YEAR);
+        month = c.get(Calendar.MONTH);
+        day = c.get(Calendar.DAY_OF_MONTH);
+
+    }
+
     void updateSaveButton() {
         if (isSavingProcess) {
             saveButton.setText(getResources().getString(R.string.saving_process));
@@ -115,26 +164,25 @@ public class CreateEventActivity extends FragmentActivity {
     }
 
     @Subscribe
-    public void savedEvent(Event event) {
-        if (event.getHash() == null) {
-            Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
-        } else {
+    public void updateEventStatus(String status) {
+        if (status.equals(DataExchange.STATUS_UPDATE_EVENT_SUCCESS)) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.event_saved), Toast.LENGTH_LONG).show();
-
-            DataExchange.uploadedEvents.add(event);
-
-            Intent intent = new Intent(this, ViewEventAsAuthorActivity.class);
-            intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, event.getHash());
-            startActivity(intent);
+        } else {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
         }
+
+        Intent intent = new Intent(this, ViewEventAsAuthorActivity.class);
+        intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEvent.getHash());
+        startActivity(intent);
     }
 
     public void implementSpinner() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.event_categories));
+        String[] categories = DataExchange.categories.keySet().toArray(new String[DataExchange.categories.size()]);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Spinner spinner = (Spinner) findViewById(R.id.category_spinner);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        categorySpinner = (AbsSpinner) findViewById(R.id.category_spinner);
+        categorySpinner.setAdapter(adapter);
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String[] categories = getResources().getStringArray(R.array.event_categories);
@@ -153,6 +201,7 @@ public class CreateEventActivity extends FragmentActivity {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current time as the default values for the picker
             final Calendar c = Calendar.getInstance();
+            c.setTime(currentEvent.getDate());
             int hour = c.get(Calendar.HOUR_OF_DAY);
             int minute = c.get(Calendar.MINUTE);
 
@@ -175,6 +224,7 @@ public class CreateEventActivity extends FragmentActivity {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current date as the default date in the picker
             final Calendar c = Calendar.getInstance();
+            c.setTime(currentEvent.getDate());
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);

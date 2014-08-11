@@ -1,5 +1,6 @@
 package com.stepout.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -8,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
@@ -16,6 +18,7 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
 
     private Event currentEvent;
     private User currentUser;
+    private boolean isRemovingProcess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,10 +26,11 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
         setContentView(R.layout.activity_view_event_as_author);
 
         currentUser = UserKeeper.readUserFromSharedPref(this);
+        String currentEventHash = getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY);
 
         boolean isEventUploaded = false;
         for (int i = 0; i < DataExchange.uploadedEvents.size(); i++) {
-            if (DataExchange.uploadedEvents.get(i).getHash().equals(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY))) {
+            if (DataExchange.uploadedEvents.get(i).getHash().equals(currentEventHash)) {
                 currentEvent = DataExchange.uploadedEvents.get(i);
 
                 showEvent(currentEvent);
@@ -50,22 +54,25 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_edit:
+        if (!isRemovingProcess) {
+            switch (item.getItemId()) {
+                case R.id.action_edit:
+                    Intent intent = new Intent(this, EditEventActivity.class);
+                    intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEvent.getHash());
+                    startActivity(intent);
+                    return true;
 
-                return true;
+                case R.id.action_share:
 
-            case R.id.action_share:
+                    return true;
 
-                return true;
-
-            case R.id.action_delete:
-
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+                case R.id.action_delete:
+                    isRemovingProcess = true;
+                    DataExchange.removeEvent(currentEvent.getHash(), currentUser.getHash());
+                    return true;
+            }
         }
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -90,6 +97,20 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
 
         findViewById(R.id.content_wrapper).setVisibility(View.VISIBLE);
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+    }
+
+    @Subscribe
+    public void removeEventStatus(String status) {
+        if (status == DataExchange.STATUS_REMOVE_SUCCESS) {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.remove_success), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
+        }
+
+        isRemovingProcess = false;
+
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
     }
 
     private void showEvent(Event event) {

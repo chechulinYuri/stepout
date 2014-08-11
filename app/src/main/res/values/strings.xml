@@ -41,6 +41,7 @@
     <string name="action_filter">Filter</string>
     <string name="action_new_event">Add event</string>
     <string name="no_search_event_dialog">Events are not found</string>
+    <string name="remove_success">Event successfully removed</string>
 
     <string-array name="event_categories">
         <item>Sport</item>
@@ -54,5 +55,6 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_view_event_as_author">View Event</string>
     <string name="title_activity_view_event_as_respondent">View Event</string>
+    <string name="title_activity_edit_event">EditEventActivity</string>
 
 </resources>
