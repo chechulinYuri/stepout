@@ -20,7 +20,7 @@ public class CustomReceiver extends BroadcastReceiver {
             String currentEventHash = json.getString(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY);
             Log.d("ASD", currentEventHash);
             Intent newIntent = new Intent(context, ViewEventAsAuthorActivity.class);
-            intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEventHash);
+            newIntent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEventHash);
             newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(newIntent);
         } catch (JSONException e) {
