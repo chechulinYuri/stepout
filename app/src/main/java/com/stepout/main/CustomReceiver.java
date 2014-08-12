@@ -29,13 +29,12 @@ public class CustomReceiver extends BroadcastReceiver {
 
             Intent newIntent = new Intent(context, ViewEventAsAuthorActivity.class);
             newIntent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEventHash);
-
-            newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             /*
+            newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(newIntent);
             */
 
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, newIntent, 0);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.drawable.ic_launcher)
                     .setAutoCancel(true)
