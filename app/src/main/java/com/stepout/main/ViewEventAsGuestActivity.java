@@ -3,8 +3,9 @@ package com.stepout.main;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,7 +24,7 @@ import com.stepout.main.models.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ViewEventAsGuestActivity extends FragmentActivity {
+public class ViewEventAsGuestActivity extends ActionBarActivity {
 
     private Event currentEvent;
     private User currentUser;
@@ -36,6 +37,8 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_event_as_guest);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         currentUser = UserKeeper.readUserFromSharedPref(this);
 
@@ -88,6 +91,24 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
     protected void onPause() {
         DataExchange.bus.unregister(this);
         super.onPause();
+    }
+
+    // 2.0 and above
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+    }
+
+    // Before 2.0
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Subscribe

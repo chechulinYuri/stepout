@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,6 +33,8 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_event_as_author);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         currentUser = UserKeeper.readUserFromSharedPref(this);
 
@@ -92,6 +95,24 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
     protected void onPause() {
         DataExchange.bus.unregister(this);
         super.onPause();
+    }
+
+    // 2.0 and above
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+    }
+
+    // Before 2.0
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Subscribe
