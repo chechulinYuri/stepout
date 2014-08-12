@@ -54,6 +54,7 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
         }
 
         if (!isEventUploaded) {
+            Log.d("asd", "event loading from parse com");
             DataExchange.getEventByHash(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY));
         }
 

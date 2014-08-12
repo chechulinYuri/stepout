@@ -358,10 +358,11 @@ public class DataExchange extends Application {
                         ev.setHash(po.getObjectId());
 
                         bus.post(ev);
-                        return;
+                    } else {
+                        Log.d(LOG_TAG, "getEventByHash event not found");
                     }
-
-                    bus.post(null);
+                } else {
+                    Log.d(LOG_TAG, e.getMessage());
                 }
             }
         });
