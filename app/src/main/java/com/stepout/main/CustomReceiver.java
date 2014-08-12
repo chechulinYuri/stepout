@@ -29,8 +29,9 @@ public class CustomReceiver extends BroadcastReceiver {
 
             Intent newIntent = new Intent(context, ViewEventAsAuthorActivity.class);
             newIntent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEventHash);
-            /*
+
             newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            /*
             context.startActivity(newIntent);
             */
 
