@@ -58,10 +58,12 @@ public class MapsActivity extends ActionBarActivity implements
     private static final LatLng nsk = new LatLng(54.940803, 83.074371);
     private boolean isUserPickLocationForNewEvent;
     private boolean isCategoriesLoaded;
+    private boolean isEventsRefreshing;
     private LatLng locationOfNewEvent;
     private Button createEventButton;
     private Button chooseEventLocationButton;
     private Button cancelChoosingLocationButton;
+    private static LatLng currentLocation;
     /*
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult
@@ -216,7 +218,12 @@ public class MapsActivity extends ActionBarActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                
+                if (!isEventsRefreshing) {
+                    isEventsRefreshing = true;
+
+                    DataExchange.uploadedEvents.clear();
+                    DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
+                }
                 return true;
         }
 
@@ -228,6 +235,7 @@ public class MapsActivity extends ActionBarActivity implements
         DataExchange.uploadedEvents.addAll(events);
         Log.d(LOG_TAG, "mapactivity get events");
         if (isCategoriesLoaded) {
+            Toast.makeText(this, getResources().getString(R.string.map_updated), Toast.LENGTH_LONG).show();
             Log.d(LOG_TAG, "and category here");
             drawMarkers(DataExchange.uploadedEvents);
         }
@@ -386,11 +394,13 @@ public class MapsActivity extends ActionBarActivity implements
         if (location != null) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
-            DataExchange.getEventsInRadius(location.getLatitude(), location.getLongitude());
+            currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
         }
         else {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(nsk, 10));
-            DataExchange.getEventsInRadius(nsk.latitude, nsk.longitude);
+            currentLocation = nsk;
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10));
+            DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
         }
     }
 
@@ -450,8 +460,8 @@ public class MapsActivity extends ActionBarActivity implements
                     .setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             map.setMyLocationEnabled(true);
-                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(nsk, 10));
-                            DataExchange.getEventsInRadius(nsk.latitude, nsk.longitude);
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10));
+                            DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
                             dismiss();
                         }
                     });

@@ -42,6 +42,7 @@
     <string name="action_search">Search</string>
     <string name="action_filter">Filter</string>
     <string name="action_refresh">Refresh map</string>
+    <string name="map_updated">Map is refreshed</string>
     <string name="action_new_event">Add event</string>
     <string name="no_search_event_dialog">Events are not found</string>
     <string name="remove_success">Event successfully removed</string>
