@@ -1,8 +1,10 @@
 package com.stepout.main;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,12 +19,15 @@ import com.parse.ParseQuery;
 import com.parse.PushService;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
+import com.stepout.main.models.Event;
+import com.stepout.main.models.User;
 
 public class ViewEventAsAuthorActivity extends ActionBarActivity {
 
     private Event currentEvent;
     private User currentUser;
     private boolean isRemovingProcess;
+    private ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +53,10 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
         if (!isEventUploaded) {
             DataExchange.getEventByHash(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY));
         }
+
+        pd = new ProgressDialog(this);
+        pd.setTitle(getResources().getString(R.string.loading_process));
+        pd.setCancelable(false);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -71,18 +80,9 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
                     return true;
 
                 case R.id.action_delete:
+                    pd.show();
                     isRemovingProcess = true;
                     DataExchange.removeEvent(currentEvent.getHash(), currentUser.getHash());
-                    PushService.unsubscribe(getApplicationContext(), currentEvent.getHash());
-                    ParsePush push = new ParsePush();
-                    ParseQuery pushQuery = ParseInstallation.getQuery();
-                    pushQuery.whereNotEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
-                    pushQuery.whereEqualTo("channels", currentEvent.getHash());
-                    push.setQuery(pushQuery);
-                    push.setMessage(getString(R.string.author_deleted_event, android.text.format.DateFormat.format("dd.MM.yy hh:mm", currentEvent.getDate())));
-                    push.sendInBackground();
-                    Intent intentDeletion = new Intent(this, MapsActivity.class);
-                    startActivity(intentDeletion);
                     return true;
             }
         }
@@ -115,16 +115,26 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
 
     @Subscribe
     public void removeEventStatus(String status) {
-        if (status == DataExchange.STATUS_REMOVE_SUCCESS) {
+        Log.d("asd", "remove " + status);
+        if (status.equals(DataExchange.STATUS_REMOVE_SUCCESS)) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.remove_success), Toast.LENGTH_LONG).show();
-        } else {
+
+            PushService.unsubscribe(getApplicationContext(), DataExchange.PREFIX_FOR_CHANNEL_NAME + currentEvent.getHash());
+            ParsePush push = new ParsePush();
+            ParseQuery pushQuery = ParseInstallation.getQuery();
+            pushQuery.whereNotEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
+            pushQuery.whereEqualTo("channels", DataExchange.PREFIX_FOR_CHANNEL_NAME + currentEvent.getHash());
+            push.setQuery(pushQuery);
+            push.setMessage(getString(R.string.author_deleted_event, android.text.format.DateFormat.format("dd.MM.yy hh:mm", currentEvent.getDate())));
+            push.sendInBackground();
+
+            Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
+        } else if (status.equals(DataExchange.STATUS_REMOVE_FAIL)) {
+            isRemovingProcess = false;
+            pd.hide();
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
         }
-
-        isRemovingProcess = false;
-
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
     }
 
     private void showEvent(Event event) {

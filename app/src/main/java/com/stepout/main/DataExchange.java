@@ -20,6 +20,8 @@ import com.parse.ParseQuery;
 import com.parse.PushService;
 import com.parse.SaveCallback;
 import com.squareup.otto.Bus;
+import com.stepout.main.models.Event;
+import com.stepout.main.models.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +59,8 @@ public class DataExchange extends Application {
     public static final ArrayList<Event> searchEventResult = new ArrayList<Event>();
     public static HashMap<String, Bitmap> categories = new HashMap<String, Bitmap>();
 
+    public static final String LOG_TAG = "asd";
+
     public static Bus bus;
     public static Context context;
 
@@ -72,11 +76,11 @@ public class DataExchange extends Application {
     public static final String LOCATION_OF_NEW_EVENT_LAT_KEY = "LOCATION_OF_NEW_EVENT_LAT_KEY";
     public static final String LOCATION_OF_NEW_EVENT_LNG_KEY = "LOCATION_OF_NEW_EVENT_LNG_KEY";
 
+    public static final String PREFIX_FOR_CHANNEL_NAME = "channel_";
+
     public void onCreate() {
         super.onCreate();
         Parse.initialize(getApplicationContext(), "w8w75nqgzFroCnZEqO6auY85PJnTRKILNXYZUeKa", "UNH39pBxBzLAD4ekMZQUp0VzGUACPTPTHBT5x8qg");
-
-
 
         bus = new Bus();
         context = getApplicationContext();
@@ -85,11 +89,13 @@ public class DataExchange extends Application {
     }
 
     public static void getCategories() {
+        Log.d(LOG_TAG, "start category loading");
         ParseQuery<ParseObject> query = ParseQuery.getQuery(CATEGORY_TABLE_NAME);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
+                    Log.d(LOG_TAG, "category loaded");
                     for (ParseObject po: objects) {
                         ParseFile imageFile = po.getParseFile(IMAGE_COL_NAME);
                         try {
@@ -101,7 +107,7 @@ public class DataExchange extends Application {
                         }
                     }
                 } else {
-                    Log.d("Error with getCategory", e.getMessage());
+                    Log.d(LOG_TAG, e.getMessage());
                 }
 
                 bus.post(categories);
@@ -239,7 +245,7 @@ public class DataExchange extends Application {
         });
     }
 
-    public static void respondToEvent(final String eventHash, final User user) {
+    public static void respondToEvent(final String eventHash, final String userHash) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
         query.whereEqualTo(OBJECT_ID_COL_NAME, eventHash);
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -247,14 +253,44 @@ public class DataExchange extends Application {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
                     final ParseObject eventParseObj = objects.get(0);
-                    eventParseObj.getList(RESPONDENTS_HASH_COL_NAME).add(user.getHash());
+                    eventParseObj.getList(RESPONDENTS_HASH_COL_NAME).add(userHash);
                     eventParseObj.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
                                 for (Event ev : uploadedEvents) {
                                     if (ev.getHash().equals(eventParseObj.getObjectId())) {
-                                        ev.getRespondentsHash().add(user.getHash());
+                                        ev.getRespondentsHash().add(userHash);
+                                    }
+                                }
+
+                                bus.post(STATUS_SUCCESS);
+                            } else {
+                                bus.post(STATUS_FAIL);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public static void  unresponseFromEvent(String eventHash, final String userHash) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
+        query.whereEqualTo(OBJECT_ID_COL_NAME, eventHash);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    final ParseObject eventParseObj = objects.get(0);
+                    eventParseObj.getList(RESPONDENTS_HASH_COL_NAME).remove(userHash);
+                    eventParseObj.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                for (Event ev : uploadedEvents) {
+                                    if (ev.getHash().equals(eventParseObj.getObjectId())) {
+                                        ev.getRespondentsHash().remove(userHash);
                                     }
                                 }
 
@@ -331,29 +367,6 @@ public class DataExchange extends Application {
         });
     }
 
-    /*public static ArrayList<User> getUsersByEvent(String eventHash) {
-        ArrayList<User> result = new ArrayList<User>();
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(RESPONSE_TABLE_NAME);
-        query.whereEqualTo(EVENT_HASH_COL_NAME, eventHash);
-        try {
-            List<ParseObject> objects = query.find();
-
-            for (int i = 0; i < objects.size(); i++) {
-                ParseObject po = objects.get(i);
-
-                User user = getUserByHash(po.getString(USER_HASH_COL_NAME));
-                if (user != null) {
-                    result.add(user);
-                }
-            }
-        } catch(ParseException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-    }*/
-
     public static void getEventsInRadius(double lan, double lng) {
         final ArrayList<Event> events = new ArrayList<Event>();
 
@@ -386,10 +399,6 @@ public class DataExchange extends Application {
     }
 
     public static boolean isEventAssignedToUser(String eventHash, String userHash) {
-        return false;
-    }
-
-    public static boolean unsubscribeFromEvent(String eventHash, String userHash) {
         return false;
     }
 
@@ -499,6 +508,8 @@ public class DataExchange extends Application {
                     searchEventResult.clear();
                     searchEventResult.addAll(events);
                     bus.post(STATUS_SEARCH_SUCCESS);
+                } else {
+                    bus.post(STATUS_SEARCH_FAIL);
                 }
             }
         });

@@ -1,4 +1,4 @@
-package com.stepout.main;
+package com.stepout.main.models;
 
 import com.parse.ParseGeoPoint;
 

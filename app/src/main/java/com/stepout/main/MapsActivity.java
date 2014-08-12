@@ -38,6 +38,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 import com.squareup.otto.Subscribe;
+import com.stepout.main.models.Event;
+import com.stepout.main.models.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,6 +67,7 @@ public class MapsActivity extends ActionBarActivity implements
      * This code is returned in Activity.onActivityResult
      */
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private final static String LOG_TAG = "asd";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,27 +215,34 @@ public class MapsActivity extends ActionBarActivity implements
     @Subscribe
     public void getEvents(ArrayList<Event> events) {
         DataExchange.uploadedEvents.addAll(events);
+        Log.d(LOG_TAG, "mapactivity get events");
         if (isCategoriesLoaded) {
+            Log.d(LOG_TAG, "and category here");
             drawMarkers(DataExchange.uploadedEvents);
         }
     }
 
     @Subscribe
     public void getCategories(HashMap<String, Bitmap> categories) {
+        Log.d(LOG_TAG, "mapactivity get categories");
         isCategoriesLoaded = true;
         if (DataExchange.uploadedEvents.size() > 0) {
+            Log.d(LOG_TAG, "and events here");
             drawMarkers(DataExchange.uploadedEvents);
         }
     }
 
     @Subscribe
     public void searchCallback(String status) {
-        if (status == DataExchange.STATUS_SEARCH_SUCCESS) {
+        if (status.equals(DataExchange.STATUS_SEARCH_SUCCESS)) {
             drawMarkers(DataExchange.searchEventResult);
 
             if (DataExchange.searchEventResult.size() == 0) {
                 Toast.makeText(MapsActivity.this, getResources().getString(R.string.no_search_event_dialog), Toast.LENGTH_LONG).show();
             }
+        } else if (status.equals(DataExchange.STATUS_SEARCH_FAIL)) {
+            Toast.makeText(MapsActivity.this, getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
+            drawMarkers(DataExchange.uploadedEvents);
         }
     }
 
@@ -242,7 +252,6 @@ public class MapsActivity extends ActionBarActivity implements
             Event currentEvent = events.get(i);
             LatLng latLng = new LatLng(currentEvent.getCoordinates().getLatitude(), events.get(i).getCoordinates().getLongitude());
             String category = currentEvent.getCategory();
-            //String snippet = currentEvent.getMessage() + " " + getString(R.string.attenders_text, currentEvent.getRespondents().size());
             String snippet = currentEvent.getMessage() + " " + getString(R.string.attenders_text, currentEvent.getRespondentsHash().size());
             IconGenerator iconGenerator = new IconGenerator(this);
             if (currentUser.getHash().compareTo(currentEvent.getAuthorHash()) == 0) {

@@ -11,6 +11,7 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
+import com.stepout.main.models.User;
 
 public class MainActivity extends Activity {
 

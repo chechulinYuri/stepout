@@ -17,7 +17,9 @@
     <string name="some_error">Sorry, something went wrong</string>
     <string name="event_saved">Event has been saved</string>
     <string name="you_respond">You respond to the event</string>
+    <string name="you_unrespond">You not respond to the event</string>
     <string name="saving_process">Saving...</string>
+    <string name="loading_process">Loading</string>
     <string name="responding_process">Responding...</string>
     <string name="pick_a_time">Pick a time</string>
     <string name="pick_a_date">Pick a date</string>

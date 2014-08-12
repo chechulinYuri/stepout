@@ -1,5 +1,6 @@
 package com.stepout.main;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -16,6 +17,8 @@ import com.parse.PushService;
 import com.parse.SendCallback;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
+import com.stepout.main.models.Event;
+import com.stepout.main.models.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +30,7 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
     private boolean isSavingProcess;
     private Button respondButton;
     private User eventAuthor;
+    private ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +48,8 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
                 if (!isSavingProcess) {
                     if (currentEvent != null && currentUser != null) {
                         isSavingProcess = true;
-                        updateSaveButton();
-                        DataExchange.respondToEvent(currentEvent.getHash(), currentUser);
+                        DataExchange.respondToEvent(currentEvent.getHash(), currentUser.getHash());
+                        pd.show();
                     } else {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
                     }
@@ -68,6 +72,10 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
             Log.d("asd", "Get event from parse.com");
             DataExchange.getEventByHash(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY));
         }
+
+        pd = new ProgressDialog(this);
+        pd.setTitle(getResources().getString(R.string.loading_process));
+        pd.setCancelable(false);
     }
 
     @Override
@@ -82,20 +90,10 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
         super.onPause();
     }
 
-    void updateSaveButton() {
-        if (isSavingProcess) {
-            respondButton.setText(getResources().getString(R.string.responding_process));
-            respondButton.setBackgroundColor(getResources().getColor(R.color.flat_turquoise));
-        } else {
-            respondButton.setText(getResources().getString(R.string.respond_button));
-            respondButton.setBackgroundColor(getResources().getColor(R.color.flat_green_sea));
-        }
-    }
-
     @Subscribe
     public void getRespondStatus(String status) {
         isSavingProcess = false;
-        updateSaveButton();
+        pd.hide();
         if (status == DataExchange.STATUS_FAIL) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
         } else if (status == DataExchange.STATUS_SUCCESS) {
@@ -117,7 +115,7 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
             push.sendInBackground(new SendCallback() {
                 @Override
                 public void done(ParseException e) {
-                    PushService.subscribe(getApplicationContext(), currentEvent.getHash(), MainActivity.class);
+                    PushService.subscribe(getApplicationContext(), DataExchange.PREFIX_FOR_CHANNEL_NAME + currentEvent.getHash(), MainActivity.class);
                 }
             });
             startActivity(intent);

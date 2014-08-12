@@ -2,6 +2,7 @@ package com.stepout.main;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
 import com.squareup.otto.Subscribe;
+import com.stepout.main.models.Event;
+import com.stepout.main.models.User;
 
 import java.util.Calendar;
 
@@ -42,6 +45,7 @@ public class EditEventActivity extends FragmentActivity {
     private User currentUser;
     private static Event currentEvent;
     private boolean isSavingProcess;
+    private ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +96,7 @@ public class EditEventActivity extends FragmentActivity {
 
                     if (day != null && month != null && year != null && minutes != null && hour != null && message != null && message.length() > 0 && category != null) {
                         isSavingProcess = true;
-                        updateSaveButton();
+                        pd.show();
                         Calendar cal = Calendar.getInstance();
                         cal.set(year, month, day, hour, minutes, 0);
                         Event event = new Event(
@@ -115,6 +119,10 @@ public class EditEventActivity extends FragmentActivity {
                 }
             }
         });
+
+        pd = new ProgressDialog(this);
+        pd.setTitle(getResources().getString(R.string.loading_process));
+        pd.setCancelable(false);
     }
 
     @Override
@@ -153,16 +161,6 @@ public class EditEventActivity extends FragmentActivity {
 
     }
 
-    void updateSaveButton() {
-        if (isSavingProcess) {
-            saveButton.setText(getResources().getString(R.string.saving_process));
-            saveButton.setBackgroundColor(getResources().getColor(R.color.flat_turquoise));
-        } else {
-            saveButton.setText(getResources().getString(R.string.save_button));
-            saveButton.setBackgroundColor(getResources().getColor(R.color.flat_green_sea));
-        }
-    }
-
     @Subscribe
     public void updateEventStatus(String status) {
         if (status.equals(DataExchange.STATUS_UPDATE_EVENT_SUCCESS)) {
@@ -175,8 +173,8 @@ public class EditEventActivity extends FragmentActivity {
         intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEvent.getHash());
         startActivity(intent);
 
+        pd.hide();
         isSavingProcess = false;
-        updateSaveButton();
     }
 
     public void implementSpinner() {
