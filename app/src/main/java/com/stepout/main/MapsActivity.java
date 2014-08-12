@@ -76,8 +76,6 @@ public class MapsActivity extends ActionBarActivity implements
 
         currentUser = UserKeeper.readUserFromSharedPref(this);
 
-
-
         createEventButton = (Button) findViewById(R.id.create_event_button);
         chooseEventLocationButton = (Button) findViewById(R.id.choose_location_for_new_event);
         cancelChoosingLocationButton = (Button) findViewById(R.id.cancel_choose_location_for_new_event);
@@ -212,6 +210,17 @@ public class MapsActivity extends ActionBarActivity implements
         });
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Subscribe
