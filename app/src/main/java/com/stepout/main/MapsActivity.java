@@ -234,6 +234,7 @@ public class MapsActivity extends ActionBarActivity implements
     public void getEvents(ArrayList<Event> events) {
         DataExchange.uploadedEvents.addAll(events);
         Log.d(LOG_TAG, "mapactivity get events");
+        isEventsRefreshing = false;
         if (isCategoriesLoaded) {
             Toast.makeText(this, getResources().getString(R.string.map_updated), Toast.LENGTH_LONG).show();
             Log.d(LOG_TAG, "and category here");
