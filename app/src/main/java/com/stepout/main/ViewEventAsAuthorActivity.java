@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,6 +35,8 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_event_as_author);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         currentUser = UserKeeper.readUserFromSharedPref(this);
         String currentEventHash = getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY);
 
@@ -58,6 +61,7 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
         pd.setTitle(getResources().getString(R.string.loading_process));
         pd.setCancelable(false);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -89,7 +93,6 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     protected void onResume() {
         DataExchange.bus.register(this);
@@ -100,6 +103,24 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
     protected void onPause() {
         DataExchange.bus.unregister(this);
         super.onPause();
+    }
+
+    // 2.0 and above
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+    }
+
+    // Before 2.0
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Subscribe
