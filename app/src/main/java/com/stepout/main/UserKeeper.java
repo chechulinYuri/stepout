@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.facebook.model.GraphUser;
 import com.google.gson.Gson;
+import com.stepout.main.models.User;
 
 /**
  * Created by Admin on 31.07.2014.

@@ -17,7 +17,9 @@
     <string name="some_error">Sorry, something went wrong</string>
     <string name="event_saved">Event has been saved</string>
     <string name="you_respond">You respond to the event</string>
+    <string name="you_unrespond">You not respond to the event</string>
     <string name="saving_process">Saving...</string>
+    <string name="loading_process">Loading</string>
     <string name="responding_process">Responding...</string>
     <string name="pick_a_time">Pick a time</string>
     <string name="pick_a_date">Pick a date</string>
@@ -39,8 +41,15 @@
     <string name="cancel">Cancel</string>
     <string name="action_search">Search</string>
     <string name="action_filter">Filter</string>
+    <string name="action_refresh">Refresh map</string>
+    <string name="map_updated">Map is refreshed</string>
     <string name="action_new_event">Add event</string>
     <string name="no_search_event_dialog">Events are not found</string>
+    <string name="remove_success">Event successfully removed</string>
+    <string name="user_joined_event">A user just joined to this event! Attenders: %s</string>.
+    <string name="user_do_not_attend_event">A user is not going to attend this event anymore! Attenders: %s</string>
+    <string name="author_deleted_event">The event planned on %s has been cancelled by its author :(</string>
+    <string name="attenders_text">Attenders: %s</string>
 
     <string-array name="event_categories">
         <item>Sport</item>
@@ -60,5 +69,6 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_view_event_as_author">View Event</string>
     <string name="title_activity_view_event_as_respondent">View Event</string>
+    <string name="title_activity_edit_event">EditEventActivity</string>
 
 </resources>

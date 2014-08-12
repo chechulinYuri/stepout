@@ -11,6 +11,7 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
+import com.stepout.main.models.User;
 
 public class MainActivity extends Activity {
 
@@ -45,6 +46,7 @@ public class MainActivity extends Activity {
                                     if (user != null) {
                                         UserKeeper.writeUserToSharedPref(user, MainActivity.this);
                                         Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
                                     }
                                 }
@@ -61,6 +63,7 @@ public class MainActivity extends Activity {
 
         if (currentUser != null) {
             Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
 

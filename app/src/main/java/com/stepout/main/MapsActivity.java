@@ -42,6 +42,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 import com.squareup.otto.Subscribe;
+import com.stepout.main.models.Event;
+import com.stepout.main.models.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,16 +61,20 @@ public class MapsActivity extends ActionBarActivity implements
     private User currentUser;
     private static final LatLng nsk = new LatLng(54.940803, 83.074371);
     private boolean isUserPickLocationForNewEvent;
+    private boolean isCategoriesLoaded;
+    private boolean isEventsRefreshing;
     private LatLng locationOfNewEvent;
     private Button createEventButton;
     private Button chooseEventLocationButton;
     private Button cancelChoosingLocationButton;
     private boolean isSearching;
+    private static LatLng currentLocation;
     /*
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult
      */
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private final static String LOG_TAG = "asd";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +107,8 @@ public class MapsActivity extends ActionBarActivity implements
                             return;
                         }
 
-                        for (User usr: e.getRespondents()) {
-                            if (usr.getHash().equals(currentUser.getHash())) {
+                        for (String usrHash: e.getRespondentsHash()) {
+                            if (usrHash.equals(currentUser.getHash())) {
                                 Intent intent = new Intent(getApplicationContext(), ViewEventAsRespondentActivity.class);
                                 intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, e.getHash());
                                 startActivity(intent);
@@ -210,7 +216,7 @@ public class MapsActivity extends ActionBarActivity implements
             }
         });
 
-        SubMenu submenu = menu.getItem(1).getSubMenu();
+        SubMenu submenu = menu.findItem(R.id.action_filter).getSubMenu();
         submenu.clear();
 
         for (String category: DataExchange.categories.keySet()) {
@@ -222,6 +228,17 @@ public class MapsActivity extends ActionBarActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                if (!isEventsRefreshing) {
+                    isEventsRefreshing = true;
+
+                    DataExchange.uploadedEvents.clear();
+                    DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
+                }
+                return true;
+        }
+
         // Handle item selection
         if (item.isCheckable()) {
             if (item.isChecked()) {
@@ -232,33 +249,43 @@ public class MapsActivity extends ActionBarActivity implements
             Log.d("asd", item.getTitle().toString());
         }
 
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     @Subscribe
     public void getEvents(ArrayList<Event> events) {
         DataExchange.uploadedEvents.addAll(events);
-        drawMarkers(DataExchange.uploadedEvents);
+        Log.d(LOG_TAG, "mapactivity get events");
+        isEventsRefreshing = false;
+        if (isCategoriesLoaded) {
+            Toast.makeText(this, getResources().getString(R.string.map_updated), Toast.LENGTH_LONG).show();
+            Log.d(LOG_TAG, "and category here");
+            drawMarkers(DataExchange.uploadedEvents);
+        }
+    }
+
+    @Subscribe
+    public void getCategories(HashMap<String, Bitmap> categories) {
+        Log.d(LOG_TAG, "mapactivity get categories");
+        isCategoriesLoaded = true;
+        if (DataExchange.uploadedEvents.size() > 0) {
+            Log.d(LOG_TAG, "and events here");
+            drawMarkers(DataExchange.uploadedEvents);
+        }
     }
 
     @Subscribe
     public void searchCallback(String status) {
-        if (status == DataExchange.STATUS_SEARCH_SUCCESS) {
+        if (status.equals(DataExchange.STATUS_SEARCH_SUCCESS)) {
             drawMarkers(DataExchange.searchEventResult);
 
             if (DataExchange.searchEventResult.size() == 0) {
                 Toast.makeText(MapsActivity.this, getResources().getString(R.string.no_search_event_dialog), Toast.LENGTH_LONG).show();
             }
+        } else if (status.equals(DataExchange.STATUS_SEARCH_FAIL)) {
+            Toast.makeText(MapsActivity.this, getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
+            drawMarkers(DataExchange.uploadedEvents);
         }
-    }
-
-    private ArrayList<String> getUserHashes(Event event) {
-        ArrayList<User> tempUsers = event.getRespondents();
-        ArrayList<String> usersHashes = new ArrayList<String>();
-        for (int i = 0; i < tempUsers.size(); i++) {
-            usersHashes.add(tempUsers.get(i).getHash());
-        }
-        return usersHashes;
     }
 
     private void drawMarkers(ArrayList<Event> events) {
@@ -267,12 +294,12 @@ public class MapsActivity extends ActionBarActivity implements
             Event currentEvent = events.get(i);
             LatLng latLng = new LatLng(currentEvent.getCoordinates().getLatitude(), events.get(i).getCoordinates().getLongitude());
             String category = currentEvent.getCategory();
-            String snippet = currentEvent.getMessage() + " Attenders: " + currentEvent.getRespondents().size();
+            String snippet = currentEvent.getMessage() + " " + getString(R.string.attenders_text, currentEvent.getRespondentsHash().size());
             IconGenerator iconGenerator = new IconGenerator(this);
             if (currentUser.getHash().compareTo(currentEvent.getAuthorHash()) == 0) {
                 iconGenerator.setStyle(IconGenerator.STYLE_GREEN);
             }
-            else if (getUserHashes(currentEvent).indexOf(currentUser.getHash()) != -1) {
+            else if (currentEvent.getRespondentsHash().indexOf(currentUser.getHash()) != -1) {
                 iconGenerator.setStyle(IconGenerator.STYLE_ORANGE);
             }
             else {
@@ -390,11 +417,13 @@ public class MapsActivity extends ActionBarActivity implements
         if (location != null) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
-            DataExchange.getEventsInRadius(location.getLatitude(), location.getLongitude());
+            currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
         }
         else {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(nsk, 10));
-            DataExchange.getEventsInRadius(nsk.latitude, nsk.longitude);
+            currentLocation = nsk;
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10));
+            DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
         }
     }
 
@@ -454,8 +483,8 @@ public class MapsActivity extends ActionBarActivity implements
                     .setNegativeButton(R.string.cancel_text, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             map.setMyLocationEnabled(true);
-                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(nsk, 10));
-                            DataExchange.getEventsInRadius(nsk.latitude, nsk.longitude);
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10));
+                            DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
                             dismiss();
                         }
                     });

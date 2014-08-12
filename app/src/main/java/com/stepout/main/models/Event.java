@@ -1,8 +1,7 @@
-package com.stepout.main;
+package com.stepout.main.models;
 
 import com.parse.ParseGeoPoint;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,20 +14,20 @@ public class Event extends Entity {
     private String category;
     private String authorHash;
     private Date date;
-    private ArrayList<User> respondents;
+    private List<String> respondentsHash;
 
     private String markerId;
 
     private boolean isMeAuthor;
     private boolean isMeRespondent;
 
-    public Event(String message, ParseGeoPoint coordinates, String category, String authorHash, Date date, ArrayList<User> respondents) {
+    public Event(String message, ParseGeoPoint coordinates, String category, String authorHash, Date date, List<String> respondentsHash) {
         this.message = message;
         this.coordinates = coordinates;
         this.category = category;
         this.authorHash = authorHash;
         this.date = date;
-        this.respondents = respondents;
+        this.respondentsHash = respondentsHash;
     }
 
     public String getMessage() {
@@ -51,12 +50,11 @@ public class Event extends Entity {
         return coordinates;
     }
 
+    public List<String> getRespondentsHash() { return respondentsHash; }
+
     public void setIsMeAuthor(boolean isMeAuthor) { this.isMeAuthor = isMeAuthor; }
 
     public void setIsMeRespondent(boolean isMeRespondent) { this.isMeRespondent = isMeRespondent; }
-
-    public ArrayList<User> getRespondents() { return respondents; }
-
 
     public boolean isMeRespondent() { return isMeRespondent; }
 
