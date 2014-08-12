@@ -114,7 +114,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
-        </receiver> -->
+        </receiver>
         <receiver android:name="com.parse.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
@@ -122,7 +122,7 @@
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
                 <category android:name="com.stepout.main" />
             </intent-filter>
-        </receiver>
+        </receiver> -->
         <receiver android:name="com.stepout.main.CustomReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="com.stepout.main.CustomReceiver.SHOW_EVENT" />
