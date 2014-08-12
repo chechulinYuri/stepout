@@ -39,11 +39,13 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
 
         currentUser = UserKeeper.readUserFromSharedPref(this);
         String currentEventHash = getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY);
+        Log.d("ASD", "asAuthor1: " + currentEventHash);
 
         boolean isEventUploaded = false;
         for (int i = 0; i < DataExchange.uploadedEvents.size(); i++) {
             if (DataExchange.uploadedEvents.get(i).getHash().equals(currentEventHash)) {
                 currentEvent = DataExchange.uploadedEvents.get(i);
+                Log.d("ASD", "asAuthor2: " + currentEvent.getHash());
 
                 showEvent(currentEvent);
                 findViewById(R.id.content_wrapper).setVisibility(View.VISIBLE);
