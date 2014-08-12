@@ -126,7 +126,7 @@ public class ViewEventAsGuestActivity extends ActionBarActivity {
             ParsePush push = new ParsePush();
             push.setChannel(DataExchange.PREFIX_FOR_CHANNEL_NAME + currentEvent.getHash());
             try {
-                JSONObject data = new JSONObject("{\"action\": \"com.stepout.main.CustomReceiver.SHOW_EVENT\", \"alert\": \"" + getString(R.string.user_joined_event, currentEvent.getRespondentsHash().size()) + "\", \"" + DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY + "\": \"" + currentEvent.getHash() + "\"}");
+                JSONObject data = new JSONObject("{\"action\": \"com.stepout.main.CustomReceiver.SHOW_EVENT\", \"message\": \"" + getString(R.string.user_joined_event, currentEvent.getRespondentsHash().size()) + "\", \"" + DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY + "\": \"" + currentEvent.getHash() + "\"}");
                 push.setData(data);
             } catch (JSONException e) {
                 e.printStackTrace();

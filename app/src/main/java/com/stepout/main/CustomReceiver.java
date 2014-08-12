@@ -22,7 +22,7 @@ public class CustomReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         try {
             JSONObject json = new JSONObject(intent.getExtras().getString("com.parse.Data"));
-            String alert = json.getString("alert");
+            String alert = json.getString("message");
             String currentEventHash = json.getString(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY);
             Log.d("ASD", currentEventHash);
 
