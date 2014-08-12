@@ -48,6 +48,12 @@
         <item>Communication</item>
     </string-array>
 
+    <string-array name="action_list">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+    </string-array>
+
     <string name="user_photo">User photo</string>
     <string name="title_activity_create_event">Create Event</string>
     <string name="title_activity_view_event">View Event</string>

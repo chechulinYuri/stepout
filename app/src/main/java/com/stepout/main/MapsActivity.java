@@ -14,15 +14,19 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -40,6 +44,7 @@ import com.google.maps.android.ui.IconGenerator;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class MapsActivity extends ActionBarActivity implements
@@ -58,6 +63,7 @@ public class MapsActivity extends ActionBarActivity implements
     private Button createEventButton;
     private Button chooseEventLocationButton;
     private Button cancelChoosingLocationButton;
+    private boolean isSearching;
     /*
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult
@@ -204,7 +210,29 @@ public class MapsActivity extends ActionBarActivity implements
             }
         });
 
+        SubMenu submenu = menu.getItem(1).getSubMenu();
+        submenu.clear();
+
+        for (String category: DataExchange.categories.keySet()) {
+            submenu.add(category).setCheckable(true); // TODO
+        }
+
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        if (item.isCheckable()) {
+            if (item.isChecked()) {
+                item.setChecked(false);
+            } else {
+                item.setChecked(true);
+            }
+            Log.d("asd", item.getTitle().toString());
+        }
+
+        return true;
     }
 
     @Subscribe
