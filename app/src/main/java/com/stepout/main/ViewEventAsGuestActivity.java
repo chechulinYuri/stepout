@@ -102,7 +102,7 @@ public class ViewEventAsGuestActivity extends FragmentActivity {
             Intent intent = new Intent(this, ViewEventAsRespondentActivity.class);
             intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEvent.getHash());
             ParsePush push = new ParsePush();
-            push.setChannel(currentEvent.getHash());
+            push.setChannel(DataExchange.PREFIX_FOR_CHANNEL_NAME + currentEvent.getHash());
             //push.setMessage(getString(R.string.user_joined_event, currentEvent.getRespondents().size() + 1));
             //NEW SHIT
             try {
