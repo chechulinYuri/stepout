@@ -103,9 +103,7 @@ public class EditEventActivity extends FragmentActivity {
                                 category,
                                 currentUser.getHash(),
                                 cal.getTime(),
-                                null,
-                                currentEvent.getRespondentsCount()/*,
-                                currentEvent.getRespondentsHash()*/
+                                currentEvent.getRespondentsHash()
                         );
 
                         event.setHash(currentEvent.getHash());

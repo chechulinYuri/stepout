@@ -40,6 +40,7 @@ import com.google.maps.android.ui.IconGenerator;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class MapsActivity extends ActionBarActivity implements
@@ -54,6 +55,7 @@ public class MapsActivity extends ActionBarActivity implements
     private User currentUser;
     private static final LatLng nsk = new LatLng(54.940803, 83.074371);
     private boolean isUserPickLocationForNewEvent;
+    private boolean isCategoriesLoaded;
     private LatLng locationOfNewEvent;
     private Button createEventButton;
     private Button chooseEventLocationButton;
@@ -95,8 +97,8 @@ public class MapsActivity extends ActionBarActivity implements
                             return;
                         }
 
-                        for (User usr: e.getRespondents()) {
-                            if (usr.getHash().equals(currentUser.getHash())) {
+                        for (String usrHash: e.getRespondentsHash()) {
+                            if (usrHash.equals(currentUser.getHash())) {
                                 Intent intent = new Intent(getApplicationContext(), ViewEventAsRespondentActivity.class);
                                 intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, e.getHash());
                                 startActivity(intent);
@@ -210,7 +212,17 @@ public class MapsActivity extends ActionBarActivity implements
     @Subscribe
     public void getEvents(ArrayList<Event> events) {
         DataExchange.uploadedEvents.addAll(events);
-        drawMarkers(DataExchange.uploadedEvents);
+        if (isCategoriesLoaded) {
+            drawMarkers(DataExchange.uploadedEvents);
+        }
+    }
+
+    @Subscribe
+    public void getCategories(HashMap<String, Bitmap> categories) {
+        isCategoriesLoaded = true;
+        if (DataExchange.uploadedEvents.size() > 0) {
+            drawMarkers(DataExchange.uploadedEvents);
+        }
     }
 
     @Subscribe
@@ -224,15 +236,6 @@ public class MapsActivity extends ActionBarActivity implements
         }
     }
 
-    private ArrayList<String> getUserHashes(Event event) {
-        ArrayList<User> tempUsers = event.getRespondents();
-        ArrayList<String> usersHashes = new ArrayList<String>();
-        for (int i = 0; i < tempUsers.size(); i++) {
-            usersHashes.add(tempUsers.get(i).getHash());
-        }
-        return usersHashes;
-    }
-
     private void drawMarkers(ArrayList<Event> events) {
         map.clear();
         for (int i = 0; i < events.size(); i++) {
@@ -240,12 +243,12 @@ public class MapsActivity extends ActionBarActivity implements
             LatLng latLng = new LatLng(currentEvent.getCoordinates().getLatitude(), events.get(i).getCoordinates().getLongitude());
             String category = currentEvent.getCategory();
             //String snippet = currentEvent.getMessage() + " " + getString(R.string.attenders_text, currentEvent.getRespondents().size());
-            String snippet = currentEvent.getMessage() + " " + getString(R.string.attenders_text, currentEvent.getRespondentsCount());
+            String snippet = currentEvent.getMessage() + " " + getString(R.string.attenders_text, currentEvent.getRespondentsHash().size());
             IconGenerator iconGenerator = new IconGenerator(this);
             if (currentUser.getHash().compareTo(currentEvent.getAuthorHash()) == 0) {
                 iconGenerator.setStyle(IconGenerator.STYLE_GREEN);
             }
-            else if (getUserHashes(currentEvent).indexOf(currentUser.getHash()) != -1) {
+            else if (currentEvent.getRespondentsHash().indexOf(currentUser.getHash()) != -1) {
                 iconGenerator.setStyle(IconGenerator.STYLE_ORANGE);
             }
             else {
@@ -360,7 +363,6 @@ public class MapsActivity extends ActionBarActivity implements
         locationClient.disconnect();
         //LocationManager asd = (LocationManager)getSystemService(LOCATION_SERVICE);
         //location = asd.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        Log.d("asd", "searchStart");
         if (location != null) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
