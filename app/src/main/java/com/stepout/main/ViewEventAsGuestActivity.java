@@ -97,6 +97,7 @@ public class ViewEventAsGuestActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, MapsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
@@ -105,6 +106,7 @@ public class ViewEventAsGuestActivity extends ActionBarActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Intent intent = new Intent(this, MapsActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             return true;
         }
@@ -115,9 +117,9 @@ public class ViewEventAsGuestActivity extends ActionBarActivity {
     public void getRespondStatus(String status) {
         isSavingProcess = false;
         pd.hide();
-        if (status == DataExchange.STATUS_FAIL) {
+        if (status.equals(DataExchange.STATUS_FAIL)) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
-        } else if (status == DataExchange.STATUS_SUCCESS) {
+        } else if (status.equals(DataExchange.STATUS_SUCCESS)) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.you_respond), Toast.LENGTH_LONG).show();
 
             Intent intent = new Intent(this, ViewEventAsRespondentActivity.class);

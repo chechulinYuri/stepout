@@ -76,6 +76,8 @@ public class MapsActivity extends ActionBarActivity implements
 
         currentUser = UserKeeper.readUserFromSharedPref(this);
 
+
+
         createEventButton = (Button) findViewById(R.id.create_event_button);
         chooseEventLocationButton = (Button) findViewById(R.id.choose_location_for_new_event);
         cancelChoosingLocationButton = (Button) findViewById(R.id.cancel_choose_location_for_new_event);

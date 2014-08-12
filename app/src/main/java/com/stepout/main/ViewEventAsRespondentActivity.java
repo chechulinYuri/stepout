@@ -101,6 +101,7 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, MapsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 
@@ -109,6 +110,7 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Intent intent = new Intent(this, MapsActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             return true;
         }
@@ -145,6 +147,7 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
             push.setMessage(getString(R.string.user_do_not_attend_event));
             push.sendInBackground();
             Intent intentDeletion = new Intent(this, MapsActivity.class);
+            intentDeletion.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intentDeletion);
         } else if (status.equals(DataExchange.STATUS_FAIL)) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
