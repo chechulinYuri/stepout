@@ -2,7 +2,6 @@ package com.stepout.main;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -46,7 +45,6 @@ public class CreateEventActivity extends FragmentActivity {
     private static LatLng eventLocation;
     private User currentUser;
     private boolean isSavingProcess;
-    private ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +84,7 @@ public class CreateEventActivity extends FragmentActivity {
 
                     if (day != null && month != null && year != null && minutes != null && hour != null && message != null && message.length() > 0 && category != null) {
                         isSavingProcess = true;
-                        pd.show();
+                        Util.showLoadingDialog(CreateEventActivity.this);
                         Calendar cal = Calendar.getInstance();
                         cal.set(year, month, day, hour, minutes, 0);
 
@@ -101,10 +99,6 @@ public class CreateEventActivity extends FragmentActivity {
                 }
             }
         });
-
-        pd = new ProgressDialog(this);
-        pd.setTitle(getResources().getString(R.string.loading_process));
-        pd.setCancelable(false);
     }
 
     @Override
@@ -121,7 +115,9 @@ public class CreateEventActivity extends FragmentActivity {
 
     @Subscribe
     public void savedEvent(Event event) {
-        pd.hide();
+
+        Util.dismissLoadingDialog();
+
         if (event.getHash() == null) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
         } else {

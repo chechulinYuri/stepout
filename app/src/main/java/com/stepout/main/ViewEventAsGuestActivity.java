@@ -1,6 +1,5 @@
 package com.stepout.main;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -31,7 +30,6 @@ public class ViewEventAsGuestActivity extends ActionBarActivity {
     private boolean isSavingProcess;
     private Button respondButton;
     private User eventAuthor;
-    private ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +50,7 @@ public class ViewEventAsGuestActivity extends ActionBarActivity {
                     if (currentEvent != null && currentUser != null) {
                         isSavingProcess = true;
                         DataExchange.respondToEvent(currentEvent.getHash(), currentUser.getHash());
-                        pd.show();
+                        Util.showLoadingDialog(ViewEventAsGuestActivity.this);
                     } else {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
                     }
@@ -75,10 +73,6 @@ public class ViewEventAsGuestActivity extends ActionBarActivity {
             Log.d("asd", "Get event from parse.com");
             DataExchange.getEventByHash(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY));
         }
-
-        pd = new ProgressDialog(this);
-        pd.setTitle(getResources().getString(R.string.loading_process));
-        pd.setCancelable(false);
     }
 
     @Override
@@ -114,7 +108,7 @@ public class ViewEventAsGuestActivity extends ActionBarActivity {
     @Subscribe
     public void getRespondStatus(String status) {
         isSavingProcess = false;
-        pd.hide();
+        Util.dismissLoadingDialog();
         if (status.equals(DataExchange.STATUS_FAIL)) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
         } else if (status.equals(DataExchange.STATUS_SUCCESS)) {
@@ -143,8 +137,16 @@ public class ViewEventAsGuestActivity extends ActionBarActivity {
 
     @Subscribe
     public void getEvent(Event event) {
-        currentEvent = event;
-        DataExchange.getUserByHash(currentEvent.getAuthorHash());
+        if (event.getHash() != null) {
+            currentEvent = event;
+            DataExchange.getUserByHash(currentEvent.getAuthorHash());
+        } else {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.event_not_found), Toast.LENGTH_LONG).show();
+
+            Intent intent = new Intent(this, MapsActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
     }
 
     @Subscribe

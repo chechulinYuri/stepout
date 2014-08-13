@@ -328,9 +328,11 @@ public class DataExchange extends Application {
                         bus.post(ev);
                     } else {
                         Log.d(LOG_TAG, "getEventByHash event not found");
+                        bus.post(new Event());
                     }
                 } else {
                     Log.d(LOG_TAG, e.getMessage());
+                    bus.post(new Event());
                 }
             }
         });
