@@ -52,6 +52,7 @@
     <string name="attenders_text">Attenders: %s</string>
     <string name="filter_only_respond_event">I will go to</string>
     <string name="events_updated">Events updated</string>
+    <string name="author_updated_event">This event has been updated by its author!</string>
 
     <string-array name="event_categories">
         <item>Sport</item>

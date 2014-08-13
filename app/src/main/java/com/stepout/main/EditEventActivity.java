@@ -22,9 +22,15 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseInstallation;
+import com.parse.ParsePush;
+import com.parse.ParseQuery;
 import com.squareup.otto.Subscribe;
 import com.stepout.main.models.Event;
 import com.stepout.main.models.User;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Calendar;
 
@@ -165,7 +171,20 @@ public class EditEventActivity extends FragmentActivity {
     public void updateEventStatus(String status) {
         if (status.equals(DataExchange.STATUS_UPDATE_EVENT_SUCCESS)) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.event_saved), Toast.LENGTH_LONG).show();
-        } else {
+
+            ParsePush push = new ParsePush();
+            ParseQuery pushQuery = ParseInstallation.getQuery();
+            pushQuery.whereNotEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
+            pushQuery.whereEqualTo("channels", DataExchange.PREFIX_FOR_CHANNEL_NAME + currentEvent.getHash());
+            push.setQuery(pushQuery);
+            try {
+                JSONObject data = new JSONObject("{\"action\": \"com.stepout.main.CustomReceiver.SHOW_EVENT\", \"message\": \"" + getString(R.string.author_updated_event, currentEvent.getRespondentsHash().size()) + "\", \"" + DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY + "\": \"" + currentEvent.getHash() + "\", \"author\": \"" + currentEvent.getAuthorHash() + "\"}");
+                push.setData(data);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            push.sendInBackground();
+        } else if(status.equals(DataExchange.STATUS_UPDATE_EVENT_FAIL)) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
         }
 
