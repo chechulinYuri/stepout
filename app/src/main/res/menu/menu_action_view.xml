@@ -16,5 +16,10 @@
     <item android:id="@+id/action_filter"
         android:title="@string/action_filter"
         android:icon="@drawable/filter"
-        yourapp:showAsAction="ifRoom|collapseActionView"/>
+        yourapp:showAsAction="ifRoom|collapseActionView">
+        <menu>
+            <item android:id="@+id/category_filter_placeholder"
+                android:title="@string/hello_world"/>
+        </menu>
+    </item>
 </menu>

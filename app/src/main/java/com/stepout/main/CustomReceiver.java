@@ -41,9 +41,13 @@ public class CustomReceiver extends BroadcastReceiver {
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(alert))
                     .setContentText(alert);
 
+            Notification notification = builder.build();
+            notification.defaults |= Notification.DEFAULT_SOUND;
+            notification.defaults |= Notification.DEFAULT_VIBRATE;
+
             builder.setContentIntent(pendingIntent);
             NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(1, builder.build());
+            notificationManager.notify(1, notification);
             setResultCode(Activity.RESULT_OK);
         } catch (JSONException e) {
             e.printStackTrace();

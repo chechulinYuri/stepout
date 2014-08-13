@@ -14,15 +14,19 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -63,6 +67,7 @@ public class MapsActivity extends ActionBarActivity implements
     private Button createEventButton;
     private Button chooseEventLocationButton;
     private Button cancelChoosingLocationButton;
+    private boolean isSearching;
     private static LatLng currentLocation;
     /*
      * Define a request code to send to Google Play services
@@ -211,6 +216,13 @@ public class MapsActivity extends ActionBarActivity implements
             }
         });
 
+        SubMenu submenu = menu.findItem(R.id.action_filter).getSubMenu();
+        submenu.clear();
+
+        for (String category: DataExchange.categories.keySet()) {
+            submenu.add(category).setCheckable(true); // TODO
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -225,6 +237,16 @@ public class MapsActivity extends ActionBarActivity implements
                     DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
                 }
                 return true;
+        }
+
+        // Handle item selection
+        if (item.isCheckable()) {
+            if (item.isChecked()) {
+                item.setChecked(false);
+            } else {
+                item.setChecked(true);
+            }
+            Log.d("asd", item.getTitle().toString());
         }
 
         return super.onOptionsItemSelected(item);
