@@ -22,6 +22,9 @@ import com.squareup.picasso.Picasso;
 import com.stepout.main.models.Event;
 import com.stepout.main.models.User;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class ViewEventAsRespondentActivity extends ActionBarActivity {
 
     private Event currentEvent;
@@ -142,7 +145,13 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
             pushQuery.whereNotEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
             pushQuery.whereEqualTo("channels", DataExchange.PREFIX_FOR_CHANNEL_NAME + currentEvent.getHash());
             push.setQuery(pushQuery);
-            push.setMessage(getString(R.string.user_do_not_attend_event));
+            //push.setMessage(getString(R.string.user_do_not_attend_event));
+            try {
+                JSONObject data = new JSONObject("{\"action\": \"com.stepout.main.CustomReceiver.SHOW_EVENT\", \"message\": \"" + getString(R.string.user_do_not_attend_event, currentEvent.getRespondentsHash().size() - 1) + "\", \"" + DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY + "\": \"" + currentEvent.getHash() + "\", \"author\": \"" + currentEvent.getAuthorHash() + "\"}");
+                push.setData(data);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             push.sendInBackground();
             Intent intentDeletion = new Intent(this, MapsActivity.class);
             startActivity(intentDeletion);

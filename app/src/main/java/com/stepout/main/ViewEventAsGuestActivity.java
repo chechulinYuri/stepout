@@ -131,7 +131,6 @@ public class ViewEventAsGuestActivity extends ActionBarActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
             push.sendInBackground(new SendCallback() {
                 @Override
                 public void done(ParseException e) {
