@@ -92,6 +92,7 @@ public class DataExchange extends Application {
     }
 
     public static void getCategories() {
+        categories = new HashMap<String, Bitmap>();
         Log.d(LOG_TAG, "start category loading");
         ParseQuery<ParseObject> query = ParseQuery.getQuery(CATEGORY_TABLE_NAME);
         query.findInBackground(new FindCallback<ParseObject>() {
