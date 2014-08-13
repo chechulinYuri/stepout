@@ -38,15 +38,14 @@ public class CustomReceiver extends BroadcastReceiver {
                     .setAutoCancel(true)
                     .setContentTitle(context.getString(R.string.app_name))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(alert))
-                    .setContentText(alert);
+                    .setContentText(alert)
+                    .setDefaults(NotificationCompat.DEFAULT_ALL);
 
-            Notification notification = builder.build();
-            notification.defaults |= Notification.DEFAULT_SOUND;
-            notification.defaults |= Notification.DEFAULT_VIBRATE;
+            
 
             builder.setContentIntent(pendingIntent);
             NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.notify(1, notification);
+            notificationManager.notify(1, builder.build());
         } catch (JSONException e) {
             e.printStackTrace();
         }
