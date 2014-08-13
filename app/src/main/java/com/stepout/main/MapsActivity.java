@@ -69,6 +69,7 @@ public class MapsActivity extends ActionBarActivity implements
     private static LatLng currentLocation;
     private SubMenu filterSubMenu;
     private ProgressDialog pd;
+    private Menu menu;
 
     /*
      * Define a request code to send to Google Play services
@@ -224,14 +225,7 @@ public class MapsActivity extends ActionBarActivity implements
             }
         });
 
-        filterSubMenu = menu.findItem(R.id.action_filter).getSubMenu();
-        filterSubMenu.clear();
-
-        for (String category: DataExchange.categories.keySet()) {
-            filterSubMenu.add(category).setCheckable(true);
-        }
-
-        filterSubMenu.add(getResources().getString(R.string.filter_only_respond_event)).setCheckable(true);
+        this.menu = menu;
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -242,6 +236,7 @@ public class MapsActivity extends ActionBarActivity implements
             case R.id.action_refresh:
                 if (!isEventsRefreshing) {
                     isEventsRefreshing = true;
+                    pd.show();
 
                     DataExchange.uploadedEvents.clear();
                     DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
@@ -264,6 +259,8 @@ public class MapsActivity extends ActionBarActivity implements
     }
 
     private void initFilterQuery() {
+        pd.show();
+
         ArrayList<String> categories = new ArrayList<String>();
         categories.addAll(DataExchange.categories.keySet());
 
@@ -296,10 +293,24 @@ public class MapsActivity extends ActionBarActivity implements
         }
     }
 
+    private void addFilterMenuOption() {
+        filterSubMenu = menu.findItem(R.id.action_filter).getSubMenu();
+        filterSubMenu.clear();
+
+        for (String category: DataExchange.categories.keySet()) {
+            filterSubMenu.add(category).setCheckable(true);
+        }
+
+        filterSubMenu.add(getResources().getString(R.string.filter_only_respond_event)).setCheckable(true);
+    }
+
     @Subscribe
     public void getCategories(HashMap<String, Bitmap> categories) {
         Log.d(LOG_TAG, "mapactivity get categories");
         isCategoriesLoaded = true;
+
+        addFilterMenuOption();
+
         pd.hide();
         if (DataExchange.uploadedEvents.size() > 0) {
             Log.d(LOG_TAG, "and events here");
@@ -309,6 +320,8 @@ public class MapsActivity extends ActionBarActivity implements
 
     @Subscribe
     public void searchOrFilterCallback(String status) {
+        pd.hide();
+
         if (status.equals(DataExchange.STATUS_SEARCH_SUCCESS)) {
             drawMarkers(DataExchange.searchEventResult);
 
