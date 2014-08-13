@@ -47,7 +47,6 @@ public class CustomReceiver extends BroadcastReceiver {
             builder.setContentIntent(pendingIntent);
             NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(1, notification);
-            setResultCode(Activity.RESULT_OK);
         } catch (JSONException e) {
             e.printStackTrace();
         }
