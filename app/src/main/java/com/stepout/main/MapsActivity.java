@@ -3,6 +3,7 @@ package com.stepout.main;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -67,6 +68,8 @@ public class MapsActivity extends ActionBarActivity implements
     private boolean isSearching;
     private static LatLng currentLocation;
     private SubMenu filterSubMenu;
+    private ProgressDialog pd;
+
     /*
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult
@@ -187,6 +190,13 @@ public class MapsActivity extends ActionBarActivity implements
                 isUserPickLocationForNewEvent = false;
             }
         });
+
+        DataExchange.getCategories();
+
+        pd = new ProgressDialog(this);
+        pd.setTitle(getResources().getString(R.string.loading_process));
+        pd.setCancelable(false);
+        pd.show();
     }
 
     @Override
@@ -279,6 +289,7 @@ public class MapsActivity extends ActionBarActivity implements
         Log.d(LOG_TAG, "mapactivity get events");
         isEventsRefreshing = false;
         if (isCategoriesLoaded) {
+            pd.hide();
             Toast.makeText(this, getResources().getString(R.string.map_updated), Toast.LENGTH_LONG).show();
             Log.d(LOG_TAG, "and category here");
             drawMarkers(DataExchange.uploadedEvents);
@@ -289,6 +300,7 @@ public class MapsActivity extends ActionBarActivity implements
     public void getCategories(HashMap<String, Bitmap> categories) {
         Log.d(LOG_TAG, "mapactivity get categories");
         isCategoriesLoaded = true;
+        pd.hide();
         if (DataExchange.uploadedEvents.size() > 0) {
             Log.d(LOG_TAG, "and events here");
             drawMarkers(DataExchange.uploadedEvents);

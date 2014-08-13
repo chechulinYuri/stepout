@@ -137,14 +137,15 @@ public class CreateEventActivity extends FragmentActivity {
     }
 
     public void implementSpinner() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.event_categories));
+        final String[] categories = DataExchange.categories.keySet().toArray(new String[DataExchange.categories.size()]);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner spinner = (Spinner) findViewById(R.id.category_spinner);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String[] categories = getResources().getStringArray(R.array.event_categories);
                 category = categories[position];
             }
             @Override

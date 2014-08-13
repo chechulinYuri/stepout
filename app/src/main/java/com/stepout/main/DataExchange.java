@@ -89,7 +89,6 @@ public class DataExchange extends Application {
         bus = new Bus();
         context = getApplicationContext();
         PushService.setDefaultPushCallback(getApplicationContext(), MainActivity.class);
-        DataExchange.getCategories();
     }
 
     public static void getCategories() {
