@@ -1,1 +1,1 @@
-include ':app', ':facebook', ':HelloFacebookSample'
+include ':app', ':facebook'
