@@ -54,6 +54,8 @@
     <string name="events_updated">Events updated</string>
     <string name="author_updated_event">This event has been updated by its author!</string>
     <string name="event_not_found">Event does not exist</string>
+    <string name="fb_share_caption">I just created a new event via StepOut! Join me by installing this application.</string>
+    <string name="fb_share_caption_as_respondent">I just joined to a new event via StepOut! Join me by installing this application.</string>
 
     <string-array name="event_categories">
         <item>Sport</item>

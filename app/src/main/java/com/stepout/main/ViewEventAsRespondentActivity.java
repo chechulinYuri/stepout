@@ -13,8 +13,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.FacebookException;
+import com.facebook.FacebookOperationCanceledException;
+import com.facebook.Session;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.android.Facebook;
 import com.facebook.widget.FacebookDialog;
+import com.facebook.widget.WebDialog;
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
@@ -78,17 +83,16 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
             case R.id.action_share:
                 if (FacebookDialog.canPresentShareDialog(getApplicationContext(),
                         FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
-                    // Publish the post using the Share Dialog
                     FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
-                            .setLink("https://play.google.com/store/apps/details?id=com.sega.cityrush")
-                            .setName("StepOut")
-                            .setCaption("I just created a new event via StepOut! Join me by installing this application.")
+                            .setLink("https://developers.facebook.com/android")
+                            .setName(getString(R.string.app_name))
+                            .setCaption(getString(R.string.fb_share_caption_as_respondent))
                             .setPicture("http://files.parsetfss.com/ba2c63d0-4860-42a0-9547-7d01e94d4446/tfss-371c4d8e-35e1-4257-a8f5-0fbb6a0670f9-Card-Games.png")
                             .build();
                     uiHelper.trackPendingDialogCall(shareDialog.present());
 
                 } else {
-                    // Fallback. For example, publish the post using the Feed Dialog
+                    publishFeedDialog();
                 }
 
                 return true;
@@ -213,5 +217,35 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
                 Log.e("Activity", String.format("Error: %s", error.toString()));
             }
         });
+    }
+
+    private void publishFeedDialog() {
+        Bundle params = new Bundle();
+        params.putString("name", getString(R.string.app_name));
+        params.putString("caption", getString(R.string.fb_share_caption_as_respondent));
+        params.putString("link", "https://developers.facebook.com/android");
+        params.putString("picture", "http://files.parsetfss.com/ba2c63d0-4860-42a0-9547-7d01e94d4446/tfss-371c4d8e-35e1-4257-a8f5-0fbb6a0670f9-Card-Games.png");
+
+        WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(this, Session.getActiveSession(), params)).setOnCompleteListener(new WebDialog.OnCompleteListener() {
+            @Override
+            public void onComplete(Bundle values, FacebookException error) {
+                if (error == null) {
+                    final String postId = values.getString("post_id");
+                    if (postId != null) {
+                        Toast.makeText(ViewEventAsRespondentActivity.this, "Posted story, id: "+postId, Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(ViewEventAsRespondentActivity.this.getApplicationContext(), "Publish cancelled", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else  if (error instanceof FacebookOperationCanceledException) {
+                    Toast.makeText(ViewEventAsRespondentActivity.this.getApplicationContext(), "Publish cancelled", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(ViewEventAsRespondentActivity.this.getApplicationContext(), "Error posting story", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).build();
+        feedDialog.show();
     }
 }

@@ -13,6 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.FacebookException;
+import com.facebook.FacebookOperationCanceledException;
+import com.facebook.Session;
+import com.facebook.UiLifecycleHelper;
+import com.facebook.widget.FacebookDialog;
+import com.facebook.widget.WebDialog;
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
@@ -27,10 +33,15 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
     private Event currentEvent;
     private User currentUser;
     private boolean isRemovingProcess;
+    private UiLifecycleHelper uiHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        uiHelper = new UiLifecycleHelper(this, null);
+        uiHelper.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_view_event_as_author);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -75,7 +86,19 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
                     return true;
 
                 case R.id.action_share:
-                    //TODO
+                    if (FacebookDialog.canPresentShareDialog(getApplicationContext(),
+                            FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
+                        FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
+                                .setLink("https://developers.facebook.com/android")
+                                .setName(getString(R.string.app_name))
+                                .setCaption(getString(R.string.fb_share_caption))
+                                .setPicture("http://files.parsetfss.com/ba2c63d0-4860-42a0-9547-7d01e94d4446/tfss-371c4d8e-35e1-4257-a8f5-0fbb6a0670f9-Card-Games.png")
+                                .build();
+                        uiHelper.trackPendingDialogCall(shareDialog.present());
+
+                    } else {
+                        publishFeedDialog();
+                    }
                     return true;
 
                 case R.id.action_delete:
@@ -92,12 +115,14 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
     protected void onResume() {
         DataExchange.bus.register(this);
         super.onResume();
+        uiHelper.onResume();
     }
 
     @Override
     protected void onPause() {
         DataExchange.bus.unregister(this);
         super.onPause();
+        uiHelper.onPause();
     }
 
     // 2.0 and above
@@ -174,5 +199,52 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
 
         Picasso.with(this).load("https://graph.facebook.com/" + currentUser.getFbId().toString() + "/picture?type=square").into(userPhoto);
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        uiHelper.onActivityResult(requestCode, resultCode, data, new FacebookDialog.Callback() {
+            @Override
+            public void onComplete(FacebookDialog.PendingCall pendingCall, Bundle data) {
+                Log.i("Activity", "Success!");
+            }
+
+            @Override
+            public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
+                Log.e("Activity", String.format("Error: %s", error.toString()));
+            }
+        });
+    }
+
+    private void publishFeedDialog() {
+        Bundle params = new Bundle();
+        params.putString("name", getString(R.string.app_name));
+        params.putString("caption", getString(R.string.fb_share_caption));
+        params.putString("link", "https://developers.facebook.com/android");
+        params.putString("picture", "http://files.parsetfss.com/ba2c63d0-4860-42a0-9547-7d01e94d4446/tfss-371c4d8e-35e1-4257-a8f5-0fbb6a0670f9-Card-Games.png");
+
+        WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(this, Session.getActiveSession(), params)).setOnCompleteListener(new WebDialog.OnCompleteListener() {
+            @Override
+            public void onComplete(Bundle values, FacebookException error) {
+                if (error == null) {
+                    final String postId = values.getString("post_id");
+                    if (postId != null) {
+                        Toast.makeText(ViewEventAsAuthorActivity.this, "Posted story, id: "+postId, Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(ViewEventAsAuthorActivity.this.getApplicationContext(), "Publish cancelled", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else  if (error instanceof FacebookOperationCanceledException) {
+                    Toast.makeText(ViewEventAsAuthorActivity.this.getApplicationContext(), "Publish cancelled", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(ViewEventAsAuthorActivity.this.getApplicationContext(), "Error posting story", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).build();
+        feedDialog.show();
     }
 }
