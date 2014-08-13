@@ -26,6 +26,7 @@ import com.stepout.main.models.User;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Yuri on 25.07.2014.
@@ -57,6 +58,7 @@ public class DataExchange extends Application {
 
     public static final ArrayList<Event> uploadedEvents = new ArrayList<Event>();
     public static final ArrayList<Event> searchEventResult = new ArrayList<Event>();
+    public static final ArrayList<Event> filterEventResult = new ArrayList<Event>();
     public static HashMap<String, Bitmap> categories = new HashMap<String, Bitmap>();
 
     public static final String LOG_TAG = "asd";
@@ -72,6 +74,8 @@ public class DataExchange extends Application {
     public static final String STATUS_UPDATE_EVENT_FAIL = "STATUS_UPDATE_EVENT_FAIL";
     public static final String STATUS_SEARCH_SUCCESS = "STATUS_SEARCH_SUCCESS";
     public static final String STATUS_SEARCH_FAIL = "STATUS_SEARCH_FAIL";
+    public static final String STATUS_FILTER_SUCCESS = "STATUS_FILTER_SUCCESS";
+    public static final String STATUS_FILTER_FAIL = "STATUS_FILTER_FAIL";
     public static final String EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY = "EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY";
     public static final String LOCATION_OF_NEW_EVENT_LAT_KEY = "LOCATION_OF_NEW_EVENT_LAT_KEY";
     public static final String LOCATION_OF_NEW_EVENT_LNG_KEY = "LOCATION_OF_NEW_EVENT_LNG_KEY";
@@ -514,6 +518,65 @@ public class DataExchange extends Application {
                 }
             }
         });
+    }
+
+    public static void filterEventsInRadius(HashMap<String, Boolean> categoriesFlags, boolean onlyRespondEvent, Double lan, Double lng, String userHash) {
+
+        final ArrayList<Event> events = new ArrayList<Event>();
+
+        List<ParseQuery<ParseObject>> queries = new ArrayList<ParseQuery<ParseObject>>();
+
+        for(Map.Entry<String, Boolean> entry : categoriesFlags.entrySet()) {
+            if (entry.getValue()) {
+                ParseQuery<ParseObject> subQuery = ParseQuery.getQuery(EVENT_TABLE_NAME);
+                subQuery.whereEqualTo(CATEGORY_COL_NAME, entry.getKey());
+                queries.add(subQuery);
+            }
+        }
+
+        ParseQuery<ParseObject> query;
+
+        if (queries.size() > 0) {
+            query = ParseQuery.or(queries);
+        } else {
+            query = ParseQuery.getQuery(EVENT_TABLE_NAME);
+        }
+
+        query.whereWithinMiles(COORDINATES_COL_NAME, new ParseGeoPoint(lan, lng), EVENTS_VISIBILITY_RADIUS_IN_MILES);
+        if (onlyRespondEvent) {
+            query.whereEqualTo(RESPONDENTS_HASH_COL_NAME, userHash);
+        }
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    for (int i = 0; i < parseObjects.size(); i++) {
+                        ParseObject po = parseObjects.get(i);
+
+                        Event ev = new Event(
+                                po.getString(MESSAGE_COL_NAME),
+                                po.getParseGeoPoint(COORDINATES_COL_NAME),
+                                po.getString(CATEGORY_COL_NAME),
+                                po.getString(AUTHOR_HASH_COL_NAME),
+                                po.getDate(DATE_COL_NAME),
+                                po.<String>getList(RESPONDENTS_HASH_COL_NAME)
+                        );
+
+                        ev.setHash(po.getObjectId());
+                        events.add(ev);
+
+                    }
+
+                    filterEventResult.clear();
+                    filterEventResult.addAll(events);
+                    bus.post(STATUS_FILTER_SUCCESS);
+                } else {
+                    bus.post(STATUS_FILTER_FAIL);
+                }
+            }
+        });
+
     }
 
     private static ArrayList<User> castParseObjectToUserList(List<ParseObject> objects) {

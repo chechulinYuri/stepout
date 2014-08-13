@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -23,10 +22,8 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -69,6 +66,7 @@ public class MapsActivity extends ActionBarActivity implements
     private Button cancelChoosingLocationButton;
     private boolean isSearching;
     private static LatLng currentLocation;
+    private SubMenu filterSubMenu;
     /*
      * Define a request code to send to Google Play services
      * This code is returned in Activity.onActivityResult
@@ -216,12 +214,14 @@ public class MapsActivity extends ActionBarActivity implements
             }
         });
 
-        SubMenu submenu = menu.findItem(R.id.action_filter).getSubMenu();
-        submenu.clear();
+        filterSubMenu = menu.findItem(R.id.action_filter).getSubMenu();
+        filterSubMenu.clear();
 
         for (String category: DataExchange.categories.keySet()) {
-            submenu.add(category).setCheckable(true); // TODO
+            filterSubMenu.add(category).setCheckable(true);
         }
+
+        filterSubMenu.add(getResources().getString(R.string.filter_only_respond_event)).setCheckable(true);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -246,10 +246,31 @@ public class MapsActivity extends ActionBarActivity implements
             } else {
                 item.setChecked(true);
             }
-            Log.d("asd", item.getTitle().toString());
+
+            initFilterQuery();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void initFilterQuery() {
+        ArrayList<String> categories = new ArrayList<String>();
+        categories.addAll(DataExchange.categories.keySet());
+
+        HashMap<String, Boolean> categoriesFilter = new HashMap<String, Boolean>();
+        boolean onlyRespondEvent = false;
+
+        for (int i = 0; i < filterSubMenu.size(); i++) {
+            MenuItem item = filterSubMenu.getItem(i);
+
+            if (categories.contains(item.getTitle().toString())) {
+                categoriesFilter.put(item.getTitle().toString(), item.isChecked());
+            } else if (item.getTitle().toString().equals(getResources().getString(R.string.filter_only_respond_event)) && item.isChecked()) {
+                onlyRespondEvent = true;
+            }
+        }
+
+        DataExchange.filterEventsInRadius(categoriesFilter, onlyRespondEvent, currentLocation.latitude, currentLocation.longitude, currentUser.getHash());
     }
 
     @Subscribe
@@ -275,16 +296,29 @@ public class MapsActivity extends ActionBarActivity implements
     }
 
     @Subscribe
-    public void searchCallback(String status) {
+    public void searchOrFilterCallback(String status) {
         if (status.equals(DataExchange.STATUS_SEARCH_SUCCESS)) {
             drawMarkers(DataExchange.searchEventResult);
 
             if (DataExchange.searchEventResult.size() == 0) {
                 Toast.makeText(MapsActivity.this, getResources().getString(R.string.no_search_event_dialog), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(MapsActivity.this, getResources().getString(R.string.events_updated), Toast.LENGTH_LONG).show();
             }
         } else if (status.equals(DataExchange.STATUS_SEARCH_FAIL)) {
             Toast.makeText(MapsActivity.this, getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
             drawMarkers(DataExchange.uploadedEvents);
+        } else if (status.equals(DataExchange.STATUS_FILTER_FAIL)) {
+            Toast.makeText(MapsActivity.this, getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
+            drawMarkers(DataExchange.uploadedEvents);
+        } else if (status.equals(DataExchange.STATUS_FILTER_SUCCESS)) {
+            drawMarkers(DataExchange.filterEventResult);
+
+            if (DataExchange.filterEventResult.size() == 0) {
+                Toast.makeText(MapsActivity.this, getResources().getString(R.string.no_search_event_dialog), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(MapsActivity.this, getResources().getString(R.string.events_updated), Toast.LENGTH_LONG).show();
+            }
         }
     }
 
