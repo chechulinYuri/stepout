@@ -3,6 +3,7 @@ package com.stepout.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.UiLifecycleHelper;
+import com.facebook.widget.FacebookDialog;
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
@@ -29,10 +32,15 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
     private Event currentEvent;
     private User eventAuthor;
     private User currentUser;
+    private UiLifecycleHelper uiHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        uiHelper = new UiLifecycleHelper(this, null);
+        uiHelper.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_view_event_as_author);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -68,6 +76,20 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
                 return true;
 
             case R.id.action_share:
+                if (FacebookDialog.canPresentShareDialog(getApplicationContext(),
+                        FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
+                    // Publish the post using the Share Dialog
+                    FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
+                            .setLink("https://play.google.com/store/apps/details?id=com.sega.cityrush")
+                            .setName("StepOut")
+                            .setCaption("I just created a new event via StepOut! Join me by installing this application.")
+                            .setPicture("http://files.parsetfss.com/ba2c63d0-4860-42a0-9547-7d01e94d4446/tfss-371c4d8e-35e1-4257-a8f5-0fbb6a0670f9-Card-Games.png")
+                            .build();
+                    uiHelper.trackPendingDialogCall(shareDialog.present());
+
+                } else {
+                    // Fallback. For example, publish the post using the Feed Dialog
+                }
 
                 return true;
 
@@ -86,12 +108,14 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
     protected void onResume() {
         DataExchange.bus.register(this);
         super.onResume();
+        uiHelper.onResume();
     }
 
     @Override
     protected void onPause() {
         DataExchange.bus.unregister(this);
         super.onPause();
+        uiHelper.onPause();
     }
 
     // 2.0 and above
@@ -172,5 +196,22 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
         author.setText(eventAuthor.getFirstName() + " " + eventAuthor.getLastName());
 
         Picasso.with(this).load("https://graph.facebook.com/" + eventAuthor.getFbId().toString() + "/picture?type=square").into(userPhoto);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        uiHelper.onActivityResult(requestCode, resultCode, data, new FacebookDialog.Callback() {
+            @Override
+            public void onComplete(FacebookDialog.PendingCall pendingCall, Bundle data) {
+                Log.i("Activity", "Success!");
+            }
+
+            @Override
+            public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
+                Log.e("Activity", String.format("Error: %s", error.toString()));
+            }
+        });
     }
 }

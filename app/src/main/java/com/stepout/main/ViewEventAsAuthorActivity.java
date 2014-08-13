@@ -75,7 +75,7 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
                     return true;
 
                 case R.id.action_share:
-
+                    //TODO
                     return true;
 
                 case R.id.action_delete:
