@@ -216,10 +216,6 @@ public class DataExchange extends Application {
         }
     }
 
-    public boolean isLogedin() {
-        return false;
-    }
-
     public static void saveEventToParseCom(final Event event) {
         final ParseObject eventParse = new ParseObject(EVENT_TABLE_NAME);
         eventParse.put(MESSAGE_COL_NAME, event.getMessage());
@@ -309,37 +305,6 @@ public class DataExchange extends Application {
         });
     }
 
-    public static void getEventsByUser(String userHash) {
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
-        query.whereEqualTo(AUTHOR_HASH_COL_NAME, userHash);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    ArrayList<Event> events = new ArrayList<Event>();
-
-                    for (int i = 0; i < objects.size(); i++) {
-                        ParseObject po = objects.get(i);
-
-                        Event ev = new Event(
-                                po.getString(MESSAGE_COL_NAME),
-                                po.getParseGeoPoint(COORDINATES_COL_NAME),
-                                po.getString(CATEGORY_COL_NAME),
-                                po.getString(AUTHOR_HASH_COL_NAME),
-                                po.getDate(DATE_COL_NAME),
-                                po.<String>getList(RESPONDENTS_HASH_COL_NAME)
-                        );
-
-                        ev.setHash(po.getObjectId());
-                        events.add(ev);
-                    }
-                    bus.post(events);
-                }
-            }
-        });
-    }
-
     public static void getEventByHash(String eventHash) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
         query.whereEqualTo(OBJECT_ID_COL_NAME, eventHash);
@@ -401,10 +366,6 @@ public class DataExchange extends Application {
                 }
             }
         });
-    }
-
-    public static boolean isEventAssignedToUser(String eventHash, String userHash) {
-        return false;
     }
 
     public static void removeEvent(final String eventHash, String userHash) {
@@ -577,26 +538,5 @@ public class DataExchange extends Application {
             }
         });
 
-    }
-
-    private static ArrayList<User> castParseObjectToUserList(List<ParseObject> objects) {
-
-        ArrayList<User> users = new ArrayList<User>();
-
-        for (ParseObject obj: objects) {
-
-            User user = new User(
-                    obj.getString(FIRST_NAME_COL_NAME),
-                    obj.getString(LAST_NAME_COL_NAME),
-                    obj.getString(PHONE_COL_NAME),
-                    obj.getString(FACEBOOK_ID_COL_NAME)
-            );
-
-            user.setHash(obj.getObjectId());
-
-            users.add(user);
-        }
-
-        return users;
     }
 }
