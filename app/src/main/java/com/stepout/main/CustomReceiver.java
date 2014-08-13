@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.stepout.main.models.User;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,11 +27,15 @@ public class CustomReceiver extends BroadcastReceiver {
             String alert = json.getString("message");
             String currentEventHash = json.getString(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY);
             String author = json.getString("author");
-            Log.d("ASD", currentEventHash);
-            Log.d("AUTHOR", author);
 
-
-            Intent newIntent = new Intent(context, ViewEventAsAuthorActivity.class);
+            Intent newIntent;
+            User currentUser = UserKeeper.readUserFromSharedPref(context);
+            if (author.equals(currentUser.getHash())) {
+                newIntent = new Intent(context, ViewEventAsAuthorActivity.class);
+            }
+            else {
+                newIntent = new Intent(context, ViewEventAsRespondentActivity.class);
+            }
             newIntent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEventHash);
 
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -40,8 +46,6 @@ public class CustomReceiver extends BroadcastReceiver {
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(alert))
                     .setContentText(alert)
                     .setDefaults(NotificationCompat.DEFAULT_ALL);
-
-            
 
             builder.setContentIntent(pendingIntent);
             NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
