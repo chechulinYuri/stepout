@@ -1,6 +1,5 @@
 package com.stepout.main;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -28,7 +27,6 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
     private Event currentEvent;
     private User currentUser;
     private boolean isRemovingProcess;
-    private ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +55,6 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
             Log.d("asd", "event loading from parse com " + currentEventHash);
             DataExchange.getEventByHash(currentEventHash);
         }
-
-        pd = new ProgressDialog(this);
-        pd.setTitle(getResources().getString(R.string.loading_process));
-        pd.setCancelable(false);
     }
 
     @Override
@@ -85,7 +79,7 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
                     return true;
 
                 case R.id.action_delete:
-                    pd.show();
+                    Util.showLoadingDialog(this);
                     isRemovingProcess = true;
                     DataExchange.removeEvent(currentEvent.getHash(), currentUser.getHash());
                     return true;
@@ -126,9 +120,15 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
 
     @Subscribe
     public void getEvent(Event event) {
-        if (event != null) {
+        if (event.getHash() != null) {
             currentEvent = event;
             showEvent(currentEvent);
+        } else {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.event_not_found), Toast.LENGTH_LONG).show();
+
+            Intent intent = new Intent(this, MapsActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
 
         findViewById(R.id.content_wrapper).setVisibility(View.VISIBLE);
@@ -137,7 +137,9 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
 
     @Subscribe
     public void removeEventStatus(String status) {
-        Log.d("asd", "remove " + status);
+
+        Util.dismissLoadingDialog();
+
         if (status.equals(DataExchange.STATUS_REMOVE_SUCCESS)) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.remove_success), Toast.LENGTH_LONG).show();
 
@@ -155,7 +157,6 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
             startActivity(intent);
         } else if (status.equals(DataExchange.STATUS_REMOVE_FAIL)) {
             isRemovingProcess = false;
-            pd.hide();
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.some_error), Toast.LENGTH_LONG).show();
         }
     }

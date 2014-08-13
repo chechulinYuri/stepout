@@ -1,6 +1,5 @@
 package com.stepout.main;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -30,7 +29,6 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
     private Event currentEvent;
     private User eventAuthor;
     private User currentUser;
-    private ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +52,6 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
         if (!isEventUploaded) {
             DataExchange.getEventByHash(getIntent().getStringExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY));
         }
-
-        pd = new ProgressDialog(this);
-        pd.setTitle(getResources().getString(R.string.loading_process));
-        pd.setCancelable(false);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -78,7 +72,7 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
                 return true;
 
             case R.id.action_unresponse:
-                pd.show();
+                Util.showLoadingDialog(this);
                 DataExchange.unresponseFromEvent(currentEvent.getHash(), currentUser.getHash());
                 return true;
 
@@ -120,8 +114,16 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
 
     @Subscribe
     public void getEvent(Event event) {
-        currentEvent = event;
-        DataExchange.getUserByHash(currentEvent.getAuthorHash());
+        if (event.getHash() != null) {
+            currentEvent = event;
+            DataExchange.getUserByHash(currentEvent.getAuthorHash());
+        } else {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.event_not_found), Toast.LENGTH_LONG).show();
+
+            Intent intent = new Intent(this, MapsActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
     }
 
     @Subscribe
@@ -135,7 +137,7 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
 
     @Subscribe
     public void getUnresponseStatus(String status) {
-        pd.hide();
+        Util.dismissLoadingDialog();
         if (status.equals(DataExchange.STATUS_SUCCESS)) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.you_unrespond), Toast.LENGTH_LONG).show();
 

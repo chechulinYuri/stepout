@@ -3,7 +3,6 @@ package com.stepout.main;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -68,7 +67,6 @@ public class MapsActivity extends ActionBarActivity implements
     private boolean isSearching;
     private static LatLng currentLocation;
     private SubMenu filterSubMenu;
-    private ProgressDialog pd;
     private Menu menu;
 
     /*
@@ -192,12 +190,12 @@ public class MapsActivity extends ActionBarActivity implements
             }
         });
 
-        DataExchange.getCategories();
-
-        pd = new ProgressDialog(this);
-        pd.setTitle(getResources().getString(R.string.loading_process));
-        pd.setCancelable(false);
-        pd.show();
+        if (DataExchange.categories.size() == 0) {
+            DataExchange.getCategories();
+            Util.showLoadingDialog(this);
+        } else {
+            isCategoriesLoaded = true;
+        }
     }
 
     @Override
@@ -227,6 +225,10 @@ public class MapsActivity extends ActionBarActivity implements
 
         this.menu = menu;
 
+        if (isCategoriesLoaded) {
+            addFilterMenuOption();
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -236,7 +238,7 @@ public class MapsActivity extends ActionBarActivity implements
             case R.id.action_refresh:
                 if (!isEventsRefreshing) {
                     isEventsRefreshing = true;
-                    pd.show();
+                    Util.showLoadingDialog(this);
 
                     DataExchange.uploadedEvents.clear();
                     DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
@@ -259,7 +261,7 @@ public class MapsActivity extends ActionBarActivity implements
     }
 
     private void initFilterQuery() {
-        pd.show();
+        Util.showLoadingDialog(this);
 
         ArrayList<String> categories = new ArrayList<String>();
         categories.addAll(DataExchange.categories.keySet());
@@ -286,7 +288,7 @@ public class MapsActivity extends ActionBarActivity implements
         Log.d(LOG_TAG, "mapactivity get events");
         isEventsRefreshing = false;
         if (isCategoriesLoaded) {
-            pd.hide();
+            Util.dismissLoadingDialog();
             Toast.makeText(this, getResources().getString(R.string.map_updated), Toast.LENGTH_LONG).show();
             Log.d(LOG_TAG, "and category here");
             drawMarkers(DataExchange.uploadedEvents);
@@ -311,7 +313,7 @@ public class MapsActivity extends ActionBarActivity implements
 
         addFilterMenuOption();
 
-        pd.hide();
+        Util.dismissLoadingDialog();
         if (DataExchange.uploadedEvents.size() > 0) {
             Log.d(LOG_TAG, "and events here");
             drawMarkers(DataExchange.uploadedEvents);
@@ -320,7 +322,7 @@ public class MapsActivity extends ActionBarActivity implements
 
     @Subscribe
     public void searchOrFilterCallback(String status) {
-        pd.hide();
+        Util.dismissLoadingDialog();
 
         if (status.equals(DataExchange.STATUS_SEARCH_SUCCESS)) {
             drawMarkers(DataExchange.searchEventResult);
@@ -477,11 +479,13 @@ public class MapsActivity extends ActionBarActivity implements
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
             currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+            Util.showLoadingDialog(this);
             DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
         }
         else {
             currentLocation = nsk;
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10));
+            Util.showLoadingDialog(this);
             DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
         }
     }
@@ -543,6 +547,7 @@ public class MapsActivity extends ActionBarActivity implements
                         public void onClick(DialogInterface dialog, int id) {
                             map.setMyLocationEnabled(true);
                             map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10));
+                            Util.showLoadingDialog(getActivity());
                             DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
                             dismiss();
                         }

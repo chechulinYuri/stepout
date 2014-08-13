@@ -30,6 +30,10 @@ public class Event extends Entity {
         this.respondentsHash = respondentsHash;
     }
 
+    public Event() {
+        // Empty constructor need for DataExchange methods
+    }
+
     public String getMessage() {
         return message;
     }
