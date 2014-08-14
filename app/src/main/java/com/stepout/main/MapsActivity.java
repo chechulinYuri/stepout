@@ -97,7 +97,12 @@ public class MapsActivity extends ActionBarActivity implements
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                for (Event e: DataExchange.uploadedEvents) {
+                ArrayList<Event> events = new ArrayList<Event>();
+                events.addAll(DataExchange.uploadedEvents);
+                events.addAll(DataExchange.filterEventResult);
+                events.addAll(DataExchange.searchEventResult);
+
+                for (Event e: events) {
                     if (e.getMarkerId().equals(marker.getId())) {
 
                         if (e.getAuthorHash().equals(currentUser.getHash())) {
@@ -284,6 +289,7 @@ public class MapsActivity extends ActionBarActivity implements
 
     @Subscribe
     public void getEvents(ArrayList<Event> events) {
+        DataExchange.uploadedEvents.clear();
         DataExchange.uploadedEvents.addAll(events);
         Log.d(LOG_TAG, "mapactivity get events");
         isEventsRefreshing = false;

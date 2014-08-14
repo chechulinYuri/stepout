@@ -339,37 +339,6 @@ public class DataExchange extends Application {
         });
     }
 
-    public static void getEventsInRadius(double lan, double lng) {
-        final ArrayList<Event> events = new ArrayList<Event>();
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
-        query.whereWithinMiles(COORDINATES_COL_NAME, new ParseGeoPoint(lan, lng), EVENTS_VISIBILITY_RADIUS_IN_MILES);
-
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    for (int i = 0; i < parseObjects.size(); i++) {
-                        ParseObject po = parseObjects.get(i);
-                        Event ev = new Event(
-                            po.getString(MESSAGE_COL_NAME),
-                            po.getParseGeoPoint(COORDINATES_COL_NAME),
-                            po.getString(CATEGORY_COL_NAME),
-                            po.getString(AUTHOR_HASH_COL_NAME),
-                            po.getDate(DATE_COL_NAME),
-                            po.<String>getList(RESPONDENTS_HASH_COL_NAME)
-                        );
-
-                        ev.setHash(po.getObjectId());
-                        events.add(ev);
-                    }
-
-                    bus.post(events);
-                }
-            }
-        });
-    }
-
     public static void removeEvent(final String eventHash, String userHash) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
@@ -441,8 +410,35 @@ public class DataExchange extends Application {
         });
     }
 
-    public static boolean shareEvent(String eventHash, String type) {
-        return false;
+    public static void getEventsInRadius(double lan, double lng) {
+        final ArrayList<Event> events = new ArrayList<Event>();
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(EVENT_TABLE_NAME);
+        query.whereWithinMiles(COORDINATES_COL_NAME, new ParseGeoPoint(lan, lng), EVENTS_VISIBILITY_RADIUS_IN_MILES);
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
+                    for (int i = 0; i < parseObjects.size(); i++) {
+                        ParseObject po = parseObjects.get(i);
+                        Event ev = new Event(
+                                po.getString(MESSAGE_COL_NAME),
+                                po.getParseGeoPoint(COORDINATES_COL_NAME),
+                                po.getString(CATEGORY_COL_NAME),
+                                po.getString(AUTHOR_HASH_COL_NAME),
+                                po.getDate(DATE_COL_NAME),
+                                po.<String>getList(RESPONDENTS_HASH_COL_NAME)
+                        );
+
+                        ev.setHash(po.getObjectId());
+                        events.add(ev);
+                    }
+
+                    bus.post(events);
+                }
+            }
+        });
     }
 
     public static void searchEventsInRadius(String key, Double lan, Double lng) {
