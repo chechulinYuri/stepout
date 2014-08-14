@@ -70,11 +70,10 @@
     </string-array>
 
     <string name="user_photo">User photo</string>
-    <string name="title_activity_create_event">Create Event</string>
-    <string name="title_activity_view_event">View Event</string>
-    <string name="title_activity_maps">Map</string>
-    <string name="title_activity_view_event_as_author">View Event</string>
-    <string name="title_activity_view_event_as_respondent">View Event</string>
-    <string name="title_activity_edit_event">EditEventActivity</string>
+    <string name="title_activity_create_event">Create event</string>
+    <string name="title_activity_view_event">View event</string>
+    <string name="title_activity_view_event_as_author">View event</string>
+    <string name="title_activity_view_event_as_respondent">View event</string>
+    <string name="title_activity_edit_event">Edit event</string>
 
 </resources>
