@@ -248,6 +248,7 @@ public class MapsActivity extends ActionBarActivity implements
                     DataExchange.uploadedEvents.clear();
                     DataExchange.getEventsInRadius(currentLocation.latitude, currentLocation.longitude);
                 }
+
                 return true;
         }
 

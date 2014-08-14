@@ -13,12 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Session;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.WebDialog;
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
@@ -100,6 +96,10 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
                         Toast.makeText(getApplicationContext(), "It will work as soon as you install facebook app. I swear.", Toast.LENGTH_LONG).show();
                     }
                     return true;
+
+                case R.id.add_to_cal:
+                    Util.addEventToCal(this, currentEvent);
+                    break;
 
                 case R.id.action_delete:
                     Util.showLoadingDialog(this);

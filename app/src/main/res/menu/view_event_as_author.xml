@@ -13,6 +13,11 @@
         android:icon="@drawable/ic_action_share"
         yourapp:showAsAction="always"/>
 
+    <item android:id="@+id/add_to_cal"
+        android:title="@string/add_to_cal"
+        android:icon="@drawable/ic_action_event"
+        yourapp:showAsAction="ifRoom"/>
+
     <item android:id="@+id/action_delete"
         android:title="@string/action_delete"
         android:icon="@drawable/ic_action_remove"

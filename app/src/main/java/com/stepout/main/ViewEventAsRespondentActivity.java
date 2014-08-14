@@ -13,17 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.FacebookException;
-import com.facebook.FacebookOperationCanceledException;
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
-import com.facebook.android.Facebook;
-import com.facebook.model.GraphUser;
 import com.facebook.widget.FacebookDialog;
-import com.facebook.widget.WebDialog;
 import com.parse.ParseInstallation;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
@@ -101,6 +92,10 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
 
                 return true;
 
+            case R.id.add_to_cal:
+                Util.addEventToCal(this, currentEvent);
+                break;
+
             case R.id.action_unresponse:
                 Util.showLoadingDialog(this);
                 DataExchange.unresponseFromEvent(currentEvent.getHash(), currentUser.getHash());
@@ -109,6 +104,8 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
 

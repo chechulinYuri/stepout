@@ -75,5 +75,6 @@
     <string name="title_activity_view_event_as_author">View event</string>
     <string name="title_activity_view_event_as_respondent">View event</string>
     <string name="title_activity_edit_event">Edit event</string>
+    <string name="add_to_cal">Add to calendar</string>
 
 </resources>
