@@ -15,9 +15,13 @@ import android.widget.Toast;
 
 import com.facebook.FacebookException;
 import com.facebook.FacebookOperationCanceledException;
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
+import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.android.Facebook;
+import com.facebook.model.GraphUser;
 import com.facebook.widget.FacebookDialog;
 import com.facebook.widget.WebDialog;
 import com.parse.ParseInstallation;
@@ -92,7 +96,7 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
                     uiHelper.trackPendingDialogCall(shareDialog.present());
 
                 } else {
-                    publishFeedDialog();
+                    Toast.makeText(getApplicationContext(), "It will work as soon as you install facebook app. I swear.", Toast.LENGTH_LONG).show();
                 }
 
                 return true;
@@ -217,35 +221,5 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
                 Log.e("Activity", String.format("Error: %s", error.toString()));
             }
         });
-    }
-
-    private void publishFeedDialog() {
-        Bundle params = new Bundle();
-        params.putString("name", getString(R.string.app_name));
-        params.putString("caption", getString(R.string.fb_share_caption_as_respondent));
-        params.putString("link", "https://developers.facebook.com/android");
-        params.putString("picture", "http://files.parsetfss.com/ba2c63d0-4860-42a0-9547-7d01e94d4446/tfss-371c4d8e-35e1-4257-a8f5-0fbb6a0670f9-Card-Games.png");
-
-        WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(this, Session.getActiveSession(), params)).setOnCompleteListener(new WebDialog.OnCompleteListener() {
-            @Override
-            public void onComplete(Bundle values, FacebookException error) {
-                if (error == null) {
-                    final String postId = values.getString("post_id");
-                    if (postId != null) {
-                        Toast.makeText(ViewEventAsRespondentActivity.this, "Posted story, id: "+postId, Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        Toast.makeText(ViewEventAsRespondentActivity.this.getApplicationContext(), "Publish cancelled", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else  if (error instanceof FacebookOperationCanceledException) {
-                    Toast.makeText(ViewEventAsRespondentActivity.this.getApplicationContext(), "Publish cancelled", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(ViewEventAsRespondentActivity.this.getApplicationContext(), "Error posting story", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }).build();
-        feedDialog.show();
     }
 }

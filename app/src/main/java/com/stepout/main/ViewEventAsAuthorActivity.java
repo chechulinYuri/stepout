@@ -97,7 +97,7 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
                         uiHelper.trackPendingDialogCall(shareDialog.present());
 
                     } else {
-                        publishFeedDialog();
+                        Toast.makeText(getApplicationContext(), "It will work as soon as you install facebook app. I swear.", Toast.LENGTH_LONG).show();
                     }
                     return true;
 
@@ -216,35 +216,5 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
                 Log.e("Activity", String.format("Error: %s", error.toString()));
             }
         });
-    }
-
-    private void publishFeedDialog() {
-        Bundle params = new Bundle();
-        params.putString("name", getString(R.string.app_name));
-        params.putString("caption", getString(R.string.fb_share_caption));
-        params.putString("link", "https://developers.facebook.com/android");
-        params.putString("picture", "http://files.parsetfss.com/ba2c63d0-4860-42a0-9547-7d01e94d4446/tfss-371c4d8e-35e1-4257-a8f5-0fbb6a0670f9-Card-Games.png");
-
-        WebDialog feedDialog = (new WebDialog.FeedDialogBuilder(this, Session.getActiveSession(), params)).setOnCompleteListener(new WebDialog.OnCompleteListener() {
-            @Override
-            public void onComplete(Bundle values, FacebookException error) {
-                if (error == null) {
-                    final String postId = values.getString("post_id");
-                    if (postId != null) {
-                        Toast.makeText(ViewEventAsAuthorActivity.this, "Posted story, id: "+postId, Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        Toast.makeText(ViewEventAsAuthorActivity.this.getApplicationContext(), "Publish cancelled", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else  if (error instanceof FacebookOperationCanceledException) {
-                    Toast.makeText(ViewEventAsAuthorActivity.this.getApplicationContext(), "Publish cancelled", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(ViewEventAsAuthorActivity.this.getApplicationContext(), "Error posting story", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }).build();
-        feedDialog.show();
     }
 }
