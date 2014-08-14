@@ -137,7 +137,10 @@ public class DataExchange extends Application {
         userParse.put(FACEBOOK_ID_COL_NAME, user.getFbId());
         userParse.put(FIRST_NAME_COL_NAME, user.getFirstName());
         userParse.put(LAST_NAME_COL_NAME, user.getLastName());
-        userParse.put(PHONE_COL_NAME, user.getPhone()   );
+
+        if (user.getPhone() != null) {
+            userParse.put(PHONE_COL_NAME, user.getPhone());
+        }
 
         try {
             userParse.save();
