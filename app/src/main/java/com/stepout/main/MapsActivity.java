@@ -362,7 +362,7 @@ public class MapsActivity extends ActionBarActivity implements
             Event currentEvent = events.get(i);
             LatLng latLng = new LatLng(currentEvent.getCoordinates().getLatitude(), events.get(i).getCoordinates().getLongitude());
             String category = currentEvent.getCategory();
-            String snippet = currentEvent.getMessage() + " " + getString(R.string.attenders_text, currentEvent.getRespondentsHash().size());
+            String snippet = currentEvent.getMessage();
             IconGenerator iconGenerator = new IconGenerator(this);
             if (currentUser.getHash().compareTo(currentEvent.getAuthorHash()) == 0) {
                 iconGenerator.setStyle(IconGenerator.STYLE_GREEN);
@@ -387,7 +387,7 @@ public class MapsActivity extends ActionBarActivity implements
             }
             currentEvent.setMarkerId(map.addMarker(new MarkerOptions()
                     .position(latLng)
-                    .title(category)
+                    .title(getString(R.string.attenders_text, currentEvent.getRespondentsHash().size()))
                     .snippet(snippet)
                     .icon(BitmapDescriptorFactory.fromBitmap(bmp))
                 ).getId());
