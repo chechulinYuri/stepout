@@ -1,6 +1,7 @@
 package com.stepout.main;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -72,40 +73,50 @@ public class ViewEventAsRespondentActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_call:
+                if (eventAuthor != null && eventAuthor.getPhone() != null) {
+                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + eventAuthor.getPhone()));
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, getResources().getString(R.string.tel_not_avalible), Toast.LENGTH_LONG).show();
+                }
 
                 return true;
 
             case R.id.action_share:
-                if (FacebookDialog.canPresentShareDialog(getApplicationContext(),
-                        FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
-                    FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
-                            .setLink("https://developers.facebook.com/android")
-                            .setName(getString(R.string.app_name))
-                            .setCaption(getString(R.string.fb_share_caption_as_respondent))
-                            .setPicture("http://files.parsetfss.com/ba2c63d0-4860-42a0-9547-7d01e94d4446/tfss-371c4d8e-35e1-4257-a8f5-0fbb6a0670f9-Card-Games.png")
-                            .build();
-                    uiHelper.trackPendingDialogCall(shareDialog.present());
+                if (currentEvent != null) {
+                    if (FacebookDialog.canPresentShareDialog(getApplicationContext(),
+                            FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
+                        FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
+                                .setLink("https://developers.facebook.com/android")
+                                .setName(getString(R.string.app_name))
+                                .setCaption(getString(R.string.fb_share_caption_as_respondent))
+                                .setPicture("http://files.parsetfss.com/ba2c63d0-4860-42a0-9547-7d01e94d4446/tfss-371c4d8e-35e1-4257-a8f5-0fbb6a0670f9-Card-Games.png")
+                                .build();
+                        uiHelper.trackPendingDialogCall(shareDialog.present());
 
-                } else {
-                    Toast.makeText(getApplicationContext(), "It will work as soon as you install facebook app. I swear.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "It will work as soon as you install facebook app. I swear.", Toast.LENGTH_LONG).show();
+                    }
                 }
 
                 return true;
 
             case R.id.add_to_cal:
-                Util.addEventToCal(this, currentEvent);
-                break;
+                if (currentEvent != null) {
+                    Util.addEventToCal(this, currentEvent);
+                }
+                return true;
 
             case R.id.action_unresponse:
-                Util.showLoadingDialog(this);
-                DataExchange.unresponseFromEvent(currentEvent.getHash(), currentUser.getHash());
+                if (currentEvent != null) {
+                    Util.showLoadingDialog(this);
+                    DataExchange.unresponseFromEvent(currentEvent.getHash(), currentUser.getHash());
+                }
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
 

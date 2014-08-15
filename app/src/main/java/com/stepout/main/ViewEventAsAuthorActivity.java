@@ -76,35 +76,43 @@ public class ViewEventAsAuthorActivity extends ActionBarActivity {
         if (!isRemovingProcess) {
             switch (item.getItemId()) {
                 case R.id.action_edit:
-                    Intent intent = new Intent(this, EditEventActivity.class);
-                    intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEvent.getHash());
-                    startActivity(intent);
+                    if (currentEvent != null) {
+                        Intent intent = new Intent(this, EditEventActivity.class);
+                        intent.putExtra(DataExchange.EVENT_HASH_FOR_VIEW_EVENT_ACTIVITY_KEY, currentEvent.getHash());
+                        startActivity(intent);
+                    }
                     return true;
 
                 case R.id.action_share:
-                    if (FacebookDialog.canPresentShareDialog(getApplicationContext(),
-                            FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
-                        FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
-                                .setLink("https://developers.facebook.com/android")
-                                .setName(getString(R.string.app_name))
-                                .setCaption(getString(R.string.fb_share_caption))
-                                .setPicture("http://files.parsetfss.com/ba2c63d0-4860-42a0-9547-7d01e94d4446/tfss-371c4d8e-35e1-4257-a8f5-0fbb6a0670f9-Card-Games.png")
-                                .build();
-                        uiHelper.trackPendingDialogCall(shareDialog.present());
+                    if (currentEvent != null) {
+                        if (FacebookDialog.canPresentShareDialog(getApplicationContext(),
+                                FacebookDialog.ShareDialogFeature.SHARE_DIALOG)) {
+                            FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
+                                    .setLink("https://developers.facebook.com/android")
+                                    .setName(getString(R.string.app_name))
+                                    .setCaption(getString(R.string.fb_share_caption))
+                                    .setPicture("http://files.parsetfss.com/ba2c63d0-4860-42a0-9547-7d01e94d4446/tfss-371c4d8e-35e1-4257-a8f5-0fbb6a0670f9-Card-Games.png")
+                                    .build();
+                            uiHelper.trackPendingDialogCall(shareDialog.present());
 
-                    } else {
-                        Toast.makeText(getApplicationContext(), "It will work as soon as you install facebook app. I swear.", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "It will work as soon as you install facebook app. I swear.", Toast.LENGTH_LONG).show();
+                        }
                     }
                     return true;
 
                 case R.id.add_to_cal:
-                    Util.addEventToCal(this, currentEvent);
-                    break;
+                    if (currentEvent != null) {
+                        Util.addEventToCal(this, currentEvent);
+                    }
+                    return true;
 
                 case R.id.action_delete:
-                    Util.showLoadingDialog(this);
-                    isRemovingProcess = true;
-                    DataExchange.removeEvent(currentEvent.getHash(), currentUser.getHash());
+                    if (currentEvent != null) {
+                        Util.showLoadingDialog(this);
+                        isRemovingProcess = true;
+                        DataExchange.removeEvent(currentEvent.getHash(), currentUser.getHash());
+                    }
                     return true;
             }
         }

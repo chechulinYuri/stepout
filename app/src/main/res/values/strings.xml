@@ -76,5 +76,6 @@
     <string name="title_activity_view_event_as_respondent">View event</string>
     <string name="title_activity_edit_event">Edit event</string>
     <string name="add_to_cal">Add to calendar</string>
+    <string name="tel_not_avalible">Phone not available</string>
 
 </resources>
